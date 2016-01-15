@@ -42,8 +42,9 @@ bool load_content()
 	eff.build();
 
 	// Set camera properties
-	cam.set_position(vec3(10.0f, 10.0f, 10.0f));
+	cam.set_position(vec3(0.0f, 10.0f, 0.0f));
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
+	cam.set_up(vec3(1.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 	return true;
@@ -66,8 +67,13 @@ bool render()
 	// ******************************************************
 	// Create rotation matrix - rotate around Z axis by theta
 	// ******************************************************
-	mat4 R;
 	
+
+	// rotation on z axis
+	//mat4 R = rotate(mat4(1.0f), theta, vec3(0.0f, 0.0f, 1.0f));
+	
+	// rotation on x
+	mat4 R = rotate(mat4(1.0f), theta, vec3(1.0f, 0.0f, 0.0f));
 
 	mat4 M = R;
 	auto V = cam.get_view();
