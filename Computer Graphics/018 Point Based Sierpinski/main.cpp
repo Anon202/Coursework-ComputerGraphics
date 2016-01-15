@@ -9,6 +9,18 @@ geometry geom;
 effect eff;
 target_camera cam;
 
+// create a pos vector for translation
+vec3 pos(0.0f, 0.0f, 0.0f);
+
+// create theta
+float theta = 0.0f;
+
+// create s ( scale var)
+float s = 0.0f;
+
+// create time var for accumulation
+float total_time = 0.0f;
+
 const int num_points = 50000;
 
 void create_sierpinski(geometry &geom)
@@ -36,19 +48,23 @@ void create_sierpinski(geometry &geom)
         // ****************
 		// Add random point
         // ****************
-		
+		auto n = dist(e);
+
+		points.push_back((points[i - 1] + v[n]) / 2.0f);  // adding a point to the vector, 
 
         // ***************************
 		// Add colour - all points red
         // ***************************
-		
+
+		colours.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	}
 
     // ***********************
 	// Add buffers to geometry
     // ***********************
-
+	geom.add_buffer(points, BUFFER_INDEXES::POSITION_BUFFER);
+	geom.add_buffer(colours, BUFFER_INDEXES::COLOUR_BUFFER);
 
 
 }
@@ -82,6 +98,30 @@ bool update(float delta_time)
 {
 	// Update the camera
 	cam.update(delta_time);
+
+
+	// Increment theta - half a rotation per second
+	theta += pi<float>() * delta_time;
+
+	total_time += delta_time;
+
+	// increment scale each second by sin
+	s = 1.0f + sinf(total_time);
+
+
+	// add direction // get key if key pressed is correct key update pos vector by 5.0f per seconds
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+		pos += vec3(0.0f, 0.0f, 5.0f) * delta_time;
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+		pos += vec3(0.0f, 0.0f, -5.0f) * delta_time;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
+		pos += vec3(5.0f, 0.0f, 0.0f) * delta_time;
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
+		pos += vec3(-5.0f, 0.0f, 0.0f) * delta_time;
+
+
+
 	return true;
 }
 
@@ -89,8 +129,20 @@ bool render()
 {
 	// Bind effect
 	renderer::bind(eff);
-	// Create MVP matrix
-	mat4 M(1.0f);
+	
+
+	// change M from identity to transformation matrix
+	mat4 T = translate(mat4(1.0f), pos);
+	
+	// angle, axis
+	mat4 R = rotate(mat4(1.0f), theta, vec3(1.0f, 0.0f, 0.0f));
+	
+
+	// scale
+	mat4 S = scale(mat4(1.0f), vec3(s, s, s));
+	
+	mat4 M = T * (S*R);
+
 	auto V = cam.get_view();
 	auto P = cam.get_projection();
 	auto MVP = P * V * M;

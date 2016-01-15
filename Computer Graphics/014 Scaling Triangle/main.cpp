@@ -71,7 +71,8 @@ bool render()
 	// **************************************************
 	// Create scale matrix - use uniform scale based on s
 	// **************************************************
-	mat4 S;
+	
+	mat4 S = scale(mat4(1.0f), vec3(s, s, s));
 
 
 	mat4 M = S;

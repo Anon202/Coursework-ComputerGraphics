@@ -18,7 +18,7 @@ bool load_content()
 	// **************************
 	// Set geometry type to quads
 	// **************************
-
+	geom.set_type(GL_QUADS);
 
 	// Create quad data
 	// Positions
@@ -91,14 +91,14 @@ bool render()
 	// ******************************
 	// Create transformation matrices
 	// ******************************
-    mat4 T;
-    mat4 R;
-    mat4 S;
+	mat4 T = translate(mat4(1.0f), pos);
+	mat4 R = rotate(mat4(1.0f), theta, vec3(1.0f, 0.0f, 0.0f));
+    mat4 S = scale(mat4(1.0f), vec3(s, s, s));
 
 	// *********************************************************
 	// Combine matrices to set M - remember multiplication order
 	// *********************************************************
-    mat4 M;
+    mat4 M = T * (R* S);
 
 	auto V = cam.get_view();
 	auto P = cam.get_projection();
