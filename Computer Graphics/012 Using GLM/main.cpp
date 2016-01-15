@@ -10,7 +10,7 @@ using namespace std;
 using namespace glm;
 
 int main()
-{
+{ /*
 	// v2
 	vec2 u1(1.0f, 0.0f);
 	//vec2 u2(0.0f, 1.0f);
@@ -67,12 +67,22 @@ int main()
 	// projection
 	vec3 p = proj(v1, v2);
 
-	vec3 c = cross(v1, v2);
+	vec3 c2 = cross(v1, v2);
 
 	
 	// MATRIX 
 
 	// Identity matrix
-	mat4 m(1.0f); 
+	mat4 m(1.0f);
+
+	// can convert between matrix types as with vectors 
+	mat3 n1(m);
+
+	// can add and subtract and scale as before
+	mat4 o = m + mat4(1.0f);
+
+	mat4 p1 = 5.0f * o; */
+
+
 
 }
