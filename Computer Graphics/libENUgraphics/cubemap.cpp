@@ -17,24 +17,6 @@ namespace graphics_framework
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	// Creates a cubemap object
-	cubemap::cubemap() throw (...)
-	{
-		// Generate texture with OpenGL
-		glGenTextures(1, &_id);
-		// Check error
-		if (CHECK_GL_ERROR)
-		{
-			// Display error
-			std::cerr << "ERROR - creating cubemap" << std::endl;
-			std::cerr << "Could not allocate texture with OpenGL" << std::endl;
-			// Set ID to 0
-			_id = 0;
-			// Throw exception
-			throw std::runtime_error("Error creating cubemap texture with OpenGL");
-		}
-	}
-
 	// Creates a cubemap object from an array of six file names
 	cubemap::cubemap(const std::array<std::string, 6> &filenames) throw (...)
 	{
@@ -69,6 +51,12 @@ namespace graphics_framework
 			images[i] = FreeImage_ConvertTo32Bits(images[i]);
 			// Unload temporary (non-converted) image
 			FreeImage_Unload(temp);
+            // Set temp to converted image
+            temp = images[i];
+            // Rotate image - OpenGL is a bit silly here
+            images[i] = FreeImage_Rotate(images[i], 180.0f);
+            // Unload temporary (non-rotated) image
+            FreeImage_Unload(temp);
 		}
 		// Set magnification and minification filters
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -123,6 +111,24 @@ namespace graphics_framework
 	// Sets one of the textures in the cubemap
 	bool cubemap::set_texture(GLenum target, const std::string &filename) throw (...)
 	{
+        // Check that cubemap has been generated
+        if (_id == 0)
+        {
+            // Generate texture with OpenGL
+            glGenTextures(1, &_id);
+            // Check error
+            if (CHECK_GL_ERROR)
+            {
+                // Display error
+                std::cerr << "ERROR - creating cubemap" << std::endl;
+                std::cerr << "Could not allocate texture with OpenGL" << std::endl;
+                // Set ID to 0
+                _id = 0;
+                // Throw exception
+                throw std::runtime_error("Error creating cubemap texture with OpenGL");
+            }
+        }
+
 		// Check that target is valid
 		assert(std::find(std::begin(targets), std::end(targets), target) != std::end(targets));
 		// Check that filename is valid
@@ -149,6 +155,12 @@ namespace graphics_framework
 		image = FreeImage_ConvertTo32Bits(image);
 		// Unload temporary (not converted) image
 		FreeImage_Unload(temp);
+        // Set temp to converted image
+        temp = image;
+        // Rotate image - OpenGL is a bit silly here
+        image = FreeImage_Rotate(image, 180.0f);
+        // Unload temporary (non-rotated) image
+        FreeImage_Unload(temp);
 		// Load the texture into OpenGL
 		glTexImage2D(
 			target,

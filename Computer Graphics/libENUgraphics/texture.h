@@ -11,16 +11,16 @@ namespace graphics_framework
 	{
 	private:
 		// The OpenGL ID of the texture data
-		GLuint _id;
+        GLuint _id = 0;
 		// The width of the texture
-		GLuint _width;
+        GLuint _width = 0;
 		// The height of the texture
-		GLuint _height;
+        GLuint _height = 0;
 		// The type of the texture
-		GLenum _type;
+        GLenum _type = 0;
 	public:
 		// Default constructor
-		texture() : _id(0) { }
+		texture() { }
 		// Creates an empty texture of the given width and height
 		texture(GLuint width, GLuint height) throw (...);
 		// Loads a texture from the given filename

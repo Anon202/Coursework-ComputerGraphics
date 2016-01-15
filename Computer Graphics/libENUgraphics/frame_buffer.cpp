@@ -2,6 +2,7 @@
 
 #include "frame_buffer.h"
 #include "util.h"
+#include <FreeImage\FreeImage.h>
 
 namespace graphics_framework
 {
@@ -65,11 +66,9 @@ namespace graphics_framework
 		// Set texture properties
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
 		CHECK_GL_ERROR; // Non-fatal
 
 		// Create and set up the FBO
@@ -126,4 +125,27 @@ namespace graphics_framework
 		// Log
 		std::clog << "LOG - frame buffer built" << std::endl;
 	}
+
+    // Saves the framebuffer
+    void frame_buffer::save(const std::string &filename) const
+    {
+        // Allocate memory to read image data into
+        BYTE *data = new BYTE[4 * _width * _height];
+        // Bind the frame
+        glBindFramebuffer(GL_FRAMEBUFFER, _buffer);
+        // Get the pixel data
+        glPixelStorei(GL_PACK_ALIGNMENT, 4);
+        glReadPixels(0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        CHECK_GL_ERROR;
+        // Create bitmap
+        FIBITMAP *bitmap = FreeImage_ConvertFromRawBits(data, _width, _height, (unsigned int)(((_width * 24 + 31) / 32) * 4), 24, FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK);
+        // Save image
+        auto saved = FreeImage_Save(FIF_BMP, bitmap, filename.c_str());
+        // Unload bitmap
+        FreeImage_Unload(bitmap);
+        // Unbind framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // Delete data
+        delete[] data;
+    }
 }

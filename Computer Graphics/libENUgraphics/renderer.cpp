@@ -5,8 +5,8 @@
 
 namespace graphics_framework
 {
-	// Initialise the renderer singleton
-	renderer *renderer::_instance = new renderer();
+    // Initialise the renderer singleton
+    renderer *renderer::_instance = nullptr;
 
 	// Helper function to display OpenGL information
 	void print_GL_info()
@@ -51,11 +51,11 @@ namespace graphics_framework
 
 		// If in debug mode, set window dimensions to 800 x 600
 #if defined(DEBUG) | defined(_DEBUG)
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 		_instance->_window = glfwCreateWindow(800, 600, "Render Framework", nullptr, nullptr);
 		glfwSetWindowPos(_instance->_window, video_mode->width / 2 - 400, video_mode->height / 2 - 300);
 		_instance->_width = 800;
-		_instance->_height = 600;
-		SET_DEBUG;
+        _instance->_height = 600;
 #else
 		// If in release mode, set as fullscreen
 		_instance->_window = glfwCreateWindow(video_mode->width, video_mode->height, "Render Framework", nullptr, nullptr);
@@ -93,6 +93,10 @@ namespace graphics_framework
 			glfwTerminate();
 			return false;
 		}
+
+#if defined(DEBUG) | defined(_DEBUG)
+        SET_DEBUG;
+#endif
 
 		// Set clear colour to cyan
 		glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
@@ -327,6 +331,27 @@ namespace graphics_framework
 			throw std::runtime_error("Error using texture with OpenGL");
 		}
 	}
+
+    // Binds a cubemap to the renderer at the given index
+    void renderer::bind(const cubemap &tex, int index) throw (...)
+    {
+        // Check texture is valid
+        assert(tex.get_id() != 0);
+        // Check that index is valid
+        assert(index >= 0);
+        // Set active texture
+        glActiveTexture(GL_TEXTURE0 + index);
+        // Bind texture
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tex.get_id());
+        // Check for error
+        if (CHECK_GL_ERROR)
+        {
+            std::cerr << "ERROR - binding cubemap to renderer" << std::endl;
+            std::cerr << "OpenGL could not bind the texture" << std::endl;
+            // Throw exception
+            throw std::runtime_error("Error using cubemap with OpenGL");
+        }
+    }
 
 	// Binds a material to the currently bound effect
 	void renderer::bind(const material &mat, const std::string &name) throw (...)
@@ -613,4 +638,64 @@ namespace graphics_framework
 		// Render geometry
 		render(m.get_geometry());
 	}
+
+    // Sets the render target of the renderer to the screen
+    void renderer::set_render_target() throw (...)
+    {
+        // Set framebuffer to screen (0)
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // Check for error
+        if (CHECK_GL_ERROR)
+        {
+            std::cerr << "ERROR - setting render target" << std::endl;
+            std::cerr << "Could not set render target to screen!" << std::endl;
+            // Throw exception
+            throw std::runtime_error("Error setting render target");
+        }
+    }
+
+    // Sets the render target of the renderer to a shadow map
+    void renderer::set_render_target(const shadow_map &shadow) throw (...)
+    {
+        // Set framebuffer to shadow map's depth buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, shadow.buffer->get_buffer());
+        // Check for error
+        if (CHECK_GL_ERROR)
+        {
+            std::cerr << "ERROR - setting render target" << std::endl;
+            std::cerr << "Could not set render target to shadow map buffer" << std::endl;
+            // Throw exception
+            throw std::runtime_error("Error setting render target");
+        }
+    }
+
+    // Sets the render target of the renderer to a depth buffer
+    void renderer::set_render_target(const depth_buffer &depth) throw (...)
+    {
+        // Set framebuffer to internal buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, depth.get_buffer());
+        // Check for error
+        if (CHECK_GL_ERROR)
+        {
+            std::cerr << "ERROR - setting render target" << std::endl;
+            std::cerr << "Could not set render target to depth buffer" << std::endl;
+            // Throw exception
+            throw std::runtime_error("Error setting render target");
+        }
+    }
+
+    // Sets the render target of the renderer to a depth buffer
+    void renderer::set_render_target(const frame_buffer &frame) throw (...)
+    {
+        // Set framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, frame.get_buffer());
+        // Check for error
+        if (CHECK_GL_ERROR)
+        {
+            std::cerr << "ERROR - setting render target" << std::endl;
+            std::cerr << "Could not set render target to frame buffer" << std::endl;
+            // Throw exception
+            throw std::runtime_error("Error setting render target");
+        }
+    }
 }

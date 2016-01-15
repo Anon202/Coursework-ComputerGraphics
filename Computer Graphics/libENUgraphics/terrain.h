@@ -17,8 +17,6 @@ namespace graphics_framework
 		geometry _geom;
 		// The material used by the terrain
 		material _mat;
-		// The effect used by the terrain
-		effect _eff;
 	public:
 		// Creates a terrain object
 		terrain() { }
@@ -35,9 +33,5 @@ namespace graphics_framework
 		const material& get_material() const { return _mat; }
 		// Sets the material for the terrain
 		void set_material(const material &value) { _mat = value; }
-		// Gets the effect used for the terrain
-		const effect& get_effect() const { return _eff; }
-		// Sets the effect used for the terrain
-		void set_effect(const effect &value) { _eff = value; }
 	};
 }

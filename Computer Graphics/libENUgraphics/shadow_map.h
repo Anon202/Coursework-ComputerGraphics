@@ -28,12 +28,11 @@ namespace graphics_framework
 			: buffer(std::make_shared<depth_buffer>(width, height))
 		{
 		}
-	};
 
-	// Set shadow bias matrix
-    glm::mat4 shadow_map::bias = 
-        glm::mat4(0.5f, 0.0f, 0.0f, 0.0f,
-                  0.0f, 0.5f, 0.0f, 0.0f,
-                  0.0f, 0.0f, 0.5f, 0.0f,
-                  0.5f, 0.5f, 0.5f, 1.0f);
+        // Gets the view matrix for this shadow map
+        glm::mat4 get_view() const
+        {
+            return glm::lookAt(light_position, light_position + light_dir, glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+	};
 }

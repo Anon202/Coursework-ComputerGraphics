@@ -5,9 +5,12 @@
 #include "mesh.h"
 #include "effect.h"
 #include "texture.h"
+#include "cubemap.h"
 #include "directional_light.h"
 #include "point_light.h"
 #include "spot_light.h"
+#include "shadow_map.h"
+#include "frame_buffer.h"
 
 namespace graphics_framework
 {
@@ -70,6 +73,8 @@ namespace graphics_framework
 		static void bind(const effect &eff) throw (...);
 		// Binds a texture with the renderer
 		static void bind(const texture &tex, int index) throw (...);
+        // Binds a cubemap with the renderer
+        static void bind(const cubemap &tex, int index) throw (...);
 		// Binds a material with the renderer
 		static void bind(const material & mat, const std::string &name) throw (...);
 		// Binds a directional light with the renderer
@@ -86,5 +91,13 @@ namespace graphics_framework
 		static void render(const geometry &geom) throw (...);
 		// Renders a mesh object
 		static void render(const mesh &m) throw (...);
+        // Sets the render target of the renderer to the screen
+        static void set_render_target() throw (...);
+        // Sets the render target of the renderer to a shadow map
+        static void set_render_target(const shadow_map &shadow) throw (...);
+        // Sets the render target of the renderer to a depth buffer
+        static void set_render_target(const depth_buffer &depth) throw (...);
+        // Sets the render target of the renderer to a frame buffer
+        static void set_render_target(const frame_buffer &frame) throw (...);
 	};
 }

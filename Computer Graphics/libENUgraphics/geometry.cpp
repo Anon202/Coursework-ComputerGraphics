@@ -52,6 +52,7 @@ namespace graphics_framework
 		std::vector<glm::vec3> normals;
 		std::vector<glm::vec2> tex_coords;
 		std::vector<GLuint> indices;
+        unsigned int vertex_begin = 0;
 		// Iterate through each sub-mesh in the model
 		for (unsigned int n = 0; n < sc->mNumMeshes; ++n)
 		{
@@ -99,8 +100,9 @@ namespace graphics_framework
 				{
 					auto face = mesh->mFaces[f];
 					for (auto i = 0; i < 3; ++i)
-						indices.push_back(face.mIndices[i]);
+						indices.push_back(vertex_begin + face.mIndices[i]);
 				}
+            vertex_begin += mesh->mNumVertices;
 		}
 
 		// Calculate the minimal and maximal

@@ -23,13 +23,23 @@ namespace graphics_framework
 		std::function<void()> _shutdown_func;
 	public:
 		// Creates rendering application.  Initialises the renderer
-		app() { renderer::initialise(); }
+		app() 
+        {
+            // Create renderer instance
+            renderer::_instance = new renderer();
+            // Initialise
+            renderer::initialise(); 
+        }
 		// Deleted copy, move constructor and assignment operator
 		app(const app &other) = delete;
 		app(app &&other) = delete;
 		app& operator=(const app &rhs) = delete;
 		// Destroys the rendering application
-		~app() {}
+		~app() 
+        {
+            // Delete the renderer
+            delete renderer::_instance;
+        }
 		// Sets the initialisation function
 		void set_initialise(const std::function<bool()> &f) { _init_func = f; }
 		// Sets the load content function

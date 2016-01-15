@@ -519,7 +519,7 @@ namespace graphics_framework
 			// Push back normals and colours
 			for (unsigned int j = 0; j < 3; ++j)
 			{
-				normals.push_back(glm::vec3(0.0f, 1.0f, 0.0f));
+				normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 				colours.push_back(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f));
 			}
 			// Push back texture coordinates

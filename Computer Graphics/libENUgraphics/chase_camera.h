@@ -23,7 +23,7 @@ namespace graphics_framework
 		// The rotation of the camera relative to the target
 		glm::vec3 _relative_rotation;
 		// Springiness factor of the camera
-		float _springiness;
+		float _springiness = 5.0f;
 	public:
 		// Creates a chase camera
 		chase_camera() { }

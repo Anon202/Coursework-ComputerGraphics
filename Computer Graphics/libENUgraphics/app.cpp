@@ -89,8 +89,6 @@ namespace graphics_framework
 		{
 			_shutdown_func();
 		}
-		// Delete the renderer
-		delete renderer::_instance;
 
 		// Application should now be exiting
 	}

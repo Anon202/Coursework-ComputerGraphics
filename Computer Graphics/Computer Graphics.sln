@@ -55,22 +55,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 	ProjectSection(SolutionItems) = preProject
 		resources\shaders\basic.frag = resources\shaders\basic.frag
 		resources\shaders\basic.vert = resources\shaders\basic.vert
+		resources\shaders\billboard.geom = resources\shaders\billboard.geom
 		resources\shaders\blend.frag = resources\shaders\blend.frag
 		resources\shaders\blend.vert = resources\shaders\blend.vert
+		resources\shaders\blur.frag = resources\shaders\blur.frag
 		resources\shaders\colour.frag = resources\shaders\colour.frag
 		resources\shaders\colour.vert = resources\shaders\colour.vert
 		resources\shaders\combined_lighting.frag = resources\shaders\combined_lighting.frag
 		resources\shaders\combined_lighting.vert = resources\shaders\combined_lighting.vert
+		resources\shaders\depth_of_field.frag = resources\shaders\depth_of_field.frag
 		resources\shaders\dissolve.frag = resources\shaders\dissolve.frag
 		resources\shaders\dissolve.vert = resources\shaders\dissolve.vert
+		resources\shaders\env_map.frag = resources\shaders\env_map.frag
+		resources\shaders\env_map.vert = resources\shaders\env_map.vert
+		resources\shaders\explode.geom = resources\shaders\explode.geom
 		resources\shaders\gouraud.frag = resources\shaders\gouraud.frag
 		resources\shaders\gouraud.vert = resources\shaders\gouraud.vert
+		resources\shaders\greyscale.frag = resources\shaders\greyscale.frag
+		resources\shaders\mask.frag = resources\shaders\mask.frag
+		resources\shaders\motion_blur.frag = resources\shaders\motion_blur.frag
 		resources\shaders\multi-light.frag = resources\shaders\multi-light.frag
 		resources\shaders\multi-light.vert = resources\shaders\multi-light.vert
+		resources\shaders\normals.geom = resources\shaders\normals.geom
 		resources\shaders\phong.frag = resources\shaders\phong.frag
 		resources\shaders\phong.vert = resources\shaders\phong.vert
 		resources\shaders\point.frag = resources\shaders\point.frag
 		resources\shaders\point.vert = resources\shaders\point.vert
+		resources\shaders\shadow.vert = resources\shaders\shadow.vert
 		resources\shaders\simple_ambient.frag = resources\shaders\simple_ambient.frag
 		resources\shaders\simple_ambient.vert = resources\shaders\simple_ambient.vert
 		resources\shaders\simple_cell.frag = resources\shaders\simple_cell.frag
@@ -81,8 +92,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\simple_specular.vert = resources\shaders\simple_specular.vert
 		resources\shaders\simple_texture.frag = resources\shaders\simple_texture.frag
 		resources\shaders\simple_texture.vert = resources\shaders\simple_texture.vert
+		resources\shaders\skybox.frag = resources\shaders\skybox.frag
+		resources\shaders\skybox.vert = resources\shaders\skybox.vert
 		resources\shaders\spot.frag = resources\shaders\spot.frag
 		resources\shaders\spot.vert = resources\shaders\spot.vert
+		resources\shaders\tarnish.frag = resources\shaders\tarnish.frag
+		resources\shaders\tarnish.vert = resources\shaders\tarnish.vert
 		resources\shaders\working_diffuse.frag = resources\shaders\working_diffuse.frag
 		resources\shaders\working_diffuse.vert = resources\shaders\working_diffuse.vert
 	EndProjectSection
@@ -168,8 +183,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parts", "parts", "{1EF9CE7D
 	ProjectSection(SolutionItems) = preProject
 		resources\shaders\parts\direction.frag = resources\shaders\parts\direction.frag
 		resources\shaders\parts\dissolve.frag = resources\shaders\parts\dissolve.frag
+		resources\shaders\parts\fog.frag = resources\shaders\parts\fog.frag
+		resources\shaders\parts\normal_map.frag = resources\shaders\parts\normal_map.frag
 		resources\shaders\parts\point.frag = resources\shaders\parts\point.frag
+		resources\shaders\parts\shadow.frag = resources\shaders\parts\shadow.frag
 		resources\shaders\parts\spot.frag = resources\shaders\parts\spot.frag
+		resources\shaders\parts\weighted_texture.frag = resources\shaders\parts\weighted_texture.frag
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cubemaps", "cubemaps", "{4C6F7C7F-C253-48FE-A553-4410B949E275}"
@@ -279,6 +298,57 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "062 Spot Light", "062 Spot Light\062 Spot Light.vcxproj", "{CB08518B-B267-49B4-ABA7-55D0E9818084}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "063 Multiple Lights", "063 Multiple Lights\063 Multiple Lights.vcxproj", "{93235588-5A24-4848-9726-78FD989D6313}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "064 Multifile Shaders", "064 Multifile Shaders\064 Multifile Shaders.vcxproj", "{52543E0D-91B2-49F1-8741-C879D26900F5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "065 Shadow Mapping", "065 Shadow Mapping\065 Shadow Mapping.vcxproj", "{DA6546EB-646D-4703-8B7D-2BBD027C0742}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "066 Shadowing", "066 Shadowing\066 Shadowing.vcxproj", "{C1E46518-1D8A-4EF2-8DF5-AC98D16679DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "067 Normal Mapping", "067 Normal Mapping\067 Normal Mapping.vcxproj", "{5BB353CE-73C5-4A1D-B819-BA3175763AC1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "068 Cube Maps", "068 Cube Maps\068 Cube Maps.vcxproj", "{9E71137C-372F-486E-BF7A-AFE36E373488}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "069 Skybox", "069 Skybox\069 Skybox.vcxproj", "{16896182-19CD-4298-9651-345B7059E3A3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "070 Environment Maps", "070 Environment Maps\070 Environment Maps.vcxproj", "{B93DFB00-2F64-44F8-AC34-D2A16F09FCD3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "071 Tarnished Object", "071 Tarnished Object\071 Tarnished Object.vcxproj", "{FBF19F46-C98E-4CB0-AF27-4D24554E18DF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "072 Terrain", "072 Terrain\072 Terrain.vcxproj", "{6E44A8AA-BBED-4A79-A88F-EF363F6CB6AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "heightmaps", "heightmaps", "{34C149AA-6EA0-41F7-AFC2-18B569665C9F}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\heightmaps\terrain.png = resources\textures\heightmaps\terrain.png
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "073 Fog", "073 Fog\073 Fog.vcxproj", "{5A97CA9E-388C-4FEC-ADCB-2DC79C757AAF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "074 Geometry Shader", "074 Geometry Shader\074 Geometry Shader.vcxproj", "{848FF534-F84D-4FDB-8C14-2D461E7E2109}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "075 Exploding Shape", "075 Exploding Shape\075 Exploding Shape.vcxproj", "{13C2A139-43E0-49D1-B598-327349AB0348}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "076 Showing Normals", "076 Showing Normals\076 Showing Normals.vcxproj", "{898F5617-C13A-4797-B7C9-47F327399684}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "077 Billboarding", "077 Billboarding\077 Billboarding.vcxproj", "{33FFA386-B119-48E1-AE9D-DAA297019A4F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "078 Particle System", "078 Particle System\078 Particle System.vcxproj", "{77A962B1-5564-4270-AD98-E8149389A144}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "079 Smoke Effect", "079 Smoke Effect\079 Smoke Effect.vcxproj", "{018116B9-7EDA-4899-B3BE-C11BE3E052C4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "081 Frame Buffers", "081 Frame Buffers\081 Frame Buffers.vcxproj", "{8C9A1FFA-C941-4A07-BE55-AC5A22DC86B8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "082 Display to Screen", "082 Display to Screen\082 Display to Screen.vcxproj", "{2D07EBC0-F3E1-484C-B6DD-F176810DE0DC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "083 Greyscale", "083 Greyscale\083 Greyscale.vcxproj", "{DAC9F618-9176-4AA4-B6F3-BBB6170B9AAB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "084 Blur", "084 Blur\084 Blur.vcxproj", "{95B71FEB-FE41-4540-AFB5-1117516CE5FB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "085 Motion Blur", "085 Motion Blur\085 Motion Blur.vcxproj", "{4920461E-E4FE-41B6-BAB5-62A616E88542}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "086 Depth of Field", "086 Depth of Field\086 Depth of Field.vcxproj", "{BD8449E1-093B-4778-B6B4-3FEFAFD3D7EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "087 Masking", "087 Masking\087 Masking.vcxproj", "{C8536C7E-41DC-4B1C-BA04-A8945A0CB1FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -482,6 +552,98 @@ Global
 		{93235588-5A24-4848-9726-78FD989D6313}.Debug|Win32.Build.0 = Debug|Win32
 		{93235588-5A24-4848-9726-78FD989D6313}.Release|Win32.ActiveCfg = Release|Win32
 		{93235588-5A24-4848-9726-78FD989D6313}.Release|Win32.Build.0 = Release|Win32
+		{52543E0D-91B2-49F1-8741-C879D26900F5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{52543E0D-91B2-49F1-8741-C879D26900F5}.Debug|Win32.Build.0 = Debug|Win32
+		{52543E0D-91B2-49F1-8741-C879D26900F5}.Release|Win32.ActiveCfg = Release|Win32
+		{52543E0D-91B2-49F1-8741-C879D26900F5}.Release|Win32.Build.0 = Release|Win32
+		{DA6546EB-646D-4703-8B7D-2BBD027C0742}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DA6546EB-646D-4703-8B7D-2BBD027C0742}.Debug|Win32.Build.0 = Debug|Win32
+		{DA6546EB-646D-4703-8B7D-2BBD027C0742}.Release|Win32.ActiveCfg = Release|Win32
+		{DA6546EB-646D-4703-8B7D-2BBD027C0742}.Release|Win32.Build.0 = Release|Win32
+		{C1E46518-1D8A-4EF2-8DF5-AC98D16679DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1E46518-1D8A-4EF2-8DF5-AC98D16679DE}.Debug|Win32.Build.0 = Debug|Win32
+		{C1E46518-1D8A-4EF2-8DF5-AC98D16679DE}.Release|Win32.ActiveCfg = Release|Win32
+		{C1E46518-1D8A-4EF2-8DF5-AC98D16679DE}.Release|Win32.Build.0 = Release|Win32
+		{5BB353CE-73C5-4A1D-B819-BA3175763AC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5BB353CE-73C5-4A1D-B819-BA3175763AC1}.Debug|Win32.Build.0 = Debug|Win32
+		{5BB353CE-73C5-4A1D-B819-BA3175763AC1}.Release|Win32.ActiveCfg = Release|Win32
+		{5BB353CE-73C5-4A1D-B819-BA3175763AC1}.Release|Win32.Build.0 = Release|Win32
+		{9E71137C-372F-486E-BF7A-AFE36E373488}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E71137C-372F-486E-BF7A-AFE36E373488}.Debug|Win32.Build.0 = Debug|Win32
+		{9E71137C-372F-486E-BF7A-AFE36E373488}.Release|Win32.ActiveCfg = Release|Win32
+		{9E71137C-372F-486E-BF7A-AFE36E373488}.Release|Win32.Build.0 = Release|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Debug|Win32.Build.0 = Debug|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Release|Win32.ActiveCfg = Release|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Release|Win32.Build.0 = Release|Win32
+		{B93DFB00-2F64-44F8-AC34-D2A16F09FCD3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B93DFB00-2F64-44F8-AC34-D2A16F09FCD3}.Debug|Win32.Build.0 = Debug|Win32
+		{B93DFB00-2F64-44F8-AC34-D2A16F09FCD3}.Release|Win32.ActiveCfg = Release|Win32
+		{B93DFB00-2F64-44F8-AC34-D2A16F09FCD3}.Release|Win32.Build.0 = Release|Win32
+		{FBF19F46-C98E-4CB0-AF27-4D24554E18DF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FBF19F46-C98E-4CB0-AF27-4D24554E18DF}.Debug|Win32.Build.0 = Debug|Win32
+		{FBF19F46-C98E-4CB0-AF27-4D24554E18DF}.Release|Win32.ActiveCfg = Release|Win32
+		{FBF19F46-C98E-4CB0-AF27-4D24554E18DF}.Release|Win32.Build.0 = Release|Win32
+		{6E44A8AA-BBED-4A79-A88F-EF363F6CB6AC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E44A8AA-BBED-4A79-A88F-EF363F6CB6AC}.Debug|Win32.Build.0 = Debug|Win32
+		{6E44A8AA-BBED-4A79-A88F-EF363F6CB6AC}.Release|Win32.ActiveCfg = Release|Win32
+		{6E44A8AA-BBED-4A79-A88F-EF363F6CB6AC}.Release|Win32.Build.0 = Release|Win32
+		{5A97CA9E-388C-4FEC-ADCB-2DC79C757AAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5A97CA9E-388C-4FEC-ADCB-2DC79C757AAF}.Debug|Win32.Build.0 = Debug|Win32
+		{5A97CA9E-388C-4FEC-ADCB-2DC79C757AAF}.Release|Win32.ActiveCfg = Release|Win32
+		{5A97CA9E-388C-4FEC-ADCB-2DC79C757AAF}.Release|Win32.Build.0 = Release|Win32
+		{848FF534-F84D-4FDB-8C14-2D461E7E2109}.Debug|Win32.ActiveCfg = Debug|Win32
+		{848FF534-F84D-4FDB-8C14-2D461E7E2109}.Debug|Win32.Build.0 = Debug|Win32
+		{848FF534-F84D-4FDB-8C14-2D461E7E2109}.Release|Win32.ActiveCfg = Release|Win32
+		{848FF534-F84D-4FDB-8C14-2D461E7E2109}.Release|Win32.Build.0 = Release|Win32
+		{13C2A139-43E0-49D1-B598-327349AB0348}.Debug|Win32.ActiveCfg = Debug|Win32
+		{13C2A139-43E0-49D1-B598-327349AB0348}.Debug|Win32.Build.0 = Debug|Win32
+		{13C2A139-43E0-49D1-B598-327349AB0348}.Release|Win32.ActiveCfg = Release|Win32
+		{13C2A139-43E0-49D1-B598-327349AB0348}.Release|Win32.Build.0 = Release|Win32
+		{898F5617-C13A-4797-B7C9-47F327399684}.Debug|Win32.ActiveCfg = Debug|Win32
+		{898F5617-C13A-4797-B7C9-47F327399684}.Debug|Win32.Build.0 = Debug|Win32
+		{898F5617-C13A-4797-B7C9-47F327399684}.Release|Win32.ActiveCfg = Release|Win32
+		{898F5617-C13A-4797-B7C9-47F327399684}.Release|Win32.Build.0 = Release|Win32
+		{33FFA386-B119-48E1-AE9D-DAA297019A4F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{33FFA386-B119-48E1-AE9D-DAA297019A4F}.Debug|Win32.Build.0 = Debug|Win32
+		{33FFA386-B119-48E1-AE9D-DAA297019A4F}.Release|Win32.ActiveCfg = Release|Win32
+		{33FFA386-B119-48E1-AE9D-DAA297019A4F}.Release|Win32.Build.0 = Release|Win32
+		{77A962B1-5564-4270-AD98-E8149389A144}.Debug|Win32.ActiveCfg = Debug|Win32
+		{77A962B1-5564-4270-AD98-E8149389A144}.Debug|Win32.Build.0 = Debug|Win32
+		{77A962B1-5564-4270-AD98-E8149389A144}.Release|Win32.ActiveCfg = Release|Win32
+		{77A962B1-5564-4270-AD98-E8149389A144}.Release|Win32.Build.0 = Release|Win32
+		{018116B9-7EDA-4899-B3BE-C11BE3E052C4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{018116B9-7EDA-4899-B3BE-C11BE3E052C4}.Debug|Win32.Build.0 = Debug|Win32
+		{018116B9-7EDA-4899-B3BE-C11BE3E052C4}.Release|Win32.ActiveCfg = Release|Win32
+		{018116B9-7EDA-4899-B3BE-C11BE3E052C4}.Release|Win32.Build.0 = Release|Win32
+		{8C9A1FFA-C941-4A07-BE55-AC5A22DC86B8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8C9A1FFA-C941-4A07-BE55-AC5A22DC86B8}.Debug|Win32.Build.0 = Debug|Win32
+		{8C9A1FFA-C941-4A07-BE55-AC5A22DC86B8}.Release|Win32.ActiveCfg = Release|Win32
+		{8C9A1FFA-C941-4A07-BE55-AC5A22DC86B8}.Release|Win32.Build.0 = Release|Win32
+		{2D07EBC0-F3E1-484C-B6DD-F176810DE0DC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D07EBC0-F3E1-484C-B6DD-F176810DE0DC}.Debug|Win32.Build.0 = Debug|Win32
+		{2D07EBC0-F3E1-484C-B6DD-F176810DE0DC}.Release|Win32.ActiveCfg = Release|Win32
+		{2D07EBC0-F3E1-484C-B6DD-F176810DE0DC}.Release|Win32.Build.0 = Release|Win32
+		{DAC9F618-9176-4AA4-B6F3-BBB6170B9AAB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DAC9F618-9176-4AA4-B6F3-BBB6170B9AAB}.Debug|Win32.Build.0 = Debug|Win32
+		{DAC9F618-9176-4AA4-B6F3-BBB6170B9AAB}.Release|Win32.ActiveCfg = Release|Win32
+		{DAC9F618-9176-4AA4-B6F3-BBB6170B9AAB}.Release|Win32.Build.0 = Release|Win32
+		{95B71FEB-FE41-4540-AFB5-1117516CE5FB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95B71FEB-FE41-4540-AFB5-1117516CE5FB}.Debug|Win32.Build.0 = Debug|Win32
+		{95B71FEB-FE41-4540-AFB5-1117516CE5FB}.Release|Win32.ActiveCfg = Release|Win32
+		{95B71FEB-FE41-4540-AFB5-1117516CE5FB}.Release|Win32.Build.0 = Release|Win32
+		{4920461E-E4FE-41B6-BAB5-62A616E88542}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4920461E-E4FE-41B6-BAB5-62A616E88542}.Debug|Win32.Build.0 = Debug|Win32
+		{4920461E-E4FE-41B6-BAB5-62A616E88542}.Release|Win32.ActiveCfg = Release|Win32
+		{4920461E-E4FE-41B6-BAB5-62A616E88542}.Release|Win32.Build.0 = Release|Win32
+		{BD8449E1-093B-4778-B6B4-3FEFAFD3D7EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BD8449E1-093B-4778-B6B4-3FEFAFD3D7EF}.Debug|Win32.Build.0 = Debug|Win32
+		{BD8449E1-093B-4778-B6B4-3FEFAFD3D7EF}.Release|Win32.ActiveCfg = Release|Win32
+		{BD8449E1-093B-4778-B6B4-3FEFAFD3D7EF}.Release|Win32.Build.0 = Release|Win32
+		{C8536C7E-41DC-4B1C-BA04-A8945A0CB1FD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8536C7E-41DC-4B1C-BA04-A8945A0CB1FD}.Debug|Win32.Build.0 = Debug|Win32
+		{C8536C7E-41DC-4B1C-BA04-A8945A0CB1FD}.Release|Win32.ActiveCfg = Release|Win32
+		{C8536C7E-41DC-4B1C-BA04-A8945A0CB1FD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -493,5 +655,6 @@ Global
 		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
 		{4C6F7C7F-C253-48FE-A553-4410B949E275} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 		{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
+		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 	EndGlobalSection
 EndGlobal

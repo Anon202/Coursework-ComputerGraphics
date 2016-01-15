@@ -22,6 +22,8 @@ namespace graphics_framework
 		// The height of the frame buffer
 		GLuint _height;
 	public:
+        // Default constructor - doesn't initialise buffer
+        frame_buffer() { }
 		// Creates a frame buffer
 		frame_buffer(GLuint width, GLuint height) throw (...);
 		// Default copy constructor and assignment operator
@@ -39,5 +41,7 @@ namespace graphics_framework
 		GLuint get_width() const { return _width; }
 		// Gets the height of the frame buffer
 		GLuint get_height() const { return _height; }
+        // Saves the frame buffer
+        void save(const std::string &filename) const;
 	};
 }

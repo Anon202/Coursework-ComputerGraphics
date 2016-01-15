@@ -21,6 +21,8 @@ namespace graphics_framework
 		// Height of the depth buffer
 		GLuint _height;
 	public:
+        // Default constructor - doesn't initialise depth buffer
+        depth_buffer() { }
 		// Creates a new depth buffer
 		depth_buffer(GLuint width, GLuint height) throw (...);
 		// Default copy constructor and asignment operator
@@ -36,5 +38,7 @@ namespace graphics_framework
 		GLuint get_width() const { return _width; }
 		// Gets the height of the depth buffer
 		GLuint get_height() const { return _height; }
+        // Saves the depth buffer
+        void save(const std::string &filename) const;
 	};
 }

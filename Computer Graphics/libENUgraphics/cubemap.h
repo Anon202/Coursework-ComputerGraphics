@@ -14,7 +14,7 @@ namespace graphics_framework
 		GLuint _id;
 	public:
 		// Creates a new cubemap
-		cubemap() throw (...);
+        cubemap() { }
 		// Creates a new cubemap given six filenames
 		cubemap(const std::array<std::string, 6> &filenames) throw (...);
 		// Default copy constructor and assignment operator
