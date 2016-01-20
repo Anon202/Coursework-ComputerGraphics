@@ -18,6 +18,50 @@ void divide_triangle(const vector<vec3> &points, int divisions, vector<vec3> &po
 	// ******************
     // Update this method
     // ******************
+	
+
+	if (divisions > 0)
+	{
+		vector<vec3> v0
+		{
+		vec3(points[0]),							// p0
+		vec3(normalize(points[0] + points[1])),		// v0   = p0 + p1 
+		vec3(normalize(points[0] + points[2]))		// v1   = p0 + p2 
+		};
+
+		vector<vec3> v1
+		{
+			vec3(points[2]),							// p2
+			vec3(normalize(points[0] + points[2])),		// v1
+			vec3(normalize(points[1] + points[2]))		// v2 = p1 + p2 
+		};
+
+		vector<vec3> v2
+		{
+			vec3(points[1]),							// p1
+			vec3(normalize(points[1] + points[2])),		// v2
+			vec3(normalize(points[0] + points[1]))		// v0
+		};
+
+		vector<vec3> v3
+		{
+			vec3(normalize(points[0] + points[1])),		// v0
+			vec3(normalize(points[1] + points[2])),		// v2
+			vec3(normalize(points[0] + points[2]))		// v1
+		};
+
+		divide_triangle(v0, divisions - 1, positions, colours);
+		divide_triangle(v1, divisions - 1, positions, colours);
+		divide_triangle(v2, divisions - 1, positions, colours);
+		divide_triangle(v3, divisions - 1, positions, colours);
+	}
+	else
+	{
+		positions.insert(positions.end(), points.begin(), points.end());  // create simple tetrahedron
+		for (auto i = 0; i < 3; ++i)
+		colours.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f)); 
+	}
+
 }
 
 bool load_content()
