@@ -15,6 +15,9 @@ bool load_content()
 {
 	// Create cube data - twelve triangles triangles
 	// Positions
+
+	geom.set_type(GL_QUADS);
+
 	vector<vec3> positions
 	{
 		// ****************************************
@@ -22,21 +25,57 @@ bool load_content()
 		// ****************************************
 		// Front
 
+		vec3(-1.0f, 1.0f, 0.0f),    // 2
+		vec3(-1.0f, -1.0f, 0.0f),	// 0
+		vec3(1.0f, -1.0f, 0.0f),	// 1
+		vec3(1.0f, 1.0f, 0.0f),		// 3
+	
+
 		// Back
+		vec3(-1.0f, 1.0f, -2.0f),	// 6
+		vec3(1.0f, 1.0f, -2.0f),	// 7
+		vec3(1.0f, -1.0f, -2.0f),	// 5
+		vec3(-1.0f, -1.0f, -2.0f),	// 4	
+
 
 		// Right
+		vec3(1.0f, 1.0f, -2.0f),	// 7
+		vec3(1.0f, 1.0f, 0.0f),		// 3
+		vec3(1.0f, -1.0f, 0.0f),	// 1
+		vec3(1.0f, -1.0f, -2.0f),	// 5
+
 
 		// Left
+		vec3(-1.0f, 1.0f, 0.0f),    // 2
+		vec3(-1.0f, 1.0f, -2.0f),	// 6
+		vec3(-1.0f, -1.0f, -2.0f),	// 4	
+		vec3(-1.0f, -1.0f, 0.0f),	// 0
 
 		// Top
-
+		vec3(-1.0f, -1.0f, 0.0f),	// 0
+		vec3(-1.0f, -1.0f, -2.0f),	// 4
+		vec3(1.0f, -1.0f, -2.0f),	// 5
+		vec3(1.0f, -1.0f, 0.0f),	// 1
+		
 		// Bottom
+		vec3(-1.0f, 1.0f, -2.0f),	// 6
+		vec3(-1.0f, 1.0f, 0.0f),    // 2
+		vec3(1.0f, 1.0f, 0.0f),		// 3
+		vec3(1.0f, 1.0f, -2.0f),	// 7
 
 	};
 	// Colours
 	vector<vec4> colours;
-	for (auto i = 0; i < positions.size(); ++i)
-		colours.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	for (auto i = 0; i < 9; ++i) //positions.size(); ++i)
+    	colours.push_back(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	for (auto i = 9; i < 16; ++i)
+		colours.push_back(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	for (auto i = 16; i < positions.size(); ++i)
+		colours.push_back(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+
+	//glDisable(GL_DEPTH_TEST);
+
 	// Add to the geometry
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	geom.add_buffer(colours, BUFFER_INDEXES::COLOUR_BUFFER);
