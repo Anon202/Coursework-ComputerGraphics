@@ -30,7 +30,7 @@ void divide_triangle(const vector<vec3> &points, unsigned int count, vector<vec3
 		vec3(points[0]),
 		vec3((points[0] + points[1]) * 0.5f),
 		vec3((points[2] + points[0]) * 0.5f)
-	};
+	    };
 
 		vector<vec3> p1
 		{
@@ -46,10 +46,11 @@ void divide_triangle(const vector<vec3> &points, unsigned int count, vector<vec3
 			vec3((points[2] + points[1]) * 0.5f)
 		};
 
-		count -= 1;
-		divide_triangle(p0, count, positions, colours);
-		divide_triangle(p1, count, positions, colours);
-		divide_triangle(p2, count, positions, colours);
+
+		//count -= 1;
+		divide_triangle(p0, count -1, positions, colours);
+		divide_triangle(p1, count - 1, positions, colours);
+		divide_triangle(p2, count -1, positions, colours);
 	}
 	else
 	{												// if count is zero.
