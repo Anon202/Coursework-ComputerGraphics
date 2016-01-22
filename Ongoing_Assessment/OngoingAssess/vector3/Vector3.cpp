@@ -7,22 +7,28 @@ Vector3::Vector3() : x(0), y(0), z(0)
 Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z)
 {}
 
-Vector3::Vector3(const Vector3& rhs)						/// **************
+Vector3::Vector3(const Vector3& rhs) : x(rhs.x), y(rhs.y), z(rhs.z)
 {}
 
 void Vector3::operator+= (const Vector3 &v)
 {
-	Vector3(x + v.x, y + v.y, z + v.z);
+	this->x += v.x;
+	this->y += v.y;
+	this->z += v.z;
 }
 
 void Vector3::operator-= (const Vector3 &v)
 {
-	Vector3(x - v.x, y - v.y, z - v.z);
+	this->x -= v.x;
+	this->y -= v.y;
+	this->z -= v.z;
 }
 
 void Vector3::operator*= (const float s)
 {
-	Vector3(x*s, y*s, z*s);
+	this->x *= s;
+	this->y *= s;
+	this->z *= s;
 }
 
 Vector3 Vector3::operator/ (const float s) const
@@ -45,9 +51,9 @@ Vector3 Vector3::operator*  (const float s) const
 	return Vector3(x*s, y*s, z*s);
 }
 
-Vector3 Vector3::operator- () const   // UNARY MINUS *******************************
+Vector3 Vector3::operator- () const   
 {
-	return Vector3();
+	return Vector3(-x, -y, -z);
 }
 
 Vector3 Vector3::Cross(const Vector3 &vA, const Vector3& vB)
