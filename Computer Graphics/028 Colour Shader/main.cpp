@@ -38,12 +38,13 @@ bool load_content()
 	// ***************************
 	// Load in colour shaders here
 	// ***************************
-
+	eff.add_shader("..\\resources\\shaders\\colour.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\colour.frag", GL_FRAGMENT_SHADER);
 
 	// ************
 	// Build effect
 	// ************
-
+	eff.build();
 
 	// Set camera properties
 	cam.set_position(vec3(10.0f, 10.0f, 10.0f));
@@ -81,6 +82,8 @@ bool render()
 	// Set the colour value for the shader here
 	// ****************************************
 
+	// location of the uniform OpenGl has created, size is the number of vectors we're setting. Value is a pointer to a type
+	glUniform4fv( eff.get_uniform_location("colour"), 1, value_ptr(vec4(0.0f, 0.5f, 0.0f, 1.0f)));
 
 	// Render the mesh
 	renderer::render(m);

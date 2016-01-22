@@ -115,16 +115,11 @@ bool render()
 	// *************************************
 	// Get the model transform from the mesh
 	//**************************************
-    //mat4 M;
-	
-	eulerAngleXY(theta, rho);
 
-	
-	//m.get_transform().rotate(eulerAngleXY(theta, rho));
-	
-	
 	auto M = m.get_transform().get_transform_matrix();
-	//m.get_transform().rotate(vec3(1.0f, 0.0f, 0.0f), theta);
+
+	m.get_transform().rotate(angleAxis(theta, vec3(1,0,0)));
+	m.get_transform().rotate(angleAxis(rho, vec3(0, 1, 0)));
 	m.get_transform().scale = vec3(s, s, s);
 	m.get_transform().translate(pos);
 
