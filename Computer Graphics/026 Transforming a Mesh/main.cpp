@@ -8,6 +8,10 @@ using namespace glm;
 mesh m;
 effect eff;
 target_camera cam;
+vec3 pos; // add pos
+float theta = 0.0f;
+float rho = 0.0f;
+float s = 1.0f;
 
 bool load_content()
 {
@@ -35,6 +39,7 @@ bool load_content()
 	// ***********************
 	// Create mesh object here
 	// ***********************
+	m = mesh(geom);
 
 
 	// Load in shaders
@@ -67,6 +72,36 @@ bool update(float delta_time)
 	// O decrease scale, P increase scale
 	// ***********************************
 
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+		pos += vec3(0.0f, 1.0f, 0.0f);
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+		pos += vec3(0.0f, -1.0f, 0.0f);
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+		pos += vec3(-1.0f, 0.0f, 0.0f);
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+		pos += vec3(1.0f, 0.0f, 0.0f);
+
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+		theta += pi<float>() * delta_time;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+		theta -= pi<float>()* delta_time;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
+		rho += pi<float>()* delta_time;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
+		rho -= pi<float>()* delta_time;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_O))
+		s *= -2;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_P))
+		s *= 2;
 
 	// Update the camera
 	cam.update(delta_time);
@@ -80,7 +115,18 @@ bool render()
 	// *************************************
 	// Get the model transform from the mesh
 	//**************************************
-    mat4 M;
+    //mat4 M;
+	
+	eulerAngleXY(theta, rho);
+
+	
+	//m.get_transform().rotate(eulerAngleXY(theta, rho));
+	
+	
+	auto M = m.get_transform().get_transform_matrix();
+	//m.get_transform().rotate(vec3(1.0f, 0.0f, 0.0f), theta);
+	m.get_transform().scale = vec3(s, s, s);
+	m.get_transform().translate(pos);
 
 	// Create MVP matrix
 	auto V = cam.get_view();
@@ -96,6 +142,7 @@ bool render()
 	// ********************
 	// Render the mesh here
 	// ********************
+	renderer::render(m);
 	
 
 	return true;

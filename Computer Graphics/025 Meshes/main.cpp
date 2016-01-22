@@ -35,7 +35,7 @@ bool load_content()
 	// ***********************
 	// Create mesh object here
 	// ***********************
-	
+	m = mesh(geom);
 
 	// Load in shaders
 	eff.add_shader(
@@ -82,6 +82,8 @@ bool render()
 	// Render the mesh here
 	// ********************
 	
+
+	renderer::render(m);
 
 	return true;
 }
