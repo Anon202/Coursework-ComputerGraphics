@@ -6,11 +6,14 @@
 #include "matrix4.h"
 
 Matrix4::Matrix4() // empty Constructor. set to zero?
-{
-	for (int i = 0; i < 16; ++i)
+{ 
+	this->m[0] = { 0 };
+	//this->m[1] 
+	/*
+	for (int i = 0; i <= 16; ++i)
 	{
 		this->m[i] = 0;
-	}
+	} */
 }
 
 Matrix4::Matrix4(const Matrix4& rhs)  // rhs constructor, 
@@ -44,6 +47,11 @@ Matrix4::Matrix4(float _00, float _10, float _20, float _30,
 	this->m[15] = _33;
 
 }
+/*
+Matrix4 Matrix4::operator* (const Matrix4& lhs, const Matrix4& rhs)
+{
+	return Matrix4(); 
+} */
 
 float& Matrix4::operator[] (int index)
 {
@@ -69,82 +77,86 @@ const float& Matrix4::operator[] (int index) const
 
 Matrix4 Matrix4::Zero()
 {
+
 	return Matrix4();
 }
 
 Matrix4 Matrix4::Identity()
 {
-	float z[16];
-
-	for (int i = 0; i < 16; ++i)
-	{
-		z[i] = 0;
-	}
-
-	z[0] = 1;
-	z[5] = 1;
-	z[10] = 1;
-	z[15] = 1;
-
 	return Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // Matrix4(z[0], z[1], z[2], z[3], z[4], z[5], z[6], z[7], z[8], z[9], z[10]);
 }
 
 Matrix4 Matrix4::Transpose(const Matrix4& mat)
 {
-	return Matrix4();
+	Matrix4 T = mat; // diagonal is the same so set equal first.
+
+	T[4] = mat[1];
+	T[8] = mat[2];
+	T[12] = mat[3];
+	T[9] = mat[6];
+	T[13] = mat[7];
+	T[14] = mat[11];
+
+	T[1] = mat[4];
+	T[2] = mat[8];
+	T[3] = mat[12];
+	T[6] = mat[9];
+	T[7] = mat[13];
+	T[11] =  mat[14];
+	  
+	return T;
 }
 
-static Matrix4 SetTranslation(const Vector3& translation) {}
-static Vector3 GetTranslation(const Matrix4& mat) {}
+Matrix4 Matrix4::SetTranslation(const Vector3& translation)
+{
+	Matrix4 T = Matrix4::Identity();
 
-static Matrix4 SetScale(const Vector3& scale);
+	T[3] = translation.x;
+	T[7] = translation.y;
+	T[11] = translation.z;
+
+	return Matrix4(T);
+}
+
+
+Vector3 Matrix4::GetTranslation(const Matrix4& mat)
+{
+	return Vector3(mat[3], mat[7], mat[11]);
+}
+
+Matrix4 Matrix4::SetScale(const Vector3& scale)
+{
+	Matrix4 S = Matrix4::Identity();
+
+	S[0] = scale.x;
+	S[5] = scale.y;
+	S[10] = scale.z;
+
+	return Matrix4(S);
+}
+
 
 // ref: https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
-static Matrix4 SetRotationAxis(const Vector3& axis, float angle);
-
-// ref: https://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations
-static Vector3 TransformPoint(const Matrix4& mat, const Vector3& p);
-static Vector3 TransformDirection(const Matrix4& mat, const Vector3& n);
-
-/*
-// Minimal Matrix4 class
-
-/*
-* Column-major 4x4 matrix
-*
-* Layout:
-*			0  4  8  12
-*			1  5  9  13
-*			2  6  10 14
-*			3  7  11 15
-*
-*  3x3 Rotation Matrix Indices
-*			0  4  8
-*			1  5  9
-*			2  6  10
-*
-*  3x1 Translation Indices
-*			12
-*			13
-*			14
-*
-
-// Note column-major order also means the indices of 
-// consecutive memory places are mapped onto a matrix like so
-// [ 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 ]
-
-class Matrix4
+static Matrix4 SetRotationAxis(const Vector3& axis, float angle)
 {
-public:
-	float m[16];
 
-	Matrix4();
-	Matrix4(const Matrix4& rhs);
+}
 
-	
+Vector3 Matrix4::TransformPoint(const Matrix4& mat, const Vector3& p)
+{
+	float x1 = p.x*mat[0] + p.y*mat[1] + p.z*mat[2] + mat[3];
+	float y1 = p.x*mat[4] + p.y*mat[5] + p.z*mat[6] + mat[7];
+	float z1 = p.x*mat[8] + p.y*mat[9] + p.z*mat[10] + mat[11];
+
+	return Vector3(x1, y1, z1);
+}
 
 
-}; // End Matrix4(..)
+Vector3 Matrix4::TransformDirection(const Matrix4& mat, const Vector3& n)
+{
+	float x1 = n.x*mat[0] + n.y*mat[1] + n.z*mat[2];
+	float y1 = n.x*mat[4] + n.y*mat[5] + n.z*mat[6];
+	float z1 = n.x*mat[8] + n.y*mat[9] + n.z*mat[10];
 
-Matrix4 operator*(const Matrix4& lhs, const Matrix4& rhs);
-*/
+	return Vector3(x1, y1, z1);
+}
