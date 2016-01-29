@@ -6,11 +6,11 @@ using namespace graphics_framework;
 using namespace glm;
 
 // Four meshes
-array<mesh, 4> meshes;
+array<mesh*, 4> meshes;
 effect eff;
 target_camera cam;
 // Four textures
-array<texture, 4> texs;
+array<texture*, 4> texs;
 
 bool load_content()
 {
@@ -41,17 +41,23 @@ bool load_content()
 	// ****************************************
 	// Create two mesh objects - reuse geometry
 	// ****************************************
+	for (int i = 0; i < 4; ++i)
+		meshes[i] = new mesh(geom);
 	
 
     // *********************
 	// Scale each mesh by 10
     // *********************
-	
+	vec3 a(10.0f, 10.0f, 10.0f);
+
+	for (int i = 0; i < 4; ++i)
+		meshes[i]->get_transform().scale = a;
 
 	// ***********************************
 	// Set mesh positions - remember scale
 	// ***********************************
-	
+	meshes[1]->get_transform().translate(vec3(20.f, 0.0f, 0.0f));
+	meshes[2]->get_transform().translate(vec3(40.f, 0.0f, 0.0f));
 
 
 	// Load in texture shaders
@@ -72,7 +78,11 @@ bool load_content()
 	// 2 - no mipmaps, anisotropic
 	// 3 - mipmaps, anisotropic
 	// ******************************
-	
+	texs[0] = new texture("..\\resources\\textures\\sign.jpg", false, false);
+	texs[1] = new texture("..\\resources\\textures\\sign.jpg", false, true);
+	texs[2] = new texture("..\\resources\\textures\\sign.jpg", true, false);
+	texs[3] = new texture("..\\resources\\textures\\sign.jpg", true, true);
+
 
 
 	// Set camera properties
@@ -104,7 +114,7 @@ bool render()
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
 		// Create MVP matrix
-		auto M = meshes[i].get_transform().get_transform_matrix();
+		auto M = meshes[i]->get_transform().get_transform_matrix();
 		auto V = cam.get_view();
 		auto P = cam.get_projection();
 		auto MVP = P * V * M;
@@ -118,16 +128,16 @@ bool render()
 		// ********************************
 		// Bind correct texture to renderer
 		// ********************************
-		
+		renderer::bind(*texs[i], i);
 
 		// *****************************************
 		// Set the texture value for the shader here
 		// *****************************************
-		
+		glUniform1f(eff.get_uniform_location("tex"), i);
 
 
 		// Render the mesh
-		renderer::render(meshes[i]);
+		renderer::render(*meshes[i]);
 	}
 
 	return true;

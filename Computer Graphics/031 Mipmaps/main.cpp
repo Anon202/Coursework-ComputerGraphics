@@ -6,7 +6,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 // Two meshes
-array<mesh, 2> meshes;
+array<mesh*, 2> meshes;
 effect eff;
 target_camera cam;
 // Two textures
@@ -41,17 +41,24 @@ bool load_content()
 	// ****************************************
 	// Create two mesh objects - reuse geometry
 	// ****************************************
-	
+	meshes[0] = new mesh(geom);
+	meshes[1] = new mesh(geom);
 
     // *********************
 	// Scale each mesh by 10
     // *********************
-	
+	vec3 a(2.0f, 2.0f, 2.0f);
+	for (int i = 0; i < 2; ++i)
+		meshes[i]->get_transform().scale = a;
 
 	// ***********************************
 	// Set mesh positions - remember scale
 	// ***********************************
-	
+	vec3 b(10.0f, 0.0f, 0.0f);
+	meshes[0]->get_transform().translate(b);
+
+	vec3 c(6.0f, 0.0f, 0.0f);
+	meshes[1]->get_transform().translate(c);
 
 
 	// Load in texture shaders
@@ -70,7 +77,8 @@ bool load_content()
 	// 0 - no mipmaps
 	// 1 - mipmaps
 	// *********************
-	
+	texs[0] = texture("..\\resources\\textures\\sign.jpg", true, false);
+	texs[1] = texture("..\\resources\\textures\\sign.jpg", false, false);
 
 
 	// Set camera properties
@@ -102,7 +110,7 @@ bool render()
 	for (unsigned int i = 0; i < meshes.size(); ++i)
 	{
 		// Create MVP matrix
-		auto M = meshes[i].get_transform().get_transform_matrix();
+		auto M = meshes[i]->get_transform().get_transform_matrix();
 		auto V = cam.get_view();
 		auto P = cam.get_projection();
 		auto MVP = P * V * M;
@@ -116,16 +124,15 @@ bool render()
 		// ********************************
 		// Bind correct texture to renderer
 		// ********************************
-		
+		renderer::bind(texs[i], i);
 
 		// *****************************************
 		// Set the texture value for the shader here
 		// *****************************************
-		
-
+		glUniform1i(eff.get_uniform_location("tex"), i);
 
 		// Render the mesh
-		renderer::render(meshes[i]);
+		renderer::render(*meshes[i]);
 	}
 
 	return true;
