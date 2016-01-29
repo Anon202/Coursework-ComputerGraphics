@@ -27,7 +27,7 @@ Matrix4::Matrix4(float _00, float _10, float _20, float _30,
 				 float _02, float _12, float _22, float _32,
 				 float _03, float _13, float _23, float _33)
 {
-	this->m[0] = _00;
+	this->m[0] = _00;				// Float constructor, set values in array within column-major order.
 	this->m[1] = _10;
 	this->m[2] = _20;
 	this->m[3] = _30;
@@ -46,7 +46,7 @@ Matrix4::Matrix4(float _00, float _10, float _20, float _30,
 
 }
 
-Matrix4 operator* (const Matrix4& lhs, const Matrix4& rhs)
+Matrix4 operator* (const Matrix4& lhs, const Matrix4& rhs)		// Matrix Multiplication operator, row * column - global
 {
 	float lhsRow1[4] = { lhs[0], lhs[4], lhs[8], lhs[12] };
 	float lhsRow2[4] = { lhs[1], lhs[5], lhs[9], lhs[13] };
@@ -127,7 +127,7 @@ Matrix4 operator* (const Matrix4& lhs, const Matrix4& rhs)
 	return result; 
 }
 
-float& Matrix4::operator[] (int index)
+float& Matrix4::operator[] (int index)			// setter
 {
 	if (index > 16)
 	{
@@ -138,7 +138,7 @@ float& Matrix4::operator[] (int index)
 	return m[index];
 }
 
-const float& Matrix4::operator[] (int index) const
+const float& Matrix4::operator[] (int index) const			// getter
 {
 	if (index > 16)
 	{
@@ -154,7 +154,7 @@ Matrix4 Matrix4::Zero()
 	return Matrix4();			// zero matrix return empty constructor matrix (all elements set to zero)
 }
 
-Matrix4 Matrix4::Identity()
+Matrix4 Matrix4::Identity()			// diagonal elements are set to 1
 {
 	return Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); 
 }
@@ -163,6 +163,19 @@ Matrix4 Matrix4::Transpose(const Matrix4& mat)
 {
 	Matrix4 T = mat; // diagonal is the same so set equal first.
 
+	T[1] = mat[4];
+	T[2] = mat[8];
+	T[3] = mat[12];
+	T[6] = mat[9];
+	T[7] = mat[13];
+	T[11] = mat[14];
+
+	T[4] = mat[1];
+	T[8] = mat[2];
+	T[12] = mat[3];
+	T[9] = mat[6];
+	T[13] = mat[7];
+	T[14] = mat[11];
 
 	  
 	return T;
@@ -170,7 +183,7 @@ Matrix4 Matrix4::Transpose(const Matrix4& mat)
 
 Matrix4 Matrix4::SetTranslation(const Vector3& translation)
 {
-	Matrix4 T = Matrix4::Identity();
+	Matrix4 T = Matrix4::Identity();		// Set identity, change 4th column
 
 	T[12] = translation.x;
 	T[13] = translation.y;
@@ -180,13 +193,12 @@ Matrix4 Matrix4::SetTranslation(const Vector3& translation)
 }
 
 
-Vector3 Matrix4::GetTranslation(const Matrix4& mat)
+Vector3 Matrix4::GetTranslation(const Matrix4& mat) // pull translation from elements
 {
-
 	return Vector3(mat[12], mat[13], mat[14]);
 }
 
-Matrix4 Matrix4::SetScale(const Vector3& scale)
+Matrix4 Matrix4::SetScale(const Vector3& scale)	// set scale down the diagonal
 {
 	Matrix4 S = Matrix4::Identity();
 
@@ -222,21 +234,26 @@ Matrix4 Matrix4::SetRotationAxis(const Vector3& axis, float angle)
 
 }
 
-Vector3 Matrix4::TransformPoint(const Matrix4& mat, const Vector3& p)
+Vector3 Matrix4::TransformPoint(const Matrix4& mat, const Vector3& p)	// point transform set w = 1 therefore add translation onto each element
 {
-	float x1 = p.x*mat[0] + p.y*mat[1] + p.z*mat[2] + mat[3];
-	float y1 = p.x*mat[4] + p.y*mat[5] + p.z*mat[6] + mat[7];
-	float z1 = p.x*mat[8] + p.y*mat[9] + p.z*mat[10] + mat[11];
+	float x1 = p.x*mat[0] + p.y*mat[4] + p.z*mat[8] + mat[12];	// x y z + trans
+	float y1 = p.x*mat[1] + p.y*mat[5] + p.z*mat[9] + mat[13];
+	float z1 = p.x*mat[2] + p.y*mat[6] + p.z*mat[10] + mat[14];
+
+	// ignore 4th element
 
 	return Vector3(x1, y1, z1);
 }
 
 
-Vector3 Matrix4::TransformDirection(const Matrix4& mat, const Vector3& n)
+Vector3 Matrix4::TransformDirection(const Matrix4& mat, const Vector3& n)	// transforming direction gets rid of translation information
 {
-	float x1 = n.x*mat[0] + n.y*mat[1] + n.z*mat[2];
-	float y1 = n.x*mat[4] + n.y*mat[5] + n.z*mat[6];
-	float z1 = n.x*mat[8] + n.y*mat[9] + n.z*mat[10];
+
+	float x1 = n.x*mat[0] + n.y*mat[4] + n.z*mat[8];		// x y z
+	float y1 = n.x*mat[1] + n.y*mat[5] + n.z*mat[9];
+	float z1 = n.x*mat[2] + n.y*mat[6] + n.z*mat[10];
+
+	// ignore 4th element
 
 	return Vector3(x1, y1, z1);
 }

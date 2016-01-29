@@ -1,6 +1,7 @@
 #include "matrix4.h"
 #include <iostream>
 
+
 int main()
 {
 	int enter = 0;
@@ -71,18 +72,48 @@ int main()
 	}
 	std::cout << std::endl;
 
-	Vector3 transformed_point = Matrix4::TransformPoint(d, v);
 
+
+	Matrix4 transpose = Matrix4::Transpose(b);
+	std::cout << "Transpose of matrix b: \n";
+	for (int i = 0; i < 4; ++i)
+	{
+		std::cout << transpose[i] << " " << transpose[i + 4] << " " << transpose[i + 8] << " " << transpose[i + 12] << "\n";
+	}
+	std::cout << std::endl;
+
+	Vector3 axis(0.0f, 0.0f, 1.0f);
+	Matrix4 rotation = Matrix4::SetRotationAxis(axis, 90);
+	std::cout << "Rotation of 90 by z \n";
+	for (int i = 0; i < 4; ++i)
+	{
+		std::cout << rotation[i] << " " << rotation[i + 4] << " " << rotation[i + 8] << " " << rotation[i + 12] << "\n";
+	}
+	std::cout << std::endl;
+
+	Matrix4 direc = rotation * d;
+	std::cout << "Matrix multiplication rotation * transformation: \n";
+	for (int i = 0; i < 4; ++i)
+	{
+		std::cout << direc[i] << " " << direc[i + 4] << " " << direc[i + 8] << " " << direc[i + 12] << "\n";
+	}
+	std::cout << std::endl;
+
+
+	Vector3 v1(5.0f, 18.0f, 3.0f);
+	Vector3 transformed_point = Matrix4::TransformPoint(direc, v1);
 	std::cout << "Transform point v by Translation matrix.\nBefore: "
-		<< v.x << " " << v.y << " " << v.z << "\n"
+		<< v1.x << " " << v1.y << " " << v1.z << "\n"
 		<< "After: " << transformed_point.x << " " << transformed_point.y << " " << transformed_point.z << std::endl;
 
 
 	Vector3 v2(0.0, 1.0, 3.0);
-	Vector3 transformed_pt = Matrix4::TransformDirection(d, v2);
 
-	std::cout << "Transform v by Translation matrix.\nBefore: "
-		<< v.x << " " << v.y << " " << v.z << "\n"
+	
+	Vector3 transformed_pt = Matrix4::TransformDirection(direc, v1);
+
+	std::cout << "Transform v2 by Translation matrix.\nBefore: "
+		<< v2.x << " " << v2.y << " " << v2.z << "\n"
 		<< "After: " << transformed_pt.x << " " << transformed_pt.y << " " << transformed_pt.z << std::endl;
 
 	Matrix4 matMul = b * c;
