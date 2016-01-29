@@ -48,7 +48,7 @@ bool load_content()
     // *********************
 	// Scale each mesh by 10
     // *********************
-	vec3 a(10.0f, 10.0f, 10.0f);
+	vec3 a(2.0f, 2.0f, 2.0f);
 
 	for (int i = 0; i < 4; ++i)
 		meshes[i]->get_transform().scale = a;
@@ -56,9 +56,15 @@ bool load_content()
 	// ***********************************
 	// Set mesh positions - remember scale
 	// ***********************************
-	meshes[1]->get_transform().translate(vec3(20.f, 0.0f, 0.0f));
-	meshes[2]->get_transform().translate(vec3(40.f, 0.0f, 0.0f));
+	meshes[0]->get_transform().translate(vec3(10.0f, 10.0f, 10.0f));
 
+
+	/*vec3 b(4.0f, 0.0f, 0.0f);
+	for (int i = 0; i < 4; ++i)
+	{
+		meshes[i].get_transform().translate(b);
+		b *= 2;
+	}*/
 
 	// Load in texture shaders
 	eff.add_shader(
@@ -133,7 +139,7 @@ bool render()
 		// *****************************************
 		// Set the texture value for the shader here
 		// *****************************************
-		glUniform1f(eff.get_uniform_location("tex"), i);
+		glUniform1i(eff.get_uniform_location("tex"), i);
 
 
 		// Render the mesh
