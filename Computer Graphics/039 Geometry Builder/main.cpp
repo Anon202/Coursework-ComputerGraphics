@@ -25,14 +25,36 @@ bool load_content()
 	// - Sphere
 	// - Torus
 	// ******************
-	
+	vec3 dimen(1.0f, 1.0f, 1.0f);
+	vec3 scale(5.0f, 5.0f, 5.0f);
 
+	meshes["box"] = mesh(geometry_builder::create_box(scale));
+	meshes["tetrahedron"] = mesh(geometry_builder::create_tetrahedron(scale));
+	meshes["pyramid"] = mesh(geometry_builder::create_pyramid(scale));
+	meshes["disk"] = mesh(geometry_builder::create_disk(20));
+	meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
+	meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
+	meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1, 5));
 
 	// ***************************************
 	// Set the transforms for your meshes here
 	// ***************************************
-	
+	meshes["box"].get_transform().translate(vec3(-10, 2.5, -30));
+	meshes["tetrahedron"].get_transform().translate(vec3(-30, 10, -10));
+	meshes["pyramid"].get_transform().translate(vec3(-10, 7.5, -30));
 
+	meshes["disk"].get_transform().scale = vec3(3, 1, 3);
+	meshes["disk"].get_transform().translate(vec3(-10, 11.5, -30));
+	meshes["disk"].get_transform().rotate(angleAxis(pi<float>()/2, vec3(1, 0, 0)));
+
+	meshes["cylinder"].get_transform().scale = scale;
+	meshes["cylinder"].get_transform().translate(vec3(-25, 2.5, -25));
+
+	meshes["sphere"].get_transform().scale = vec3(2.5, 2.5, 2.5);
+	meshes["sphere"].get_transform().translate(vec3(-25, 10, -25));
+
+	meshes["torus"].get_transform().translate(vec3(-25, 10, -25));
+	meshes["torus"].get_transform().rotate(angleAxis(pi<float>() / 2, vec3(1, 0, 0)));
 
 	// Load texture
 	tex = texture("..\\resources\\textures\\checked.gif");

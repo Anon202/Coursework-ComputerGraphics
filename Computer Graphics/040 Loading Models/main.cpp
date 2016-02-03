@@ -15,11 +15,13 @@ bool load_content()
 	// *************
 	// Load in model
 	// *************
+	m = mesh(geometry("..\\resources\\models\\teapot.obj"));
 	
 
 	// ***************
 	// Load in texture
 	// ***************
+	tex = texture("..\\resources\\textures\\checked.gif", false, false);
 	
 
 	// Load in shaders
