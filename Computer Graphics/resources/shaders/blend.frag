@@ -16,15 +16,20 @@ void main()
 	// Sample the two main textures
 	// ****************************
 
+	vec4 col1 = texture2D(tex[0], tex_coord);	
+	vec4 col2 = texture2D(tex[1], tex_coord);
 
 	// ************************
 	// Sample the blend texture
 	// ************************
 
+	vec4 blendCol = texture(blend, tex_coord);
 
 	// *******************************************************
 	// Mix the main samples using r component from blend value
 	// *******************************************************
 
+	vec4 out_colour = mix(col1, col2, blendCol.r);
 
+	colour = out_colour;
 }

@@ -29,6 +29,13 @@ bool load_content()
 	// Define texture coordinates for quad - remember repeat
 	// *****************************************************
 
+	vector<vec2> tex_coords
+	{
+		vec2(2.0f, 2.0f),
+		vec2(-1.0f, 2.0f),
+		vec2(-1.0f, -1.0f),
+		vec2(2.0f, -1.0f)
+	};
 
 	// Add to the geometry
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
@@ -36,7 +43,8 @@ bool load_content()
 	// *****************************************
 	// Add texture coordinate buffer to geometry
 	// *****************************************
-	
+	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+
 
 	// Create mesh object
 	m = mesh(geom);
@@ -44,17 +52,19 @@ bool load_content()
 	// ****************************
 	// Load in texture shaders here
 	// ****************************
-
+	eff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
 
 	// ************
 	// Build effect
 	// ************
+	eff.build();
 	
 
 	// *********************
 	// Load texture sign.jpg
 	// *********************
-	
+	tex = texture("..\\resources\\textures\\sign.jpg");
 
 	// Set camera properties
 	cam.set_position(vec3(10.0f, 10.0f, 10.0f));
@@ -91,12 +101,12 @@ bool render()
 	// ************************
 	// Bind texture to renderer
 	// ************************
-	
+	renderer::bind(tex, 0);
 
 	// *****************************************
 	// Set the texture value for the shader here
 	// *****************************************
-	
+	glUniform1i(eff.get_uniform_location("tex"), 0);
 
 	// Render the mesh
 	renderer::render(m);

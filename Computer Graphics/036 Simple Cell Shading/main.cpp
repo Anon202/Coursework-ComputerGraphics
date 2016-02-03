@@ -66,22 +66,30 @@ bool load_content()
 	// **************************
 	// Load in simple cell shader
 	// **************************
+	eff.add_shader("..\\resources\\shaders\\simple_cell.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\simple_cell.frag", GL_FRAGMENT_SHADER);
 	
-
     // ************
 	// Build effect
     // ************
-	
+	eff.build();
+
 
 	// ****************************
 	// Create vector of colour data
 	// ****************************
-	
+	vector<vec4> colour_data
+	{
+		vec4(0.12, 0.0, 0.0, 1.0),
+		vec4(0.25, 0.0, 0.0, 1.0),
+		vec4(0.5, 0.0, 0.0, 1.0),
+		vec4(1.0, 0.0, 0.0, 1.0)
+	};
 
 	// *****************
 	// Create 1D texture
 	// *****************
-	
+	tex = texture(colour_data, 4.0f, 1.0f, false, false);   // 4 because each colour is one pixel 
 
 	// Set camera properties
 	cam.set_position(vec3(10.0f, 10.0f, 10.0f));
@@ -118,12 +126,13 @@ bool render()
 	// ****************
 	// Bind the texture
 	// ****************
-	
+	renderer::bind(tex, 0);
 
 	// **********************************
 	// Set the uniform values for texture
 	// **********************************
-	
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+
 
 	// Render the mesh
 	renderer::render(m);

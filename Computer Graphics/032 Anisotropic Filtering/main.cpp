@@ -56,15 +56,21 @@ bool load_content()
 	// ***********************************
 	// Set mesh positions - remember scale
 	// ***********************************
-	meshes[0]->get_transform().translate(vec3(10.0f, 10.0f, 10.0f));
+	//meshes[0]->get_transform().translate(vec3(10.0f, 10.0f, 10.0f));
 
 
-	/*vec3 b(4.0f, 0.0f, 0.0f);
+	vec3 b[4]
+	{
+
+		vec3(22.0f, 0.0f, 0.0f),
+		vec3(26.0f, 0.0f, 0.0f),
+		vec3(30.0f, 0.0f, 0.0f),
+		vec3(34.0f, 0.0f, 0.0f),
+	};
 	for (int i = 0; i < 4; ++i)
 	{
-		meshes[i].get_transform().translate(b);
-		b *= 2;
-	}*/
+		meshes[i]->get_transform().translate(b[i]);
+	}
 
 	// Load in texture shaders
 	eff.add_shader(

@@ -9,7 +9,7 @@ mesh m;
 effect eff;
 target_camera cam;
 // Main textures
-array<texture, 2> texs;
+array<texture*, 2> texs;
 // Blend map
 texture blend_map;
 
@@ -47,22 +47,26 @@ bool load_content()
 	// ********************
 	// Load in blend shader
 	// ********************
-	
+	eff.add_shader("..\\resources\\shaders\\blend.vert", GL_VERTEX_SHADER);			// vertex
+	eff.add_shader("..\\resources\\shaders\\blend.frag", GL_FRAGMENT_SHADER);		// fragment
 
     // ************
 	// Build effect
     // ************
+	eff.build();
 
 
 	// **********************
 	// Load main two textures
 	// **********************
-	
+	texs[0] = new texture("..\\resources\\textures\\grass.png", false, false);
+	texs[1] = new texture("..\\resources\\textures\\stonygrass.jpg", false, false);
+
 
 	// **************
 	// Load blend map
 	// **************
-	
+	blend_map = texture("..\\resources\\textures\\blend_map.jpg", false, false);
 
 	// Set camera properties
 	cam.set_position(vec3(0.0f, 0.0f, 30.0f));
@@ -99,16 +103,23 @@ bool render()
 	// ******************************************************
 	// Bind the three textures - use different index for each
 	// ******************************************************
-	
+
+	renderer::bind(*texs[0], 0);
+	renderer::bind(*texs[1], 1);
+	renderer::bind(blend_map, 2); 
 
 	// *******************************************************
 	// Set the uniform values for textures - use correct index
 	// *******************************************************
 
-
+	
+	glUniform1i(eff.get_uniform_location("tex[0]"), 0);
+	glUniform1i(eff.get_uniform_location("tex[1]"), 1);
+	glUniform1i(eff.get_uniform_location("blend"), 2);
     // ***************
 	// Render the mesh
     // ***************
+	renderer::render(m);
 
 
 	return true;

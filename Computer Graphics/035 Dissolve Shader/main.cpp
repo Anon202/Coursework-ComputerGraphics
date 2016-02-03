@@ -90,17 +90,21 @@ bool load_content()
 	// ***********************
 	// Load in dissolve shader
 	// ***********************
-	
+	eff.add_shader("..\\resources\\shaders\\dissolve.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\dissolve.frag", GL_FRAGMENT_SHADER);
 
     // ************
 	// Build effect
     // ************
-	
+	eff.build();
+
 
 	// ****************
 	// Load in textures
 	// ****************
-	
+	tex = texture("..\\resources\\textures\\checked.gif", false, false);
+	dissolve = texture("..\\resources\\textures\\dissolve.png", false, false);
+
 
 
 	// Set camera properties
@@ -143,17 +147,22 @@ bool render()
 	// *************************************
 	// Set the dissolve_factor uniform value
 	// *************************************
-	
+	glUniform1f(eff.get_uniform_location("dissolve_factor"), dissolve_factor);  // param location/ value for FLOAT
+
 
 	// ****************************************************
 	// Bind the two textures - use different index for each
 	// ****************************************************
-	
+	renderer::bind(tex, 0);
+	renderer::bind(dissolve, 1);
+
 
 	// *******************************************************
 	// Set the uniform values for textures - use correct index
 	// *******************************************************
-	
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+	glUniform1i(eff.get_uniform_location("dissolve"), 1);			// param index as sampler2d
+
 
 	
 	// Render the mesh
