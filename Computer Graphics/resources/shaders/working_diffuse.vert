@@ -24,7 +24,7 @@ void main()
 	// ******************
 	// Calculate position
 	// ******************
-	gl_Position = MVP * vec4(position, 1.0);
+	gl_Position = MVP * vec4(position, 1.0f);
 
 	// ********************
 	// Transform the normal
@@ -40,7 +40,7 @@ void main()
 
 	vec3 light_dir_norm = normalize(light_dir);
 	float k = dot(transformed_normal, light_dir_norm);
-	k = max(k, 0.0);
+	k = max(k, 0);
 	// Calculate diffuse
 	
 	vec4 amb = material_colour * light_colour;

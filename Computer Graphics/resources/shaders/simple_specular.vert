@@ -35,13 +35,13 @@ void main()
 	// ********************
 	// Transform the normal
 	// ********************
-	vec3 transformed_normal = N * normal;
+	vec3 transformed_normal =  normal;
 	transformed_normal = normalize(transformed_normal);
 	
 	// ************************
 	// Calculate world position
 	// ************************
-	vec4 worldPos4 = M * gl_Position;
+	vec4 worldPos4 = M * vec4(position, 1.0);
 	vec3 worldPos = vec3(worldPos4);
 
 	// ************************

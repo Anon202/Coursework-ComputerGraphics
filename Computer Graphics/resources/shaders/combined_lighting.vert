@@ -34,54 +34,65 @@ void main()
 	// ******************
 	// Calculate position
 	// ******************
-	
+	gl_Position = MVP * vec4(position, 1.0f);
 
 	// ***************************
 	// Calculate ambient component
 	// ***************************
-	
+	vec4 ambient = ambient_intensity * diffuse_reflection;
 
 	// ********************
 	// Transform the normal
 	// ********************
-	
+	vec3 transformed_normal = N * normal;
+	transformed_normal = normalize(transformed_normal);
 
 	// ***************************
 	// Calculate diffuse component
 	// - use transformed normal
 	// ***************************
 	// Calculate k
+	vec3 light_dir_norm = normalize(light_dir);
+	float k = dot(transformed_normal, light_dir_norm);
+	k = max(k, 0.0);
 	
 	// Calculate diffuse
-	
+	vec4 diffuse = k * ambient;
 
 	// **********************************
 	// Calculate world position of vertex
 	// **********************************
-	
+	vec4 worldPos = M * gl_Position;
 
 	// ************************
 	// Calculate view direction
 	// ************************
-	
+	vec3 view_dir = (eye_pos - vec3(worldPos)) / length(eye_pos - vec3(worldPos));
 
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************
-	
+	vec3 halfVec = (view_dir + light_dir) / length(view_dir + light_dir);
 
 	// ****************************
 	// Calculate specular component
 	// ****************************
 	// Calculate k
 	
-	// Calculate specular
+	float kSpec = dot(transformed_normal, halfVec);
+	kSpec = max(kSpec, 0.0);
 	
+	// Calculate specular
+	vec4 specular = kSpec * ambient;
 
 	// **************************
 	// Output combined components
 	// **************************
 	
 	// Ensure alpha is 1
+	vec4 outCol = specular + diffuse + ambient;
+	outCol.a = 1.0f;
+
+	vertex_colour = outCol;
 	
 }

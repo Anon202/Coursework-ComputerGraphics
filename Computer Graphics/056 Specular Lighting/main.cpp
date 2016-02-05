@@ -48,7 +48,7 @@ bool load_content()
 	eff.build();
 
 	// Set camera properties
-	cam.set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam.set_position(vec3(1.0f, 1.0f, 50.0f));
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
@@ -112,7 +112,7 @@ bool render()
 		// Set material colour
 		// - specular material is white
 		// ****************************
-		glUniform4f(eff.get_uniform_location("material_colour"), 1.0f, 1.0f, 1.0f, 1.0f);
+		glUniform4f(eff.get_uniform_location("material_colour"), 0.0f, 1.0f, 0.0f, 1.0f);
 
 		// *************
 		// Set shininess
@@ -131,7 +131,7 @@ bool render()
 		// Set light direction
 		// - (1.0, 1.0, -1.0)
 		// *******************
-		glUniform3f(eff.get_uniform_location("light_dir"), 1.0f, 1.0f, -1.0f);
+		glUniform3f(eff.get_uniform_location("light_dir"), 0.1f, 0.1f, -1.0f);
 
 		// *****************************
 		// Set eye position

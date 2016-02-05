@@ -9,6 +9,7 @@ map<string, mesh> meshes;
 effect eff;
 texture tex;
 target_camera cam;
+vec3 pos;
 
 bool load_content()
 {
@@ -70,6 +71,19 @@ bool update(float delta_time)
 
 	// Rotate the sphere
 	meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+	{
+		pos = cam.get_position();
+		pos += vec3(0.0f, 0.0f, -5.0f);
+		cam.set_position(pos);
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+	{
+		pos = cam.get_position();
+		pos += vec3(0.0f, 0.0f, 5.0f);
+		cam.set_position(pos);
+	}
 
 	cam.update(delta_time);
 
