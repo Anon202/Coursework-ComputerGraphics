@@ -105,7 +105,7 @@ bool render()
 		// ***********************
 
 		auto N = V * M;
-		glUniformMatrix4fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 		
 
 		// ****************************
@@ -118,7 +118,7 @@ bool render()
 		// Set shininess
 		// - Use 50.0f
 		// *************
-		glUniform1f(eff.get_uniform_location("shininess"), 50.0f);
+		glUniform1f(eff.get_uniform_location("shininess"), 100.0f);
 		
 
 		// **********************
@@ -137,8 +137,7 @@ bool render()
 		// Set eye position
 		// - Get this from active camera
 		// *****************************
-		vec3 eye;
-		eye = cam.get_position();
+		vec3 eye = cam.get_position();
 
 		glUniform3f(eff.get_uniform_location("eye_pos"), eye.x, eye.y, eye.z);
 

@@ -36,7 +36,7 @@ void main()
 	// Transform the normal
 	// ********************
 	vec3 transformed_normal = N * normal;
-	
+	transformed_normal = normalize(transformed_normal);
 	
 	// ************************
 	// Calculate world position
@@ -54,7 +54,7 @@ void main()
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************
-	vec3 viewLight = view_dir + light_dir;
+	vec3 viewLight = view_dir + light_dir;// vec4(light_dir, 1);
 	
 	vec3 half_vec = viewLight/length(viewLight);
 
@@ -62,7 +62,8 @@ void main()
 	// Calculate specular component
 	// ****************************
 	// Calculate k
-	float k = dot(view_dir, half_vec);
+
+	float k = dot(transformed_normal, half_vec);
 	k = max(k, 0);
 
 	// Calculate specular
