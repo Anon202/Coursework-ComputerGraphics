@@ -11,6 +11,6 @@ void main()
 	// **************************
 	// Set outgoing vertex colour
 	// **************************
-	
+	colour = vertex_colour;
 
 }

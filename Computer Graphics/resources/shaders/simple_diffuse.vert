@@ -22,20 +22,31 @@ void main()
 	// ******************
 	// Calculate position
 	// ******************
+	gl_Position = MVP * vec4(position, 1.0f);
 	
 	
 	// ***************************
 	// Calculate diffuse component
 	// ***************************
 	// Calculate k
-	
+	vec4 k = material_colour * light_colour;
+
+
 	// Calculate diffuse
-	
+	vec3 normal2 = normalize(normal);
+	vec3 light_dir2 = normalize(light_dir);
+
+	float dot2 = dot(normal2, light_dir2);
+	dot2 = max(dot2, 0);
 	// Ensure diffuse alpha is 1
 	
+	vec4 diffuse = k * dot2;
+
 
 	// ***********************************
 	// Output vertex colour - just diffuse
 	// ***********************************
-	
+	vertex_colour = diffuse;
+	vertex_colour.a = 1.0;
+
 }

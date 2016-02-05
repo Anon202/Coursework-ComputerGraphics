@@ -97,43 +97,50 @@ bool render()
 		// ********************
 		// Set M matrix uniform
 		// ********************
-
+		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 		
 		// ***********************
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
+
+		auto N = V * M;
+		glUniformMatrix4fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 		
 
 		// ****************************
 		// Set material colour
 		// - specular material is white
 		// ****************************
-		
+		glUniform4f(eff.get_uniform_location("material_colour"), 1.0f, 1.0f, 1.0f, 1.0f);
 
 		// *************
 		// Set shininess
 		// - Use 50.0f
 		// *************
+		glUniform1f(eff.get_uniform_location("shininess"), 50.0f);
 		
 
 		// **********************
 		// Set light colour
 		// - (1.0, 1.0, 1.0, 1.0)
 		// **********************
-		
+		glUniform4f(eff.get_uniform_location("light_colour"), 1.0f, 1.0f, 1.0f, 1.0f);
 
 		// *******************
 		// Set light direction
 		// - (1.0, 1.0, -1.0)
 		// *******************
-		
+		glUniform3f(eff.get_uniform_location("light_dir"), 1.0f, 1.0f, -1.0f);
 
 		// *****************************
 		// Set eye position
 		// - Get this from active camera
 		// *****************************
-		
+		vec3 eye;
+		eye = cam.get_position();
+
+		glUniform3f(eff.get_uniform_location("eye_pos"), eye.x, eye.y, eye.z);
 
 		// Render mesh
 		renderer::render(m);

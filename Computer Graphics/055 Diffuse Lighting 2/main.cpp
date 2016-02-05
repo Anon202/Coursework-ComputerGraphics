@@ -89,6 +89,10 @@ bool render()
 		auto V = cam.get_view();
 		auto P = cam.get_projection();
 		auto MVP = P * V * M;
+
+		auto N = V * M; /// NORMAL MATRIX - Model view
+
+
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(
 			eff.get_uniform_location("MVP"), // Location of uniform
@@ -100,25 +104,27 @@ bool render()
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
-		
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 		// *******************
 		// Set material colour
 		// - all objects red
 		// *******************
+		glUniform4f(eff.get_uniform_location("material_colour"), 1.0f, 0.0f, 0.0f, 1.0f);
 		
 
 		// **********************
 		// Set light colour
 		// - (1.0, 1.0, 1.0, 1.0)
 		// **********************
+		glUniform4f(eff.get_uniform_location("light_colour"), 1.0f, 1.0f, 1.0f, 1.0f);
 		
 
 		// *******************
 		// Set light direction
 		// - (1.0, 1.0, -1.0)
 		// *******************
-		
+		glUniform3f(eff.get_uniform_location("light_dir"), 1.0f, 1.0f, -1.0f);
 
 
 		// Render mesh
