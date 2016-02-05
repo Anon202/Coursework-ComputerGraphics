@@ -16,12 +16,12 @@ double xpos = 0;
 double ypos = 0;
 
 double current_x =0;
-double current_y =0 ;
+double current_y =0;
 
 double new_x = 0;
 double new_y = 0;
 
-bool firstMouse;
+bool firstMouse =true;
 
 bool initialise()
 {
