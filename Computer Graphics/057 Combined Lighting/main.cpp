@@ -8,7 +8,38 @@ using namespace glm;
 map<string, mesh> meshes;
 effect eff;
 texture tex;
-target_camera cam;
+free_camera cam;
+
+// initialise params
+GLFWwindow* window;
+double xpos = 0;
+double ypos = 0;
+
+double current_x = 0;
+double current_y = 0;
+
+double new_x = 0;
+double new_y = 0;
+
+bool firstMouse = true;
+
+bool initialise()
+{
+	// ********************************
+	// Set input mode - hide the cursor
+	// ********************************
+	window = renderer::get_window();
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// ******************************
+	// Capture initial mouse position
+	// ******************************
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+
+	return true;
+}
 
 bool load_content()
 {
@@ -57,21 +88,76 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	if (glfwGetKey(renderer::get_window(), '1'))
-		cam.set_position(vec3(50, 10, 50));
-	if (glfwGetKey(renderer::get_window(), '2'))
-		cam.set_position(vec3(-50, 10, 50));
-	if (glfwGetKey(renderer::get_window(), '3'))
-		cam.set_position(vec3(-50, 10, -50));
-	if (glfwGetKey(renderer::get_window(), '4'))
-		cam.set_position(vec3(50, 10, -50));
+	// The ratio of pixels to rotation - remember the fov
+	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+	static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
 
-	// Rotate the sphere
-	meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+	// *******************************
+	// Get the current cursor position
+	// *******************************
+	glfwGetCursorPos(window, &new_x, &new_y);
 
+
+	// ***************************************************
+	// Calculate delta of cursor positions from last frame
+	// ***************************************************
+	if (firstMouse)
+	{
+		current_x = xpos;
+		current_y = ypos;
+		firstMouse = false;
+	}
+
+	double delta_x = new_x - current_x;
+	double delta_y = new_y - current_y;
+
+	// *************************************************************
+	// Multiply deltas by ratios - gets actual change in orientation
+	// *************************************************************
+	delta_x *= ratio_width;
+	delta_y *= -ratio_height;
+
+	// *************************
+	// Rotate cameras by delta
+	// delta_y - x-axis rotation
+	// delta_x - y-axis rotation
+	// *************************
+	cam.rotate((float)delta_x, (float)delta_y);
+
+	// *******************************
+	// Use keyboard to move the camera
+	// - WSAD
+	// *******************************
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+		cam.move(vec3(0.0f, 0.0f, 1.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+		cam.move(vec3(-1.0f, 0.0f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+		cam.move(vec3(1.0f, 0.0f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+		cam.move(vec3(0.0f, 0.0f, -1.0f));
+
+
+	// ***********
+	// Move camera
+	// ***********
+
+	// *****************
+	// Update the camera
+	// *****************
 	cam.update(delta_time);
 
+
+	// *****************
+	// Update cursor pos
+	// *****************
+	glfwGetCursorPos(window, &current_x, &current_y);
+
+
 	return true;
+
+
+	
 }
 
 bool render()
@@ -103,7 +189,7 @@ bool render()
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
-		auto N = V * P;
+		mat3 N = mat3(V * P);
 		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 		// **********************
@@ -164,6 +250,7 @@ void main()
 	app application;
 	// Set load content, update and render methods
 	application.set_load_content(load_content);
+	application.set_initialise(initialise);
 	application.set_update(update);
 	application.set_render(render);
 	// Run application

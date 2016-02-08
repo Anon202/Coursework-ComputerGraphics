@@ -35,8 +35,9 @@ void main()
 	// ********************
 	// Transform the normal
 	// ********************
-	vec3 transformed_normal =  normal;
+	vec3 transformed_normal = N * normal;
 	transformed_normal = normalize(transformed_normal);
+	
 	
 	// ************************
 	// Calculate world position
@@ -54,7 +55,7 @@ void main()
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************
-	vec3 viewLight = view_dir + light_dir;// vec4(light_dir, 1);
+	vec3 viewLight = view_dir + light_dir; // vec4(light_dir, 1);
 	
 	vec3 half_vec = viewLight/length(viewLight);
 

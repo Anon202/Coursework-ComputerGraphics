@@ -104,8 +104,9 @@ bool render()
 		auto P = cam.get_projection();
 		auto MVP = P * V * M;
 
-		auto N = V * M; /// NORMAL MATRIX - Model view
-
+		mat3 N = mat3(V * M); /// NORMAL MATRIX - Model view
+		
+		
 
 		// Set MVP matrix uniform
 		glUniformMatrix4fv(
