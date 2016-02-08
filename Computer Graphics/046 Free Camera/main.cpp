@@ -50,7 +50,7 @@ bool load_content()
 	meshes["box"] = mesh(geometry_builder::create_box());
 	meshes["tetra"] = mesh(geometry_builder::create_tetrahedron());
 	meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
-	meshes["disk"] = mesh(geometry_builder::create_disk(20));
+	//meshes["disk"] = mesh(geometry_builder::create_disk(20));
 	meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20));
 	meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
@@ -62,9 +62,9 @@ bool load_content()
 	meshes["tetra"].get_transform().translate(vec3(-30.0f, 10.0f, -10.0f));
 	meshes["pyramid"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["pyramid"].get_transform().translate(vec3(-10.0f, 7.5f, -30.0f));
-	meshes["disk"].get_transform().scale = vec3(3.0f, 1.0f, 3.0f);
-	meshes["disk"].get_transform().translate(vec3(-10.0f, 11.5f, -30.0f));
-	meshes["disk"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+	//meshes["disk"].get_transform().scale = vec3(3.0f, 1.0f, 3.0f);
+	//meshes["disk"].get_transform().translate(vec3(-10.0f, 11.5f, -30.0f));
+	//meshes["disk"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 	meshes["cylinder"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["cylinder"].get_transform().translate(vec3(-25.0f, 2.5f, -25.0f));
 	meshes["sphere"].get_transform().scale = vec3(2.5f, 2.5f, 2.5f);
@@ -73,11 +73,13 @@ bool load_content()
 	meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
 
 	// Load texture
-	tex = texture("..\\resources\\textures\\checked.gif");
+	tex = texture("..\\resources\\textures\\stonygrass.jpg");
 
 	// Load in shaders
-	eff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
-	eff.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
+	//eff.add_shader("..\\resources\\shaders\\simple_diffuse.vert", GL_VERTEX_SHADER);
+	//eff.add_shader("..\\resources\\shaders\\simple_diffuse.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("..\\resources\\shaders\\working_diffuse.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\working_diffuse.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	eff.build();
 
@@ -182,8 +184,15 @@ bool render()
 
 		// Bind and set texture
 		renderer::bind(tex, 0);
-		glUniform1i(eff.get_uniform_location("tex"), 0);
 
+		auto N = V * M; /// NORMAL MATRIX - Model view
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+		glUniform4f(eff.get_uniform_location("material_colour"), 1.0, 0.0f, 0.0f, 1.0);
+
+
+		glUniform4f(eff.get_uniform_location("light_colour"), 1.0f, 1.0f, 1.0f, 1.0f);
+
+		glUniform3f(eff.get_uniform_location("light_dir"), 1.0f, 1.0f, -1.0f);
 		// Render mesh
 		renderer::render(m);
 	}

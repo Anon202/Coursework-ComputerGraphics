@@ -6,22 +6,28 @@
 #include "Quaternion.h"
 #include <math.h>
 
-Quaternion::Quaternion(float xx = 0, float yy = 0, float zz = 0, float ww = 1) : x(xx), y(yy), z(zz), w(ww)// float constructor
+Quaternion::Quaternion(float xx, float yy, float zz, float ww) : x(xx), y(yy), z(zz), w(ww)// float constructor
 {
-
 }
 
-Quaternion::Quaternion(const Quaternion& rhs)
+Quaternion::Quaternion(const Quaternion& rhs) : x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w)   // rhs constructor
 {
-	this-> x = rhs.x;
-	this-> y = rhs.y;
-	this-> z = rhs.z;
-	this-> w = rhs.w;
+}
+
+Quaternion& Quaternion::operator = (const Quaternion& rhs)
+{
+	this->x = rhs.x;
+	this->y = rhs.y;
+	this->z = rhs.z;
+	this->w = rhs.w;
+
+	return *this;
 }
 
 Quaternion Quaternion::Identity()  // no rotation
 {
-	return Quaternion(0, 0, 0, 1);
+	Quaternion I; // use default constructor (0, 0, 0, 1)
+	return I;
 }
 
 Quaternion Quaternion::Conjugate(const Quaternion& q)
@@ -61,21 +67,40 @@ float Quaternion::Dot(const Quaternion& q1, const Quaternion& q2)
 Quaternion Quaternion::FromAxisAngle(const Vector3& v, float angle)
 {
 	//return Quaternion sd;
+	Vector3 vNorm = Vector3::Normalize(v);
 
 	Quaternion rot;
 
-	rot.x = v.x * sin(angle / 2);
-	rot.y = v.y * sin(angle / 2);
-	rot.z = v.z * sin(angle / 2);
+	rot.x = vNorm.x * sin(angle / 2);
+	rot.y = vNorm.y * sin(angle / 2);
+	rot.z = vNorm.z * sin(angle / 2);
 	rot.w = cos(angle / 2);
 
 	return rot;
 
 }
 
+
 float Quaternion::ToAxisAngle(const Quaternion& q, Vector3& v)
 {
 	float angle;
+	
+	Quaternion qNorm = Normalize(q);
+	angle = 2 * acos(qNorm.w);
+	float wSqrt = sqrt(1 - (qNorm.w*qNorm.w));
+
+	if (wSqrt < 0.001) // avoids divide by zero
+	{
+		v.x = qNorm.x;
+		v.y = qNorm.y;
+		v.z = qNorm.z;
+	}
+	else
+	{
+		v.x = qNorm.x / wSqrt;
+		v.y = qNorm.y / wSqrt;
+		v.z = qNorm.z / wSqrt;
+	}
 
 	return angle;
 }
@@ -127,30 +152,87 @@ Quaternion Quaternion::FromRotationMatrix(const Matrix4& m)
 	mat[8] = 2 * (q.x*q.z + q.y*q.w);			m02
 	mat[9] = 2 * (q.y*q.z - q.x*q.w);			m12
 	*/
+
+	float trace = m[0] + m[5] + m[10];
 	
-	// w^2 = 1 - x^2 - y^2 - z^2
-	// 4 * w^2 = 1 + (1 - 2*y^2 - 2*z^2) + (1 - 2*x^2 - 2*z^2) + (1 - 2*x^2 - 2*y^2)
-	// 4 w^2 = 1 + m00 + m11 + m22
-	q.w = 1 / 2 * sqrt(1 + m[0] + m[5] + m[10]);
+	if (trace > 0)  // stops division by zero
+	{
+		// w^2 = 1 - x^2 - y^2 - z^2
+		// 4 * w^2 = 1 + (1 - 2*y^2 - 2*z^2) + (1 - 2*x^2 - 2*z^2) + (1 - 2*x^2 - 2*y^2)
+		// 4 w^2 = 1 + m00 + m11 + m22
+		q.w = 1 / 2 * sqrt(trace + 1);
 
+		float denom = 1 / (4 * q.w);
 
-	// 2*(yz + xw) - 2*(yz - xw) = 4xw
-	// x = (m21 - m12)/(4* w)
+		// 2*(yz + xw) - 2*(yz - xw) = 4xw
+		// x = (m21 - m12)/(4* w)
+		q.x = (m[6] - m[9])*denom;
 
-	float denom = 1 / (4 * q.w);
+		// 2*(xz + wy) - 2*(xz + wy) = 4wy
+		// y = (m02 - m20)/(4 *w)
+		q.y = (m[8] - m[2])*denom;
 
-	q.x = (m[6] - m[9])*denom;
+		// 2*(xy + wz) - 2*(xy + wz) = 4wz
+		// z = (m10 - m01)/(4 *w)
+		q.z = (m[1] - m[4])*denom;
 
-	// 2*(xz + wy) - 2*(xz + wy) = 4wy
-	// y = (m02 - m20)/(4 *w)
-	q.y = (m[8] - m[2])*denom;
+	}
+	else if ((m[0] > m[5]) && (m[0] > m[10])) // if m[0] is the largest use X 
+	{
+		q.x = 1 / 2 * sqrt(1 + m[0] - m[5] - m[10]);
+		float denom = 1 / (4 * q.x);
 
-	// 2*(xy + wz) - 2*(xy + wz) = 4wz
-	// y = (m10 - m01)/(4 *w)
-	q.z = (m[1] - m[4])*denom;
+		q.w = (m[6] - m[9])*denom;
+		q.y = (m[1] + m[4])*denom;
+		q.z = (m[8] + m[2])*denom;
+
+	}
+	else if (m[5] > m[10]) // 5 bigger than 0 so if bigger than m[10] 5 is the largest so use y
+	{
+		q.y = 1 / 2 * sqrt(1 + m[5] - m[0] - m[10]);
+		float denom = 1 / (4 * q.y);
+
+		q.w = (m[8] - m[2]) * denom;
+		q.x = (m[1] + m[4]) * denom;
+		q.z = (m[6] + m[9]) * denom;
+
+	}
+	else // m10 is largest so use z
+	{
+		q.z = 1 / 2 * sqrt(1 + m[10] - m[0] - m[5]);
+
+		float denom = 1 / (4 * q.z);
+
+		q.w = (m[1] - m[4]) * denom;
+		q.x = (m[8] + m[2]) * denom;
+		q.y = (m[6] + m[9]) * denom;
+
+	}
 
 	return q;
 }
+
+
+Quaternion Quaternion::Slerp(float t, const Quaternion& p, const Quaternion& q)
+{
+	Quaternion result;
+	Quaternion pNorm = Normalize(p);
+	Quaternion qNorm = Normalize(q);
+	float dotP = Dot(pNorm, qNorm);
+
+	float halfAngle = acos(dotP) / 2;
+
+	float denom = sin(halfAngle);
+
+	if (denom = 0)
+		result = p;
+	else
+		result = (pNorm*sin((1 - t)*halfAngle) + qNorm*sin(t*halfAngle) )* denom;
+
+
+	return result;
+}
+
 
 Quaternion operator*(const Quaternion& q, float s)
 {
@@ -162,4 +244,49 @@ Quaternion operator*(const Quaternion& q, float s)
 	
 	return a;
 }
+
+Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
+{
+	Quaternion result;
+
+	Vector3 qV1(q1.x, q1.y, q1.z);
+	Vector3 qV2(q2.x, q2.y, q2.z);
+
+	float dot = Vector3::Dot(qV1, qV2);
+
+	Vector3 cross = Vector3::Cross(qV1, qV2);
+
+	result.w = (q1.w * q2.w) - dot;
+	result.x = (q1.w * qV2.x) + (q2.w * qV1.x) + cross.x;
+	result.y = (q1.w * qV2.y) + (q2.w * qV1.y) + cross.y;
+	result.x = (q1.w * qV2.z) + (q2.w * qV1.z) + cross.z;
+
+	return result;
+}
+
+Quaternion operator*(float s, const Quaternion& q)
+{
+	Quaternion a;
+	a.x = s * q.w;
+	a.y = s * q.y;
+	a.z = s * q.z;
+	a.w = s * q.w;
+
+	return a;
+
+}
+
+Quaternion operator+(const Quaternion& q1, const Quaternion& q2)
+{
+	Quaternion result;
+
+	result.w = q1.w + q2.w;
+	result.x = q1.x + q2.x;
+	result.y = q1.y + q2.y;
+	result.z = q1.z + q2.z;
+
+
+	return result;
+}
+
 

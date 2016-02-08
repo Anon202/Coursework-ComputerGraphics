@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vector3", "vector3\vector3.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mat4", "Mat4\Mat4.vcxproj", "{230EABCA-3259-40A0-B482-9BDC4D261BD0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quaternion", "quaternion\quaternion.vcxproj", "{C4719E95-54B2-4044-ACFD-355F371719C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{230EABCA-3259-40A0-B482-9BDC4D261BD0}.Debug|Win32.Build.0 = Debug|Win32
 		{230EABCA-3259-40A0-B482-9BDC4D261BD0}.Release|Win32.ActiveCfg = Release|Win32
 		{230EABCA-3259-40A0-B482-9BDC4D261BD0}.Release|Win32.Build.0 = Release|Win32
+		{C4719E95-54B2-4044-ACFD-355F371719C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C4719E95-54B2-4044-ACFD-355F371719C1}.Debug|Win32.Build.0 = Debug|Win32
+		{C4719E95-54B2-4044-ACFD-355F371719C1}.Release|Win32.ActiveCfg = Release|Win32
+		{C4719E95-54B2-4044-ACFD-355F371719C1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
