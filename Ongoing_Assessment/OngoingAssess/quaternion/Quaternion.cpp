@@ -220,7 +220,7 @@ Quaternion Quaternion::Slerp(float t, const Quaternion& p, const Quaternion& q)
 	Quaternion qNorm = Normalize(q);
 	float dotP = Dot(pNorm, qNorm);
 
-	float halfAngle = acos(dotP) / 2;
+	float halfAngle = acos(dotP);
 
 	float denom = sin(halfAngle);
 
@@ -228,7 +228,6 @@ Quaternion Quaternion::Slerp(float t, const Quaternion& p, const Quaternion& q)
 		result = p;
 	else
 		result = (pNorm*sin((1 - t)*halfAngle) + qNorm*sin(t*halfAngle) )* denom;
-
 
 	return result;
 }
