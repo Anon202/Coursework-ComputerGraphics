@@ -259,7 +259,7 @@ Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 	result.w = (q1.w * q2.w) - dot;
 	result.x = (q1.w * qV2.x) + (q2.w * qV1.x) + cross.x;
 	result.y = (q1.w * qV2.y) + (q2.w * qV1.y) + cross.y;
-	result.x = (q1.w * qV2.z) + (q2.w * qV1.z) + cross.z;
+	result.z = (q1.w * qV2.z) + (q2.w * qV1.z) + cross.z;
 
 	return result;
 }
@@ -267,7 +267,7 @@ Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
 Quaternion operator*(float s, const Quaternion& q)
 {
 	Quaternion a;
-	a.x = s * q.w;
+	a.x = s * q.x;
 	a.y = s * q.y;
 	a.z = s * q.z;
 	a.w = s * q.w;
