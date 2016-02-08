@@ -54,63 +54,81 @@ void main()
 	// ***************************
 	// Calculate ambient component
 	// ***************************
-	mat 
+	vec4 amb = light.ambient_intensity * mat.diffuse_reflection;
+	
 	
 
 	// ********************
 	// Transform the normal
 	// ********************
-	
+	vec3 transformed_normal = N * normal;
+	transformed_normal = normalize(transformed_normal);
 
 	// ***************************
 	// Calculate diffuse component
 	// ***************************
 	// Calculate k
 	
+	float k = dot(transformed_normal, light.light_dir);
+	k = max(k, 0);
+
 	// Calculate diffuse
 	
+	vec4 diffuse = k * mat.diffuse_reflection * light.light_colour;
 
 	// **********************************
 	// Calculate world position of vertex
 	// **********************************
-	
+	vec4 world4 = M * vec4(position, 1.0);
+	vec3 worldPos = vec3(world4);
 
 	// ************************
 	// Calculate view direction
 	// ************************
+	vec3 view_dir = eye_pos - worldPos;
+	view_dir = normalize(view_dir);
 	
 
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************
-	
+	vec3 halfV = light.light_dir + view_dir;
+	halfV = normalize(halfV);
 
 	// ****************************
 	// Calculate specular component
 	// ****************************
 	// Calculate k
+
+	float kSpec = dot(transformed_normal, halfV);
+	kSpec = max(kSpec, 0);
 	
 	// Calculate specular
+	vec4 specular = pow(kSpec, mat.shininess) * mat.specular_reflection * light.light_colour; 
 	
 
 	// ***********
 	// Set primary
 	// ***********
+	primary = mat.emissive + amb + diffuse;
 	
 
 	// *************
 	// Set secondary
 	// *************
+	secondary = specular;
+
 	
 
 	// *****************************************
 	// Ensure primary and secondary alphas are 1
 	// *****************************************
-	
+	primary.a = 1.0f;
+	secondary.a = 1.0f;
 
 	// *******************************
 	// Pass through texture coordinate
 	// *******************************
+	tex_coord_out = tex_coord_in;
 	
-
 }

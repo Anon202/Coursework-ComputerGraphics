@@ -96,6 +96,22 @@ int main()
 		<< g.x << " " << g.y << " " << g.z << " " << g.w << endl;
 
 
+	Quaternion m = c * f;
+
+	cout << "Multiplication :"
+		<< m.x << " " << m.y << " " << m.z << " " << m.w << endl;
+
+	
+
+
+	Quaternion slerpA(0, 0, 0.7071, 0.7071);
+	Quaternion slerpB;
+
+	Quaternion slerpC = Quaternion::Slerp(0.33f, slerpA, slerpB);
+
+	cout << "Slerp:"
+		<< slerpC.x << " " << slerpC.y << " " << slerpC.z << " " << slerpC.w << endl;
 	cin >> enter;
+
 	return 0;
 }

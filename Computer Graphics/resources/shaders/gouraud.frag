@@ -18,11 +18,15 @@ void main()
 	// **************
 	// Sample texture
 	// **************
+
+	vec4 tex_colour = texture2D(tex, tex_coord);
+
+
 	
 
 	// ****************
 	// Calculate colour
 	// ****************
-	
+	colour = primary*tex_colour + secondary;
 
 }
