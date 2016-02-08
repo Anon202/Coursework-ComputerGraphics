@@ -188,6 +188,7 @@ bool render()
 		// ***********************
 
 		mat3 N = mat3(V * M);
+		N = transpose(inverse(N));
 		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 		
 
@@ -214,7 +215,7 @@ bool render()
 		// Set light direction
 		// - (1.0, 1.0, -1.0)
 		// *******************
-		glUniform3f(eff.get_uniform_location("light_dir"), 0.1f, 0.1f, -1.0f);
+		glUniform3f(eff.get_uniform_location("light_dir"), 0.5f, 0.5f, -1.0f);
 
 		// *****************************
 		// Set eye position

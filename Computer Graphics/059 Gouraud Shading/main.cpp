@@ -6,10 +6,12 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+map<string, material> materials;  // set dictionary of structs
 effect eff;
 texture tex;
 target_camera cam;
 directional_light light;
+
 
 bool load_content()
 {
@@ -47,36 +49,78 @@ bool load_content()
 	// - all emissive is black
 	// - all specular is white
 	// - all shininess is 25
-	// ***********************
+	// ***********************	
+	
+	//map<string, material>::iterator it = materials.begin(); it!;
+	for (map<string, material>::iterator it = materials.begin(); it!= materials.end(); ++it)
+	{
+		
+	}
+
+
 	// Red box
-	
+	materials["box"].set_diffuse(vec4(1.0, 0.0, 0.0, 1.0));
+	materials["box"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+
+	materials["box"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+
+	materials["box"].set_shininess(25);
+
+
 	// Green tetra
-	
+	materials["tetra"].set_diffuse(vec4(0.0, 1.0, 0.0, 1.0));
+	materials["tetra"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+
+	materials["tetra"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["tetra"].set_shininess(25);
+
 	// Blue pyramid
-	
+	materials["pyramid"].set_diffuse(vec4(0.0, 0.0, 1.0, 1.0));
+	materials["pyramid"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+
+	materials["pyramid"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["pyramid"].set_shininess(25);
 	// Yellow disk
-	
+	materials["disk"].set_diffuse(vec4(1.0, 1.0, 0.0, 1.0));
+	materials["disk"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+
+	materials["disk"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["disk"].set_shininess(25);
 	// Magenta cylinder
-	
+	materials["cylinder"].set_diffuse(vec4(0.0, 1.0, 1.0, 1.0));
+	materials["cylinder"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+	materials["cylinder"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["cylinder"].set_shininess(25);
 	// Cyan sphere
+	materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
+	materials["sphere"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+	materials["sphere"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["sphere"].set_shininess(25);
+
 	
 	// White torus
-	
+	materials["torus"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
+	materials["torus"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+	materials["torus"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	materials["torus"].set_shininess(25);
+
 
 	// **************************
 	// Load texture - checked.gif
 	// **************************
-	
+	tex = texture("..\\resources\\textures\\checked.gif");
 
 	// *******************
 	// Set lighting values
 	// *******************
 	// ambient intensity (0.3, 0.3, 0.3)
+	light.set_ambient_intensity(vec4(0.3, 0.3, 0.3, 1.0));
 	
 	// Light colour white
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	
 	// Light direction (1.0, 1.0, -1.0)
-	
+	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
 
 
 	// Load in shaders
@@ -141,27 +185,31 @@ bool render()
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
+		//mat3 N = mat3(V * M);
 		
 
 		// *************
 		// Bind material
 		// *************
+	
 		
 
 		// **********
 		// Bind light
 		// **********
+		renderer::bind(light, "light");
 		
 
 		// ************
 		// Bind texture
 		// ************
+		renderer::bind(tex, 0);
 		
 
 		// ***************
 		// Set tex uniform
 		// ***************
-		
+		glUniform1i(eff.get_uniform_location("tex"), 0);
 
 		// *****************************
 		// Set eye position

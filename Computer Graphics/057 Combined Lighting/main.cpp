@@ -55,6 +55,11 @@ bool load_content()
 	meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
 
+
+	// light 
+
+	meshes["light"] = mesh(geometry_builder::create_sphere(5, 5));
+
 	// Transform objects
 	meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
@@ -71,6 +76,8 @@ bool load_content()
 	meshes["sphere"].get_transform().translate(vec3(-25.0f, 10.0f, -25.0f));
 	meshes["torus"].get_transform().translate(vec3(-25.0f, 10.0f, -25.0f));
 	meshes["torus"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
+
+
 
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\combined_lighting.vert", GL_VERTEX_SHADER);
@@ -189,7 +196,11 @@ bool render()
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
-		mat3 N = mat3(V * P);
+
+		mat3 N = mat3( M );
+		//N = transpose(N);
+
+		//mat3 N = mat3(transpose(inverse(V * M)));
 		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 		// **********************
@@ -208,6 +219,7 @@ bool render()
 		// Set light direction
 		// - (1.0, 1.0, -1.0)
 		// *******************
+		meshes["light"].get_transform().position = (vec3(1.0, 1.0, -1.0));
 		glUniform3f(eff.get_uniform_location("light_dir"), 1.0, 1.0, -1.0);
 
 		// **********************

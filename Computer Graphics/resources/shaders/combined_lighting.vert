@@ -44,26 +44,35 @@ void main()
 	// ********************
 	// Transform the normal
 	// ********************
-	vec3 transformed_normal = N * normal;
-	transformed_normal = normalize(transformed_normal);
+
+	mat3 NN = mat3(M);
+
+	vec3 transformed_normal = NN * normal;
+	transformed_normal = -normalize(transformed_normal);
+
+	// **********************************
+	// Calculate world position of vertex
+	// **********************************
+	vec3 worldPos = vec3(M * vec4(position, 1.0f));
+	//worldPos = normalize(worldPos);
 
 	// ***************************
 	// Calculate diffuse component
 	// - use transformed normal
 	// ***************************
 	// Calculate k
-	vec3 light_dir_norm = normalize(light_dir);
+
+	// test light 'pos'
+	vec3 light_dir2 = worldPos - light_dir;
+
+	vec3 light_dir_norm = normalize(light_dir2);
 	float k = dot(transformed_normal, light_dir_norm);
 	k = max(k, 0.0);
 	
 	// Calculate diffuse
-	vec4 diffuse = k * (diffuse_reflection * light_colour);
+	vec4 diffuse = k * vec4(1.0, 1.0, 1.0, 1.0) ;// (diffuse_reflection * light_colour);
 
-	// **********************************
-	// Calculate world position of vertex
-	// **********************************
-	vec3 worldPos = vec3(M * vec4(position, 1.0f));
-	worldPos = normalize(worldPos);
+
 
 	
 	// ************************
@@ -93,7 +102,7 @@ void main()
 	// **************************
 	
 	// Ensure alpha is 1
-	vec4 outCol = specular + diffuse + ambient;
+	vec4 outCol = diffuse; // + diffuse;
 	outCol.a = 1.0f;
 
 	vertex_colour = outCol;
