@@ -85,54 +85,47 @@ bool load_content()
 	// ***********************	
 	
 	//map<string, material>::iterator it = materials.begin(); it!;
-	
+	for (auto &m : materials)
+	{
+		m.second.set_shininess(25);
+		m.second.set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+		m.second.set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	}
 
 
 	// Red box
 	materials["box"].set_diffuse(vec4(1.0, 0.0, 0.0, 1.0));
-	materials["box"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
 
-	materials["box"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-
-	materials["box"].set_shininess(25);
+	meshes["box"].set_material(materials["box"]);
 
 
 	// Green tetra
 	materials["tetra"].set_diffuse(vec4(0.0, 1.0, 0.0, 1.0));
-	materials["tetra"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-
-	materials["tetra"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["tetra"].set_shininess(25);
+	
+	meshes["tetra"].set_material( materials["tetra"]);
 
 	// Blue pyramid
 	materials["pyramid"].set_diffuse(vec4(0.0, 0.0, 1.0, 1.0));
-	materials["pyramid"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-
-	materials["pyramid"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["pyramid"].set_shininess(25);
+	
+	meshes["pyramid"].set_material(materials["pyramid"]);
 	// Yellow disk
 	materials["disk"].set_diffuse(vec4(1.0, 1.0, 0.0, 1.0));
-	materials["disk"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-
-	materials["disk"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["disk"].set_shininess(25);
+	
+	meshes["disk"].set_material(materials["disk"]);
 	// Magenta cylinder
 	materials["cylinder"].set_diffuse(vec4(0.0, 1.0, 1.0, 1.0));
-	materials["cylinder"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-	materials["cylinder"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["cylinder"].set_shininess(25);
+	
+	meshes["cylinder"].set_material(materials["cylinder"]);
 	// Cyan sphere
 	materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
-	materials["sphere"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-	materials["sphere"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["sphere"].set_shininess(25);
 
-	
+	meshes["sphere"].set_material(materials["sphere"]);
+
 	// White torus
 	materials["torus"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
-	materials["torus"].set_specular(vec4(1.0, 1.0, 1.0, 1.0));
-	materials["torus"].set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
-	materials["torus"].set_shininess(25);
+
+	meshes["torus"].set_material(materials["torus"]);
+
 
 
 	// **************************
@@ -245,6 +238,7 @@ bool render()
 	for (auto &e : meshes)
 	{
 		auto m = e.second;
+		
 		// Bind effect
 		renderer::bind(eff);
 		// Create MVP matrix
@@ -277,7 +271,7 @@ bool render()
 		// *************
 		// Bind material
 		// *************
-		renderer::bind(materials["box"], "mat");
+		renderer::bind(m.get_material(), "mat");
 	
 		
 

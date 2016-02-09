@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
 
-	const float pi = atan(1) * 4;
+//	const float pi = atan(1) * 4;
 	int enter;
 
 	// test default constructor
@@ -31,7 +31,7 @@ int main()
 
 	// from axis pi round x
 	Vector3 zyAxis(0, 1, 1);
-	float theta = pi/2;
+	float theta = 3.14159267f/2;
 	Quaternion fromAxis = Quaternion::FromAxisAngle(zyAxis, theta);
 
 	Vector3 vec;
@@ -104,7 +104,7 @@ int main()
 	
 
 
-	Quaternion slerpA(0, 0, 0.7071, 0.7071);
+	Quaternion slerpA(0.0f, 0.0f, 0.7071f, 0.7071f);
 	Quaternion slerpB;
 
 	Quaternion slerpC = Quaternion::Slerp(0.33f, slerpA, slerpB);

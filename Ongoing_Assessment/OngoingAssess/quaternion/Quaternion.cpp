@@ -229,6 +229,8 @@ Quaternion Quaternion::Slerp(float t, const Quaternion& p, const Quaternion& q)
 	else
 		result = (pNorm*sin((1 - t)*halfAngle) + qNorm*sin(t*halfAngle) )* denom;
 
+
+
 	return result;
 }
 
