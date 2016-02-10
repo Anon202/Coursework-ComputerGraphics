@@ -29,5 +29,11 @@ void main()
 	// Output other values to fragment shader
 	// **************************************
 	
+	vertex_position = vec3(M * vec4(position, 1));
+
+	transformed_normal = N * normal;
+
+	tex_coord_out = tex_coord_in;
+
 
 }

@@ -43,21 +43,24 @@ void main()
 	// *******************************************
 	// Get distance between point light and vertex
 	// *******************************************
-	
+	float d = distance(point.position, position);
 
 	// ****************************
 	// Calculate attenuation factor
 	// ****************************
+	float att = 1 / (point.constant + point.linear*d + point.quadratic*d*d);
 	
 
 	// **********************
 	// Calculate light colour
 	// **********************
+	vec4 lightCol = att*(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	
 
 	// *******************
 	// Calculate light dir
 	// *******************
+	vec3 light_dir = point.position - position;
 	
 
 	// ******************************************************************************
@@ -65,5 +68,50 @@ void main()
 	// - note no ambient
 	// ******************************************************************************
 	
+	//lightCol = vec4(0.5f, 1.0f, 1.0f, 1.0f);
+
+	float dotD = dot(normal, light_dir);
+	float k = max(dotD, 0);
+	vec4 diffuse = mat.diffuse_reflection * lightCol * k;
+
+	// ************************
+	// Calculate view direction
+	// ************************
+	vec3 view_dir = normalize(eye_pos - position);
+
+
+	// *********************
+	// Calculate half vector
+	// *********************
+	vec3 halfV = normalize(view_dir + light_dir);
+
+
+	// ****************************
+	// Calculate specular component
+	// ****************************
+	float dotS = dot(halfV, normal);
+	float kSpec = max(dotS, 0);
+
+	vec4 specular = mat.specular_reflection * lightCol * pow(kSpec, mat.shininess);
+
+	// **************
+	// Sample texture
+	// **************
+	vec4 tex_colour = texture2D(tex, tex_coord);
+
+
+
+	// **********************************
+	// Calculate primary colour component
+	// **********************************
+	vec4 primary = mat.emissive + diffuse;
+
+	// **********************
+	// Calculate final colour
+	// - remember alpha 1.0
+	// **********************
+
+	colour = primary*tex_colour + specular;
+	colour.a = 1.0f;
 
 }

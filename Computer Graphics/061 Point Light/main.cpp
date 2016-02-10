@@ -6,10 +6,43 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+map<string, material> materials;
 effect eff;
 texture tex;
-target_camera cam;
+free_camera cam;
 point_light light;
+
+vec3 pos;
+
+// initialise params
+GLFWwindow* window;
+double xpos = 0;
+double ypos = 0;
+
+double current_x = 0;
+double current_y = 0;
+
+double new_x = 0;
+double new_y = 0;
+
+bool firstMouse = true;
+
+bool initialise()
+{
+	// ********************************
+	// Set input mode - hide the cursor
+	// ********************************
+	window = renderer::get_window();
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// ******************************
+	// Capture initial mouse position
+	// ******************************
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	return true;
+}
 
 bool load_content()
 {
@@ -48,35 +81,60 @@ bool load_content()
 	// - all specular is white
 	// - all shininess is 25
 	// ***********************
+
 	// Red box
-	
+	materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
 	// Green tetra
-	
+	materials["tetra"].set_diffuse(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
 	// Blue pyramid
-	
+	materials["pyramid"].set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
 	// Yellow disk
-	
+	materials["disk"].set_diffuse(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
 	// Magenta cylinder
-	
+	materials["cylinder"].set_diffuse(vec4(1.0f, 0.0f, 1.0f, 1.0f));
+
 	// Cyan sphere
-	
+	materials["sphere"].set_diffuse(vec4(0.0f, 1.0f, 1.0f, 1.0f));
+
 	// White torus
-	
+	materials["torus"].set_diffuse(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	for (auto &e : materials)
+	{
+		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		e.second.set_shininess(2.0f);
+	}
+
+	meshes["box"].set_material(materials["box"]);
+	meshes["tetra"].set_material(materials["tetra"]);
+	meshes["pyramid"].set_material(materials["pyramid"]);
+	meshes["disk"].set_material(materials["disk"]);
+	meshes["cylinder"].set_material(materials["cylinder"]);
+	meshes["sphere"].set_material(materials["sphere"]);
+	meshes["torus"].set_material(materials["torus"]);
 
 	// **************************
 	// Load texture - checked.gif
 	// **************************
-	
+	tex = texture("..\\resources\\textures\\checked.gif");
 
 	// *******************
 	// Set lighting values
 	// *******************
 	// Position (-25, 10, -10)
-	
+	pos = vec3(-25.0f, 10.0f, -10.0f);
+	light.set_position(pos);
+
 	// Light colour white
-	
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
 	// Set range to 20
-	
+	light.set_range(20);
 
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\point.vert", GL_VERTEX_SHADER);
@@ -96,33 +154,87 @@ bool update(float delta_time)
 {
 	// Range of the point light
 	static float range = 20.0f;
+	// The ratio of pixels to rotation - remember the fov
+	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+	static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
 
-	if (glfwGetKey(renderer::get_window(), '1'))
-		cam.set_position(vec3(50, 10, 50));
-	if (glfwGetKey(renderer::get_window(), '2'))
-		cam.set_position(vec3(-50, 10, 50));
-	if (glfwGetKey(renderer::get_window(), '3'))
-		cam.set_position(vec3(-50, 10, -50));
-	if (glfwGetKey(renderer::get_window(), '4'))
-		cam.set_position(vec3(50, 10, -50));
+	// *******************************
+	// Get the current cursor position
+	// *******************************
+	glfwGetCursorPos(window, &new_x, &new_y);
+
+
+	// ***************************************************
+	// Calculate delta of cursor positions from last frame
+	// ***************************************************
+	if (firstMouse)
+	{
+		current_x = xpos;
+		current_y = ypos;
+		firstMouse = false;
+	}
+
+	double delta_x = new_x - current_x;
+	double delta_y = new_y - current_y;
+
+	// *************************************************************
+	// Multiply deltas by ratios - gets actual change in orientation
+	// *************************************************************
+	delta_x *= ratio_width;
+	delta_y *= -ratio_height;
+
+
+	// *************************
+	// Rotate cameras by delta
+	// delta_y - x-axis rotation
+	// delta_x - y-axis rotation
+	// *************************
+	cam.rotate((float)delta_x, (float)delta_y);
+
+
+	// *******************************
+	// Use keyboard to move the camera
+	// - WSAD
+	// *******************************
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+		cam.move(vec3(0.0f, 0.0f, 1.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+		cam.move(vec3(-1.0f, 0.0f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+		cam.move(vec3(1.0f, 0.0f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+		cam.move(vec3(0.0f, 0.0f, -1.0f));
 
 	// ************************
-	// WSAD to move point light
+	// arrow keys to move point light
 	// ************************
-	
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+		light.move(vec3(0.0, 1.0, 0.0));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+		light.move(vec3(0.0, -1.0, 0.0));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
+		light.move(vec3(-1.0, 0.0, 0.0));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
+		light.move(vec3(1.0, 0.0, 0.0));
+
 
 	// ***********************
 	// O and P to change range
 	// ***********************
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_O))
+		range += 2.0f;
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_P))
+		range -= 2.0f;
 	
 
 	// Set range
 	light.set_range(range);
 
 	// Rotate the sphere
-	meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+	//meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
 
 	cam.update(delta_time);
+	glfwGetCursorPos(window, &current_x, &current_y);
 
 	return true;
 }
@@ -150,38 +262,45 @@ bool render()
 		// ********************
 		// Set M matrix uniform
 		// ********************
+		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
 		
 
 		// ***********************
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
-		
+		mat3 N = m.get_transform().get_normal_matrix();
+
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 		// *************
 		// Bind material
 		// *************
+		renderer::bind(m.get_material(), "mat");
 		
 
 		// **********
 		// Bind light
 		// **********
+		renderer::bind(light, "point_light");
 		
 
 		// ************
 		// Bind texture
 		// ************
-		
+		renderer::bind(tex, 0);
 
 		// ***************
 		// Set tex uniform
 		// ***************
-		
+		glUniform1i(eff.get_uniform_location("tex"), 0);
 
 		// *****************************
 		// Set eye position
 		// - Get this from active camera
 		// *****************************
+		vec3 eyeP = cam.get_position();
+		glUniform3f(eff.get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 		
 
 		// Render mesh
@@ -197,6 +316,7 @@ void main()
 	app application;
 	// Set load content, update and render methods
 	application.set_load_content(load_content);
+	application.set_initialise(initialise);
 	application.set_update(update);
 	application.set_render(render);
 	// Run application
