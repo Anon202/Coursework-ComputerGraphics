@@ -33,6 +33,11 @@ bool initialise()
 	// ********************************
 	window = renderer::get_window();
 
+	if (CHECK_GL_ERROR)
+	{
+		__debugbreak();
+	}
+
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// ******************************
@@ -40,6 +45,10 @@ bool initialise()
 	// ******************************
 	glfwGetCursorPos(window, &xpos, &ypos);
 
+	if (CHECK_GL_ERROR)
+	{
+		__debugbreak();
+	}
 
 	return true;
 }
@@ -87,7 +96,7 @@ bool load_content()
 	//map<string, material>::iterator it = materials.begin(); it!;
 	for (auto &m : materials)
 	{
-		m.second.set_shininess(25);
+		m.second.set_shininess(50);
 		m.second.set_specular(vec4(1.0, 1.0, 1.0, 1.0));
 		m.second.set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
 	}
@@ -126,12 +135,16 @@ bool load_content()
 
 	meshes["torus"].set_material(materials["torus"]);
 
+	// create light source
+	meshes["light"] = mesh(geometry_builder::create_sphere(20, 20));
 
+	meshes["light"].get_transform().position = vec3(1.0f, 1.0f, -1.0f);
 
 	// **************************
 	// Load texture - checked.gif
 	// **************************
 	tex = texture("..\\resources\\textures\\checked.gif");
+
 
 	// *******************
 	// Set lighting values
@@ -152,11 +165,21 @@ bool load_content()
 	// Build effect
 	eff.build();
 
+	if (CHECK_GL_ERROR)
+	{
+		__debugbreak();
+	}
+
 	// Set camera properties
 	cam.set_position(vec3(50.0f, 10.0f, 50.0f));
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+	if (CHECK_GL_ERROR)
+	{
+		__debugbreak();
+	}
 	return true;
 }
 
@@ -191,6 +214,7 @@ bool update(float delta_time)
 	delta_x *= ratio_width;
 	delta_y *= -ratio_height;
 
+	
 	// *************************
 	// Rotate cameras by delta
 	// delta_y - x-axis rotation
@@ -198,6 +222,7 @@ bool update(float delta_time)
 	// *************************
 	cam.rotate((float)delta_x, (float)delta_y);
 
+	
 	// *******************************
 	// Use keyboard to move the camera
 	// - WSAD
@@ -211,7 +236,7 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
 		cam.move(vec3(0.0f, 0.0f, -1.0f));
 
-
+	
 	// ***********
 	// Move camera
 	// ***********
@@ -228,6 +253,7 @@ bool update(float delta_time)
 	glfwGetCursorPos(window, &current_x, &current_y);
 
 
+
 	return true;
 
 }
@@ -239,8 +265,19 @@ bool render()
 	{
 		auto m = e.second;
 		
+		if (CHECK_GL_ERROR)
+		{
+			__debugbreak();
+		}
+
 		// Bind effect
 		renderer::bind(eff);
+
+		if (CHECK_GL_ERROR)
+		{
+			__debugbreak();
+		}
+
 		// Create MVP matrix
 		auto M = m.get_transform().get_transform_matrix();
 		auto V = cam.get_view();
@@ -265,13 +302,15 @@ bool render()
 		// ***********************
 		mat3 N = mat3(M);
 		N = transpose(N);
-		glUniformMatrix4fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 
 		// *************
 		// Bind material
 		// *************
-		renderer::bind(m.get_material(), "mat");
+		material mm = m.get_material();
+
+		renderer::bind(mm, "mat");
 	
 		
 

@@ -102,7 +102,7 @@ void main()
 	// **************************
 	
 	// Ensure alpha is 1
-	vec4 outCol = diffuse; // + diffuse;
+	vec4 outCol = diffuse + specular + ambient; // + diffuse;
 	outCol.a = 1.0f;
 
 	vertex_colour = outCol;

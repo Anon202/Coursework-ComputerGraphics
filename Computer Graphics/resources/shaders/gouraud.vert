@@ -27,6 +27,7 @@ uniform mat3 N;
 uniform directional_light light;
 // Material of the object
 uniform material mat;
+
 // Position of the camera
 uniform vec3 eye_pos;
 
@@ -62,14 +63,19 @@ void main()
 	// Transform the normal
 	// ********************
 	vec3 transformed_normal = N * normal;
-	transformed_normal = normalize(transformed_normal);
+	transformed_normal = -normalize(transformed_normal);
 
 	// ***************************
 	// Calculate diffuse component
 	// ***************************
 	// Calculate k
+	vec4 world4 = M * vec4(position, 1.0);
 	
-	float k = dot(transformed_normal, light.light_dir);
+	vec3 worldPos = vec3(world4);
+	vec3 light_dir2 = worldPos - light.light_dir;
+
+	light_dir2 = normalize(light_dir2);
+	float k = dot(transformed_normal, light_dir2);
 	k = max(k, 0);
 
 	// Calculate diffuse
@@ -79,8 +85,7 @@ void main()
 	// **********************************
 	// Calculate world position of vertex
 	// **********************************
-	vec4 world4 = M * vec4(position, 1.0);
-	vec3 worldPos = vec3(world4);
+	
 
 	// ************************
 	// Calculate view direction
@@ -92,7 +97,7 @@ void main()
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************
-	vec3 halfV = light.light_dir + view_dir;
+	vec3 halfV = (light_dir2) + view_dir;
 	halfV = normalize(halfV);
 
 	// ****************************
@@ -104,7 +109,7 @@ void main()
 	kSpec = max(kSpec, 0);
 	
 	// Calculate specular
-	vec4 specular = pow(kSpec, mat.shininess) * mat.specular_reflection * light.light_colour; 
+	vec4 specular = pow(kSpec, mat.shininess) * (mat.specular_reflection * light.light_colour); 
 	
 
 	// ***********
