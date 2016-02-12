@@ -14,5 +14,7 @@ void main()
 	// ************************
 	// Sample texture as normal
 	// ************************
+	colour = texture(cubemap, tex_coord);
+
 	
 }

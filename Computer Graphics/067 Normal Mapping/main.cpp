@@ -119,7 +119,6 @@ bool render()
     // Bind normal_map
     // ***************
 	renderer::bind(normal_map, 1);
-
 	
     
     // **********************

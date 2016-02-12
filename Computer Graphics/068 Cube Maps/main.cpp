@@ -19,11 +19,21 @@ bool load_content()
     // Load the cubemap
     // - create array of six filenames +x, -x, +y, -y, +z, -z
     // ******************************************************
-    
+    array<string, 6> filenames =
+	{
+		"..\\resources\\textures\\cubemaps\\alien\\posx.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negx.png",
+		"..\\resources\\textures\\cubemaps\\alien\\posy.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negy.png",
+		"..\\resources\\textures\\cubemaps\\alien\\posz.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
+	};
 
     // ***************
     // Create cube_map
     // ***************
+
+	cube_map = cubemap(filenames);
 
     // Load in shaders
     eff.add_shader("shader.vert", GL_VERTEX_SHADER);

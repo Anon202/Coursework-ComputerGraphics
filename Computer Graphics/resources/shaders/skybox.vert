@@ -17,5 +17,5 @@ void main()
 	// *******************************
 	// Set outgoing texture coordinate
 	// *******************************
-	
+	tex_coord = position;
 }
