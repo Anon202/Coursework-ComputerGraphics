@@ -19,13 +19,16 @@ void main()
 	// **********************
 	// Sample environment map
 	// **********************
+	vec4 sampEnv = texture(cubemap, env_map_coord);
 	
 	// **********************
 	// Sample tarnish texture
 	// **********************
-	
+	vec4 sampTarnish = texture(tex, tex_coord);
+
 	// ******************************************************
 	// Final colour is product ot environment map and tarnish
 	// ******************************************************
+	colour = mix(sampEnv, sampTarnish, sampTarnish.r);
 	
 }

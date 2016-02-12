@@ -59,7 +59,8 @@ void main()
 	// **************
 	// Get tex colour
 	// **************
-	vec4 tex_colour = vec4(0.0, 0.0, 0.0, 1.0); // Change!!!
+
+	vec4 tex_colour = weighted_texture(tex[4], tex_coord, tex_weight);
 
 	// Calculate primary colour component
 	vec4 primary = mat.emissive + ambient + diffuse;

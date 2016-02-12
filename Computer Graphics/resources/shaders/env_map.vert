@@ -24,13 +24,18 @@ void main()
 	// ************************
 	// Calculate world position
 	// ************************
+	vec3 worldPos = (M * vec4(position, 1.0)).xyz;
 	
 	// ********************
 	// Transform the normal
 	// ********************
-	
+	vec3 transformed_normal = N * normal;
+
+	vec3 eye_dir = worldPos - eye_pos;
+
+	vec3 reflection = reflect(eye_dir, transformed_normal);
 	// ****************************************************************
 	// Calculate tex_coord using world position and transformed normal
 	// ****************************************************************
-	
+	tex_coord = normalize(reflection);
 }

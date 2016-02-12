@@ -14,5 +14,7 @@ void main()
 	// **************
 	// Sample cubemap
 	// **************
+
+	colour = texture(cubemap, tex_coord);
 	
 }

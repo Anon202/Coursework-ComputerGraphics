@@ -28,17 +28,25 @@ void main()
 	// ************************
 	// Calculate world position
 	// ************************
+	vec3 worldPos = (M * vec4(position, 1.0)).xyz;
 	
 	// ********************
 	// Transform the normal
 	// ********************
+	vec3 transN = N * normal;
 	
+
+	vec3 eye_dir = worldPos - eye_pos;
+
+	vec3 reflection = reflect(eye_dir, transN);
 	// ****************************************************************
-	// Calculate map_tex_coord using world position and transformed normal
+	// Calculate tex_coord using world position and transformed normal
 	// ****************************************************************
-	
+	map_tex_coord = normalize(reflection);
+
+
 	// *******************************
 	// Pass through texture coordinate
 	// *******************************
-	
+	vertex_tex_coord = tex_coord;
 }
