@@ -9,6 +9,10 @@ mesh terr;
 effect eff;
 target_camera cam;
 
+directional_light light;
+
+texture tex[4];
+
 void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
 {
     // Contains our position data
@@ -26,7 +30,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
     // Extract the texture data from the image
     // ***************************************
 	glBindTexture(GL_TEXTURE_2D, height_map.get_id());
-	auto data = new vec4[width * depth];
+	auto data = new vec4[height_map.get_width() * height_map.get_height()];
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void*)data);
     
 
@@ -177,29 +181,33 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
             // ********************************
             // Sum the components of the vector
             // ********************************
-            
+			float total = w.x + w.y + w.z + w.w;
 
             // ********************
             // Divide weight by sum
             // ********************
-            
+			w = w / total;
 
             // *************************
             // Add tex weight to weights
             // *************************
-            
-        }
+			tex_weights.push_back(w);
+		}
     }
 
     // *************************************
     // Add necessary buffers to the geometry
     // *************************************
-    
+	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	geom.add_index_buffer(indices);
+	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
+	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	geom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
 
     // ***********
     // Delete data
     // ***********
-    
+	delete data;
 }
 
 bool load_content()
@@ -216,6 +224,12 @@ bool load_content()
     // Use geometry to create terrain mesh
     terr = mesh(geom);
 
+
+	tex[0] = texture("..\\resources\\textures\\sand.dds");
+	tex[1] = texture("..\\resources\\textures\\grass.dds");
+	tex[2] = texture("..\\resources\\textures\\rock.dds");
+	tex[3] = texture("..\\resources\\textures\\snow.dds");
+
     // ************************
     // Load in necessary effect
     // - Part 1 colour
@@ -223,8 +237,13 @@ bool load_content()
     // - Part 3 textured
     // - Part 4 texture weighted
     // *************************
-    eff.add_shader("..\\resources\\shaders\\colour.vert", GL_VERTEX_SHADER); 
-    eff.add_shader("..\\resources\\shaders\\colour.frag", GL_FRAGMENT_SHADER);
+	//eff.add_shader("..\\resources\\shaders\\colour.vert", GL_VERTEX_SHADER); 
+    //eff.add_shader("..\\resources\\shaders\\colour.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("terrain.vert", GL_VERTEX_SHADER);
+	eff.add_shader("terrain.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
+
+	
 
     // Build effect
     eff.build();
@@ -232,6 +251,29 @@ bool load_content()
     // *************************************
     // Set any othe necessary content values
     // *************************************
+
+	// maybe
+	// ***********************
+	// Set materials
+	// - all emissive is black
+	// - all specular is white
+	// - all shininess is 25
+	// ***********************
+	material mat;
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	mat.set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
+	mat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	mat.set_shininess(25.0f);
+	terr.set_material(mat);
+
+	// ambient intensity (0.3, 0.3, 0.3)
+	light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+	// Light colour white
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// Light direction (1.0, 1.0, -1.0)
+	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
 
 
     // Set camera properties
@@ -267,9 +309,42 @@ bool render()
     // Set colour uniform
     glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(0.7f, 0.7f, 0.7f, 1.0f)));
 
+	glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+
+	glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(terr.get_transform().get_normal_matrix()));
+
     // ****************************
     // Set other necessary uniforms
     // ****************************
+	
+
+	// *************
+	// Bind material
+	// *************
+	renderer::bind(terr.get_material(), "mat");
+
+
+	// **********
+	// Bind light
+	// **********
+	renderer::bind(light, "light");
+
+	// ************
+	// Bind texture
+	// ************
+	renderer::bind(tex[0], 0);
+	renderer::bind(tex[1], 1);
+	renderer::bind(tex[2], 2);
+	renderer::bind(tex[3], 3);
+
+	
+
+	glUniform1i(eff.get_uniform_location("tex[0]"), 0);
+	glUniform1i(eff.get_uniform_location("tex[1]"), 1);
+	glUniform1i(eff.get_uniform_location("tex[2]"), 2);
+	glUniform1i(eff.get_uniform_location("tex[3]"), 3);
+
+	
 
 
     // Render terrain
