@@ -282,7 +282,7 @@ bool render()
 		// **********
 		// Bind light
 		// **********
-		renderer::bind(light, "point_light");
+		renderer::bind(light, "point");
 		
 
 		// ************

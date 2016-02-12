@@ -25,6 +25,7 @@ bool load_content()
     // ********************************
     // Load brick_normalmap.jpg texture
     // ********************************
+	normal_map = texture("..\\resources\\textures\\brick_normalmap.jpg");
 
     // ****************************
     // Set material
@@ -33,7 +34,12 @@ bool load_content()
     // - specular white
     // - shininess 25
     // ****************************
-
+	material mat;
+	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	mat.set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
+	mat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	mat.set_shininess(25.0f);
+	cylinder.set_material(mat);
 
     // Set light properties
     light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
@@ -112,10 +118,14 @@ bool render()
     // ***************
     // Bind normal_map
     // ***************
+	renderer::bind(normal_map, 1);
+
+	
     
     // **********************
     // Set normal_map uniform
     // **********************
+	glUniform1i(eff.get_uniform_location("normal_map"), 1);
     
 
     // Set eye position

@@ -80,7 +80,7 @@ void main()
 	// ************************
 	vec3 view_dir = (eye_pos - vec3(worldPos)) / length(eye_pos - vec3(worldPos));
 
-	view_dir = normalize(view_dir);
+	//view_dir = normalize(view_dir);
 	// ****************************************************
 	// Calculate half vector between view_dir and light_dir
 	// ****************************************************

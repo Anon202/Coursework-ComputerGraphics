@@ -60,17 +60,21 @@ void main()
     // **************
     // Sample texture
     // **************
+	vec4 text_sample = texture2D(tex, tex_coord);
     
 	// ************************
     // Calculate view direction
     // ************************
+	vec3 view_dir = normalize(eye_pos - position); // eye - world
     
 	// ********************************
 	// Calculate normal from normal map
 	// ********************************
-	
+	vec3 transN = calc_normal(normal, tangent, binormal, normal_map, tex_coord);
+
     // ***************************
     // Calculate directional light
     // ***************************
-    
+	colour = calculate_direction(light, mat, transN, view_dir, text_sample);
+
 }
