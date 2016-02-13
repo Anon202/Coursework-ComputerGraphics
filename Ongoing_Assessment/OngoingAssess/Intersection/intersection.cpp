@@ -1,11 +1,17 @@
 #include "intersection.h"
 #include <math.h>
 
+
+
+#include <iostream>
+
 bool IsPointInFrontOfPlane(const Vector3& point, const Vector3& pointOnPlane, const Vector3& planeNormal)
 {
 	Vector3 difference = point - pointOnPlane;
 	
 	float dotD = Vector3::Dot(difference, planeNormal);
+
+	std::cout << "Dot : " << dotD << std::endl;
 
 	if (dotD > 0)
 	{
@@ -13,6 +19,7 @@ bool IsPointInFrontOfPlane(const Vector3& point, const Vector3& pointOnPlane, co
 	}
 	else
 	{
+		
 		return false;
 	}
 
@@ -28,6 +35,8 @@ bool RayPlaneIntersection(const Vector3& rayOrigin, const Vector3& rayDirection,
 	 * line .. P = dl + l'  (where d is real)   
 	 * l vector in direction of line (rayDirection), l' is a point on the line (rayOrigin)
 	 *
+	 *position_along_line = point_on_line + some_float * line_direction;
+	 *
 	 * Line into plane gives... dl + l' - p' dot n = 0
 	 * expand dl.n + (l' - p').n = 0
 	 * therefore d = (p' - l').n / l.n 
@@ -35,21 +44,21 @@ bool RayPlaneIntersection(const Vector3& rayOrigin, const Vector3& rayDirection,
 	 * if l.n != 0 d can be calculated
 	 * then find point of intersection by line equation 
 	 */
+	
+	float dotD = Vector3::Dot((pointOnPlane - rayOrigin), planeNormal);
 
-	float dotP = Vector3::Dot((pointOnPlane - rayOrigin), planeNormal);
-
-	float dotL = Vector3::Dot(rayDirection, planeNormal);
+	float dotL = Vector3::Dot(rayDirection, planeNormal); // denom
 
 	float d;
 
-	if (dotL == 0) // line and plane is parallel
+	if (dotL == 0) // line and plane is parallel as normal dot direction = 0 (perpendicular)
 	{
 		return false;
 	}
 	else
 	{
-		
-		d = dotP / dotL;
+
+		d = dotD / dotL;
 
 		Vector3 out = rayDirection;
 		out *= d;
@@ -193,16 +202,22 @@ bool RayTriangleIntersection(const Vector3& rayOrigin, const Vector3& rayDirecti
 Vector3 ClosestPointToPlane(const Vector3& point,
 	const Vector3& pointOnPlane, const Vector3& planeNormal)
 {
-
+	// http://paulbourke.net/geometry/pointlineplane/
 	// ax + by + cz = d
 
 	//Vector3 P = vd / v^2
 	
 	// v dot n = d
-	float d = Vector3::Dot(planeNormal, (point - pointOnPlane));
-
-
 	
+	float d = Vector3::Dot(planeNormal, pointOnPlane); // plane eq
+
+	float v = (d - Vector3::Dot(planeNormal, point));
+	float lam = v / Vector3::LengthSq(planeNormal);
+
+	Vector3 P = point;
+	P *= lam;
+	P += pointOnPlane;
+
 	return P;
 }
 
