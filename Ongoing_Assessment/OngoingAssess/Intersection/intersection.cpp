@@ -62,7 +62,7 @@ bool RayPlaneIntersection(const Vector3& rayOrigin, const Vector3& rayDirection,
 
 		Vector3 out = rayDirection;
 		out *= d;
-		out + rayOrigin;
+		out += rayOrigin;												// fixed error 
 
 		outIntersectionPoint = out;
 		return true;
@@ -98,7 +98,7 @@ bool RaySphereIntersect(const Vector3& sphereCenter, const float sphereRadius,
 	float t0 = tc - tx;
 	Vector3 out = rayDirection;
 	out *= t0;
-	out + rayOrigin;
+	out += rayOrigin;
 	outIntersectionPoint = out;
 	return true;
 }
@@ -113,86 +113,52 @@ bool RayTriangleIntersection(const Vector3& rayOrigin, const Vector3& rayDirecti
 	
 	// treat ABC as a plane and get it's normal
 	Vector3 ab = triPointB - triPointA;
-	Vector3 bc = triPointC - triPointB;
-
-	Vector3 planeNormal = Vector3::Cross(ab, bc);
-
-	float denom = Vector3::Dot(planeNormal, planeNormal);
-
-	// area of a triangle is half the length of the normal (NOT NORMALIZED)
-	float areaABC = Vector3::Length(planeNormal) / 2;
-
-	float nDotRayDir = Vector3::Dot(rayDirection, planeNormal);
-	
-	if (nDotRayDir == 0)  // PARALLEL !!
-		return false;
+	Vector3 ac = triPointC - triPointA;
 
 
-	////////////
+	// find normal
+	Vector3 planeNormal = Vector3::Cross(ab, ac);
+	planeNormal = Vector3::Normalize(planeNormal);
+
+	// find intersection point
+	// R(t) = P + td
+	// Intersection = rayOrigin + tdir
+	// n.R(t) = d
+	// n.P + tn.dir = d
+	// t = d - n.P /n.dir
+
+	// where d = n.point on plane (triPointA)
 
 	float d = Vector3::Dot(planeNormal, triPointA);
+	float t = (d - (Vector3::Dot(planeNormal, rayOrigin))) / (Vector3::Dot(planeNormal, rayDirection));
 
-	float t = Vector3::Dot(planeNormal, rayOrigin) + d / nDotRayDir;
+	// intersection = P + tD 
+	Vector3 intersection = rayDirection;
+	intersection *= t;
+	intersection += rayOrigin;
 
-	if (t < 0)	// triangle is behind
+	// normal dot ray >= 0 
+	float nDotRayDir = Vector3::Dot(rayDirection, planeNormal);
+
+	if (nDotRayDir >= 0)  // PARALLEL !!
+		return false;
+	
+
+	// inside outside testing
+
+	// edge one
+	float e1 = Vector3::Dot(Vector3::Cross(ab, (intersection - triPointA)), planeNormal);
+
+	float e2 = Vector3::Dot(Vector3::Cross((triPointC - triPointB), (intersection - triPointB)), planeNormal);
+
+	float e3 = Vector3::Dot(Vector3::Cross(ac, (intersection - triPointC)), planeNormal);
+
+
+	if (e1 < 0 || e2 < 0 || e3 < 0)
 		return false;
 
-	// compute intersepction point;
-	Vector3 ray = rayDirection;
-	ray *= t;
 
-	Vector3 P = rayOrigin + ray; // middle of triangle
-
-
-	Vector3 C; // perpendicular to plane
-
-	/* ||AB x AP|| . N
-	 *		N . N
-	 * 
-	 */
-
-	// edge 1 AB
-	Vector3 edge1 = ab;
-	Vector3 ap = P - triPointA; 
-
-	C = Vector3::Cross(edge1, ap);
-
-	float vf = Vector3::Dot(planeNormal, C);
-	if ( vf < 0) // not intersecting
-		return false;
-
-	vf /= denom;
-
-	// edge 2 BC
-	Vector3 edge2 = bc;
-	Vector3 bp = P - triPointB;
-
-	C = Vector3::Cross(edge2, bp);
-
-	float uf = Vector3::Dot(planeNormal, C);
-	if (uf< 0)
-		return false;
-
-	uf  /= denom;
-
-	// edge 3 CA
-	Vector3 edge3 = triPointA - triPointC; // ca
-	Vector3 cp = P - triPointC;
-
-	C = Vector3::Cross(edge3, cp);
-
-
-	float wf =Vector3::Dot(planeNormal, C);
-	if ( wf < 0)
-		return false;
-
-	wf /= denom;
-
-	outIntersectionPoint.x = vf;
-	outIntersectionPoint.y = uf;
-	outIntersectionPoint.z = wf;
-
-
+	outIntersectionPoint = intersection;
 	return true;
 
 }
@@ -202,21 +168,23 @@ bool RayTriangleIntersection(const Vector3& rayOrigin, const Vector3& rayDirecti
 Vector3 ClosestPointToPlane(const Vector3& point,
 	const Vector3& pointOnPlane, const Vector3& planeNormal)
 {
-	// http://paulbourke.net/geometry/pointlineplane/
-	// ax + by + cz = d
+	// closest positon on a plabne is a projection of the normal vector
+	// R = p +tn 
+	
+	// find intersection point
+	// R(t) = P + td
+	// Intersection = rayOrigin + tdir
+	// n.R(t) = d
+	// n.P + tn.dir = d
+	// t = d - n.P /n.dir
 
-	//Vector3 P = vd / v^2
-	
-	// v dot n = d
-	
+	// where d = n.point on plane (triPointA)
 	float d = Vector3::Dot(planeNormal, pointOnPlane); // plane eq
+	float t = (d - Vector3::Dot(planeNormal, point)) / (Vector3::Dot(planeNormal, planeNormal));
 
-	float v = (d - Vector3::Dot(planeNormal, point));
-	float lam = v / Vector3::LengthSq(planeNormal);
-
-	Vector3 P = point;
-	P *= lam;
-	P += pointOnPlane;
+	Vector3 P = planeNormal;
+	P *= t;
+	P += point;
 
 	return P;
 }
