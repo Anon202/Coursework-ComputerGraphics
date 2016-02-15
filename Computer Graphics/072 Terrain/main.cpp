@@ -64,7 +64,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
             // Y position based on red component of height map data
             // ****************************************************
 
-			point.y = data[z * height_map.get_width() + x].y * height_scale;
+			point.y = data[(z * height_map.get_width()) + x].y * height_scale;
             // **************************
             // Add point to position data
             // **************************
@@ -91,7 +91,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
             // Push back indices for triangle 1
             // ********************************
 			indices.push_back(top_left);
-			indices.push_back(top_right);
+			indices.push_back(bottom_right);
 			indices.push_back(bottom_left);
             
             // ********************************
@@ -203,7 +203,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
 	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 	geom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
-
+	
     // ***********
     // Delete data
     // ***********
@@ -253,12 +253,6 @@ bool load_content()
     // *************************************
 
 	// maybe
-	// ***********************
-	// Set materials
-	// - all emissive is black
-	// - all specular is white
-	// - all shininess is 25
-	// ***********************
 	material mat;
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	mat.set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
@@ -339,12 +333,10 @@ bool render()
 
 	
 
-	glUniform1i(eff.get_uniform_location("tex[0]"), 0);
-	glUniform1i(eff.get_uniform_location("tex[1]"), 1);
-	glUniform1i(eff.get_uniform_location("tex[2]"), 2);
-	glUniform1i(eff.get_uniform_location("tex[3]"), 3);
-
-	
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+	glUniform1i(eff.get_uniform_location("tex"), 1);
+	glUniform1i(eff.get_uniform_location("tex"), 2);
+	glUniform1i(eff.get_uniform_location("tex"), 3);
 
 
     // Render terrain

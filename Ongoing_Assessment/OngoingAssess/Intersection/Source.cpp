@@ -51,6 +51,9 @@ int main()
 	}
 
 
+	Vector3 ye = ClosestPointToPlane(Vector3(1, 0, 1), Vector3(0, 0, 1), Vector3(3, 4, 1));
+	cout << ye.x << ye.y << ye.z << endl;
+
 	cin >> enter;
 	return 0;
 }
