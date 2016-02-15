@@ -1,0 +1,240 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libENUgraphics", "libENUgraphics\libENUgraphics.vcxproj", "{A943724C-1DC0-4711-9539-B78A8D6ECEC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{96425147-A5FD-4D64-8E08-00A3BF701D94}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B}"
+	ProjectSection(SolutionItems) = preProject
+		resources\models\bunny.obj = resources\models\bunny.obj
+		resources\models\bunny_optimized.obj = resources\models\bunny_optimized.obj
+		resources\models\ButterflyBody.3ds = resources\models\ButterflyBody.3ds
+		resources\models\ButterflyWings.3ds = resources\models\ButterflyWings.3ds
+		resources\models\Car.3ds = resources\models\Car.3ds
+		resources\models\CrackedQuad.3ds = resources\models\CrackedQuad.3ds
+		resources\models\Cube.3ds = resources\models\Cube.3ds
+		resources\models\Cube.x = resources\models\Cube.x
+		resources\models\Dino.3ds = resources\models\Dino.3ds
+		resources\models\Disc.3ds = resources\models\Disc.3ds
+		resources\models\Disc2.3ds = resources\models\Disc2.3ds
+		resources\models\ElephantBody.3ds = resources\models\ElephantBody.3ds
+		resources\models\ElephantTusks.3ds = resources\models\ElephantTusks.3ds
+		resources\models\Hair.obj = resources\models\Hair.obj
+		resources\models\HairPatch.3ds = resources\models\HairPatch.3ds
+		resources\models\Hebe.3ds = resources\models\Hebe.3ds
+		resources\models\Light.3ds = resources\models\Light.3ds
+		resources\models\ninjaHead.obj = resources\models\ninjaHead.obj
+		resources\models\OceanSurface.3ds = resources\models\OceanSurface.3ds
+		resources\models\QuadArray.3ds = resources\models\QuadArray.3ds
+		resources\models\Radeon.3ds = resources\models\Radeon.3ds
+		resources\models\ScreenAlignedQuad-Ocean.3ds = resources\models\ScreenAlignedQuad-Ocean.3ds
+		resources\models\ScreenAlignedQuad.3ds = resources\models\ScreenAlignedQuad.3ds
+		resources\models\Skull.3ds = resources\models\Skull.3ds
+		resources\models\SkyDome.3ds = resources\models\SkyDome.3ds
+		resources\models\Sphere.3ds = resources\models\Sphere.3ds
+		resources\models\Sphere.x = resources\models\Sphere.x
+		resources\models\Sphere_EdgeQuad.x = resources\models\Sphere_EdgeQuad.x
+		resources\models\Teapot.3ds = resources\models\Teapot.3ds
+		resources\models\teapot.obj = resources\models\teapot.obj
+		resources\models\Terrain.3ds = resources\models\Terrain.3ds
+		resources\models\terrain.obj = resources\models\terrain.obj
+		resources\models\Terrain2.3ds = resources\models\Terrain2.3ds
+		resources\models\TesselatedCube.3ds = resources\models\TesselatedCube.3ds
+		resources\models\TesselatedPlane.obj = resources\models\TesselatedPlane.obj
+		resources\models\TexturedCube.3ds = resources\models\TexturedCube.3ds
+		resources\models\Torus.3ds = resources\models\Torus.3ds
+		resources\models\Torus2.obj = resources\models\Torus2.obj
+		resources\models\Torus2_FurFin.x = resources\models\Torus2_FurFin.x
+		resources\models\Vase.3ds = resources\models\Vase.3ds
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194805E-ABC9-4D12-A0CD-98C0073AEC73}"
+	ProjectSection(SolutionItems) = preProject
+		resources\shaders\basic.frag = resources\shaders\basic.frag
+		resources\shaders\basic.vert = resources\shaders\basic.vert
+		resources\shaders\billboard.geom = resources\shaders\billboard.geom
+		resources\shaders\blend.frag = resources\shaders\blend.frag
+		resources\shaders\blend.vert = resources\shaders\blend.vert
+		resources\shaders\blur.frag = resources\shaders\blur.frag
+		resources\shaders\colour.frag = resources\shaders\colour.frag
+		resources\shaders\colour.vert = resources\shaders\colour.vert
+		resources\shaders\combined_lighting.frag = resources\shaders\combined_lighting.frag
+		resources\shaders\combined_lighting.vert = resources\shaders\combined_lighting.vert
+		resources\shaders\depth_of_field.frag = resources\shaders\depth_of_field.frag
+		resources\shaders\dissolve.frag = resources\shaders\dissolve.frag
+		resources\shaders\dissolve.vert = resources\shaders\dissolve.vert
+		resources\shaders\env_map.frag = resources\shaders\env_map.frag
+		resources\shaders\env_map.vert = resources\shaders\env_map.vert
+		resources\shaders\explode.geom = resources\shaders\explode.geom
+		resources\shaders\gouraud.frag = resources\shaders\gouraud.frag
+		resources\shaders\gouraud.vert = resources\shaders\gouraud.vert
+		resources\shaders\greyscale.frag = resources\shaders\greyscale.frag
+		resources\shaders\mask.frag = resources\shaders\mask.frag
+		resources\shaders\motion_blur.frag = resources\shaders\motion_blur.frag
+		resources\shaders\multi-light.frag = resources\shaders\multi-light.frag
+		resources\shaders\multi-light.vert = resources\shaders\multi-light.vert
+		resources\shaders\normals.geom = resources\shaders\normals.geom
+		resources\shaders\phong.frag = resources\shaders\phong.frag
+		resources\shaders\phong.vert = resources\shaders\phong.vert
+		resources\shaders\point.frag = resources\shaders\point.frag
+		resources\shaders\point.vert = resources\shaders\point.vert
+		resources\shaders\shadow.vert = resources\shaders\shadow.vert
+		resources\shaders\simple_ambient.frag = resources\shaders\simple_ambient.frag
+		resources\shaders\simple_ambient.vert = resources\shaders\simple_ambient.vert
+		resources\shaders\simple_cell.frag = resources\shaders\simple_cell.frag
+		resources\shaders\simple_cell.vert = resources\shaders\simple_cell.vert
+		resources\shaders\simple_diffuse.frag = resources\shaders\simple_diffuse.frag
+		resources\shaders\simple_diffuse.vert = resources\shaders\simple_diffuse.vert
+		resources\shaders\simple_specular.frag = resources\shaders\simple_specular.frag
+		resources\shaders\simple_specular.vert = resources\shaders\simple_specular.vert
+		resources\shaders\simple_texture.frag = resources\shaders\simple_texture.frag
+		resources\shaders\simple_texture.vert = resources\shaders\simple_texture.vert
+		resources\shaders\skybox.frag = resources\shaders\skybox.frag
+		resources\shaders\skybox.vert = resources\shaders\skybox.vert
+		resources\shaders\spot.frag = resources\shaders\spot.frag
+		resources\shaders\spot.vert = resources\shaders\spot.vert
+		resources\shaders\tarnish.frag = resources\shaders\tarnish.frag
+		resources\shaders\tarnish.vert = resources\shaders\tarnish.vert
+		resources\shaders\working_diffuse.frag = resources\shaders\working_diffuse.frag
+		resources\shaders\working_diffuse.vert = resources\shaders\working_diffuse.vert
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "textures", "textures", "{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\AmbientOcclusion_1024.dds = resources\textures\AmbientOcclusion_1024.dds
+		resources\textures\ati.tga = resources\textures\ati.tga
+		resources\textures\base.tga = resources\textures\base.tga
+		resources\textures\blend_map.jpg = resources\textures\blend_map.jpg
+		resources\textures\bump.png = resources\textures\bump.png
+		resources\textures\checked.gif = resources\textures\checked.gif
+		resources\textures\cloud.tga = resources\textures\cloud.tga
+		resources\textures\Coin.dds = resources\textures\Coin.dds
+		resources\textures\CoinDOT3.tga = resources\textures\CoinDOT3.tga
+		resources\textures\Corona.tga = resources\textures\Corona.tga
+		resources\textures\Cube4.png = resources\textures\Cube4.png
+		resources\textures\Diffuse_Mars.dds = resources\textures\Diffuse_Mars.dds
+		resources\textures\dissolve.png = resources\textures\dissolve.png
+		resources\textures\distortion.tga = resources\textures\distortion.tga
+		resources\textures\Distortion2.jpg = resources\textures\Distortion2.jpg
+		resources\textures\Earth.dds = resources\textures\Earth.dds
+		resources\textures\Earth.jpg = resources\textures\Earth.jpg
+		resources\textures\EarthClouds.jpg = resources\textures\EarthClouds.jpg
+		resources\textures\EarthNight.jpg = resources\textures\EarthNight.jpg
+		resources\textures\Fieldstone.tga = resources\textures\Fieldstone.tga
+		resources\textures\FieldstoneBumpDOT3.tga = resources\textures\FieldstoneBumpDOT3.tga
+		resources\textures\FieldstoneNoisy.tga = resources\textures\FieldstoneNoisy.tga
+		resources\textures\FireBase.tga = resources\textures\FireBase.tga
+		resources\textures\FireDistortion.tga = resources\textures\FireDistortion.tga
+		resources\textures\FireOpacity.tga = resources\textures\FireOpacity.tga
+		resources\textures\Flame.tga = resources\textures\Flame.tga
+		resources\textures\Fur.tga = resources\textures\Fur.tga
+		resources\textures\grace_cube.dds = resources\textures\grace_cube.dds
+		resources\textures\grace_diffuse_cube.dds = resources\textures\grace_diffuse_cube.dds
+		resources\textures\grass.png = resources\textures\grass.png
+		resources\textures\Hatch0.dds = resources\textures\Hatch0.dds
+		resources\textures\Hatch1.dds = resources\textures\Hatch1.dds
+		resources\textures\Hatch2.dds = resources\textures\Hatch2.dds
+		resources\textures\Hatch3.dds = resources\textures\Hatch3.dds
+		resources\textures\Hatch4.dds = resources\textures\Hatch4.dds
+		resources\textures\Hatch5.dds = resources\textures\Hatch5.dds
+		resources\textures\HeadVolume.dds = resources\textures\HeadVolume.dds
+		resources\textures\Hex.dds = resources\textures\Hex.dds
+		resources\textures\HSItoRGB.dds = resources\textures\HSItoRGB.dds
+		resources\textures\LightCube.dds = resources\textures\LightCube.dds
+		resources\textures\Mars.dds = resources\textures\Mars.dds
+		resources\textures\mtnRange_CO.bmp = resources\textures\mtnRange_CO.bmp
+		resources\textures\mtnRange_HT.bmp = resources\textures\mtnRange_HT.bmp
+		resources\textures\N2d_000.tga = resources\textures\N2d_000.tga
+		resources\textures\nhk_16.tga = resources\textures\nhk_16.tga
+		resources\textures\nhk_32.tga = resources\textures\nhk_32.tga
+		resources\textures\ninja_head_AO.dds = resources\textures\ninja_head_AO.dds
+		resources\textures\ninja_head_DM.dds = resources\textures\ninja_head_DM.dds
+		resources\textures\ninja_head_NM.dds = resources\textures\ninja_head_NM.dds
+		resources\textures\noise.tga = resources\textures\noise.tga
+		resources\textures\NoiseVolume.dds = resources\textures\NoiseVolume.dds
+		resources\textures\NormalizerCubemap.dds = resources\textures\NormalizerCubemap.dds
+		resources\textures\NPR Metallic Outline.tga = resources\textures\NPR Metallic Outline.tga
+		resources\textures\OpenGL.tga = resources\textures\OpenGL.tga
+		resources\textures\PulseTrain.tga = resources\textures\PulseTrain.tga
+		resources\textures\quad2.tga = resources\textures\quad2.tga
+		resources\textures\Rainbow.tga = resources\textures\Rainbow.tga
+		resources\textures\Random3D.dds = resources\textures\Random3D.dds
+		resources\textures\RGBtoHSI.dds = resources\textures\RGBtoHSI.dds
+		resources\textures\sign.jpg = resources\textures\sign.jpg
+		resources\textures\Snow.dds = resources\textures\Snow.dds
+		resources\textures\Spotlight.jpg = resources\textures\Spotlight.jpg
+		resources\textures\stonygrass.jpg = resources\textures\stonygrass.jpg
+		resources\textures\Terrain.tga = resources\textures\Terrain.tga
+		resources\textures\TileColorRamp.tga = resources\textures\TileColorRamp.tga
+		resources\textures\Tiles.dds = resources\textures\Tiles.dds
+		resources\textures\TilesDOT3.tga = resources\textures\TilesDOT3.tga
+		resources\textures\Toon.bmp = resources\textures\Toon.bmp
+		resources\textures\tower_cube.dds = resources\textures\tower_cube.dds
+		resources\textures\Triangle.tga = resources\textures\Triangle.tga
+		resources\textures\VariableSpecular.bmp = resources\textures\VariableSpecular.bmp
+		resources\textures\Venus.dds = resources\textures\Venus.dds
+		resources\textures\Wood.dds = resources\textures\Wood.dds
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parts", "parts", "{1EF9CE7D-8512-4511-A142-B5BA598E413C}"
+	ProjectSection(SolutionItems) = preProject
+		resources\shaders\parts\direction.frag = resources\shaders\parts\direction.frag
+		resources\shaders\parts\dissolve.frag = resources\shaders\parts\dissolve.frag
+		resources\shaders\parts\fog.frag = resources\shaders\parts\fog.frag
+		resources\shaders\parts\normal_map.frag = resources\shaders\parts\normal_map.frag
+		resources\shaders\parts\point.frag = resources\shaders\parts\point.frag
+		resources\shaders\parts\shadow.frag = resources\shaders\parts\shadow.frag
+		resources\shaders\parts\spot.frag = resources\shaders\parts\spot.frag
+		resources\shaders\parts\weighted_texture.frag = resources\shaders\parts\weighted_texture.frag
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cubemaps", "cubemaps", "{4C6F7C7F-C253-48FE-A553-4410B949E275}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "alien", "alien", "{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\cubemaps\alien\negx.png = resources\textures\cubemaps\alien\negx.png
+		resources\textures\cubemaps\alien\negy.png = resources\textures\cubemaps\alien\negy.png
+		resources\textures\cubemaps\alien\negz.png = resources\textures\cubemaps\alien\negz.png
+		resources\textures\cubemaps\alien\posx.png = resources\textures\cubemaps\alien\posx.png
+		resources\textures\cubemaps\alien\posy.png = resources\textures\cubemaps\alien\posy.png
+		resources\textures\cubemaps\alien\posz.png = resources\textures\cubemaps\alien\posz.png
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myScene", "myScene\myScene.vcxproj", "{16896182-19CD-4298-9651-345B7059E3A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "heightmaps", "heightmaps", "{34C149AA-6EA0-41F7-AFC2-18B569665C9F}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\heightmaps\terrain.png = resources\textures\heightmaps\terrain.png
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A943724C-1DC0-4711-9539-B78A8D6ECEC7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A943724C-1DC0-4711-9539-B78A8D6ECEC7}.Debug|Win32.Build.0 = Debug|Win32
+		{A943724C-1DC0-4711-9539-B78A8D6ECEC7}.Release|Win32.ActiveCfg = Release|Win32
+		{A943724C-1DC0-4711-9539-B78A8D6ECEC7}.Release|Win32.Build.0 = Release|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Debug|Win32.Build.0 = Debug|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Release|Win32.ActiveCfg = Release|Win32
+		{16896182-19CD-4298-9651-345B7059E3A3}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
+		{2194805E-ABC9-4D12-A0CD-98C0073AEC73} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
+		{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
+		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
+		{4C6F7C7F-C253-48FE-A553-4410B949E275} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
+		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
+		{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
+	EndGlobalSection
+EndGlobal

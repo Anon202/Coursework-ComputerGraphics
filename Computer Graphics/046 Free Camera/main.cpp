@@ -106,12 +106,12 @@ bool update(float delta_time)
 	// ***************************************************
 	// Calculate delta of cursor positions from last frame
 	// ***************************************************
-	if (firstMouse)
+	/*if (firstMouse)
 	{
 		current_x = xpos;
 		current_y = ypos;
 		firstMouse = false;
-	}
+	}*/
 	
 	double delta_x = new_x - current_x;
 	double delta_y = new_y - current_y;
