@@ -1,6 +1,8 @@
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
 
+#include "Obj.h"
+
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
@@ -15,6 +17,8 @@ effect eff;
 texture tex;
 free_camera cam;
 directional_light light;
+
+map<string, Obj> tree;
 
 // initialise params
 GLFWwindow* window;
@@ -49,6 +53,8 @@ bool initialise()
 
 bool load_content()
 {
+	
+
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
@@ -61,13 +67,12 @@ bool load_content()
 	meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
 	meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
 
-	// Transform objects
-	meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
-	meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
+	// Transform objects 
+	
+	
 	meshes["tetra"].get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
 	meshes["tetra"].get_transform().translate(vec3(-30.0f, 10.0f, -10.0f));
-	meshes["pyramid"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
-	meshes["pyramid"].get_transform().translate(vec3(-10.0f, 7.5f, -30.0f));
+	
 	meshes["disk"].get_transform().scale = vec3(3.0f, 1.0f, 3.0f);
 	meshes["disk"].get_transform().translate(vec3(-10.0f, 11.5f, -30.0f));
 	meshes["disk"].get_transform().rotate(vec3(half_pi<float>(), 0.0f, 0.0f));
@@ -141,6 +146,26 @@ bool load_content()
 	// Light direction (1.0, 1.0, -1.0)
 	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
 
+	/*
+	mat4 P = cam.get_projection();
+	mat4 V = cam.get_view();
+	mat4 PV = P * V;
+
+	vec3 eyeP = cam.get_position();*/
+	mat4 P = cam.get_projection();
+	mat4 V = cam.get_view();
+	mat4 PV = P * V;
+
+	vec3 eyeP = cam.get_position();
+
+
+
+
+	//meshes["pyramid"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+	//meshes["pyramid"].get_transform().translate(vec3(-10.0f, 7.5f, -30.0f));
+	//tetra = Obj()
+
+
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
 	eff.add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
@@ -152,6 +177,14 @@ bool load_content()
 	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+
+
+	tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex, eff, PV, eyeP, light);
+	tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
+
+	tree["root"].addChild(&tree["box"], "box");
+
 	return true;
 }
 
@@ -223,78 +256,15 @@ bool update(float delta_time)
 	// *****************
 	glfwGetCursorPos(window, &current_x, &current_y);
 
-
+	tree["root"].update(&tree["root"], mat4(1.0f));
 
 	return true;
 }
 
 bool render()
 {
-	// Render meshes
-	for (auto &e : meshes)
-	{
-		auto m = e.second;
-		// Bind effect
-		renderer::bind(eff);
-		// Create MVP matrix
-		auto M = m.get_transform().get_transform_matrix();
-		auto V = cam.get_view();
-		auto P = cam.get_projection();
-		auto MVP = P * V * M;
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(
-			eff.get_uniform_location("MVP"), // Location of uniform
-			1, // Number of values - 1 mat4
-			GL_FALSE, // Transpose the matrix?
-			value_ptr(MVP)); // Pointer to matrix data
-
-		// ********************
-		// Set M matrix uniform
-		// ********************
-		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
-
-		// ***********************
-		// Set N matrix uniform
-		// - remember - 3x3 matrix
-		// ***********************
-		mat3 N = m.get_transform().get_normal_matrix();
-		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
-		
-
-		// *************
-		// Bind material
-		// *************
-		renderer::bind(m.get_material(), "mat");
-		
-
-		// **********
-		// Bind light
-		// **********
-		renderer::bind(light, "light");
-
-		// ************
-		// Bind texture
-		// ************
-		renderer::bind(tex, 0);
-		
-
-		// ***************
-		// Set tex uniform
-		// ***************
-		glUniform1i(eff.get_uniform_location("tex"), 0); 
-		
-
-		// *****************************
-		// Set eye position
-		// - Get this from active camera
-		// *****************************
-		vec3 eyeP = cam.get_position();
-		glUniform3f(eff.get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
-		
-
-		// Render mesh
-		renderer::render(m);
-	}
+	
+	tree["root"].render(&tree["root"]);
 
 	return true;
 }
