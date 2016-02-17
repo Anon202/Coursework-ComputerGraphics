@@ -2,7 +2,7 @@
 
 Obj::Obj(){}
 
-Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh& me, material& mate, texture& texture, effect eff, mat4 PV, vec3 eyeP, directional_light light)
+Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh& me, material& mate, texture& texture) //effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 {
 
 	/*mat4 mlocal;
@@ -33,11 +33,11 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh& me, material& mate, t
 	this->tex = &texture;
 
 
-
-	this->eff = eff;
+	/*
+	this->eff = &eff;
 	this->PV = PV;
-	this->eyeP = eyeP;
-	this->light = light;
+	this->eyeP = &eyeP;
+	this->light = &light;*/
 
 
 }
@@ -71,6 +71,67 @@ void Obj::addChild(Obj* child, string name)
 
 }
 
+void Obj::render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
+{
+	Obj *root = this;
+	renderer::bind(eff);
+	// Create MVP matrix
+	auto MVP = PV * this->mworld; //root->mworld;
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(
+		eff.get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(MVP)); // Pointer to matrix data
+
+	// ********************
+	// Set M matrix uniform
+	// ********************
+	glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(this->mworld));
+
+	// ***********************
+	// Set N matrix uniform
+	// - remember - 3x3 matrix
+	// ***********************
+	mat3 N = this->m->get_transform().get_normal_matrix();
+	glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+
+
+	// *************
+	// Bind material
+	// *************
+	renderer::bind(this->m->get_material(), "mat");
+
+
+	// **********
+	// Bind light
+	// **********
+	renderer::bind(light, "light");
+
+	// ************
+	// Bind texture
+	// ************
+	renderer::bind(*tex, 0);
+
+
+	// ***************
+	// Set tex uniform
+	// ***************
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+
+
+	// *****************************
+	// Set eye position
+	// - Get this from active camera
+	// *****************************
+	glUniform3f(eff.get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+
+
+	// Render mesh
+	renderer::render(*m);
+}
+
+#if 0
 void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 {
 	// flag
@@ -90,9 +151,9 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 	}
 	*/
 	
-	for (auto &e : root->children)
-	{
-		Obj* child = e.second;
+	//for (auto &e : root->children)
+	//{
+		//Obj* child = e.second;
 		
 
 		// Bind effect
@@ -153,7 +214,8 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 		renderer::render(*m);
 
 
-		render(child);
-	}
+		//render(child);
+	//}
 
 }
+#endif

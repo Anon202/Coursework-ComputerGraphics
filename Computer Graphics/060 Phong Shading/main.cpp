@@ -180,10 +180,10 @@ bool load_content()
 
 
 
-	tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex, eff, PV, eyeP, light);
-	tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
+	tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex);//, &eff, PV, &eyeP, &light);
+	//tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
 
-	tree["root"].addChild(&tree["box"], "box");
+	//tree["root"].addChild(&tree["box"], "box");
 
 	return true;
 }
@@ -263,8 +263,14 @@ bool update(float delta_time)
 
 bool render()
 {
+
+	mat4 P = cam.get_projection();
+	mat4 V = cam.get_view();
+	mat4 PV = P * V;
+
+	vec3 eyeP = cam.get_position();
 	
-	tree["root"].render(&tree["root"]);
+	tree["root"].render(eff, PV, eyeP, light);
 
 	return true;
 }
