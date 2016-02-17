@@ -8,9 +8,8 @@ mesh skybox;
 effect eff;
 effect sky_eff;
 cubemap cube_map;
-//free_camera freeCam;
-//
 
+texture tex;
 // globals needed camera list object list cam and root pointer/// window pointer.  -- be good to use GLFWwindow* window = renderer::get_window(); so only 1 window? maybe
 
 camera* cam = NULL;
@@ -31,6 +30,9 @@ double new_x = 0;
 double new_y = 0;
 
 bool firstMouse = true;
+
+
+map<string, material> materials;
 
 bool initialise()
 {
@@ -76,6 +78,8 @@ bool initialise()
 
 bool load_content()
 {
+	map<string, mesh> meshes;
+
     // Create a sphere
     sphere = mesh(geometry_builder::create_sphere(25, 25));
     // ******************************
@@ -116,19 +120,21 @@ bool load_content()
 		vec3(-1.0, 1.0, -1.0),  // 5
 
 		// Face 1
-		vec3(1.0, -1.0, 1.0), // 3
-		vec3(-1.0, -1.0, 1.0), // 2
-		vec3(-1.0, 1.0, 1.0), //1
-		vec3(1.0, 1.0, 1.0), // 4
+		vec3(1.0, -1.0, 1.0),	// 3
+		vec3(-1.0, -1.0, 1.0),	// 2
+		vec3(-1.0, 1.0, 1.0),	//1
+		vec3(1.0, 1.0, 1.0),    // 4
     };
 
     geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
-    skybox = mesh(geom);
+	skybox = mesh(geom);
+
+	//meshes["skybox"] = skybox;
 
     // ***********************************
     // Scale box by 100 - allows a distance
     // ***********************************
-	skybox.get_transform().scale = vec3(100, 100, 100);
+	//skybox.get_transform().scale = vec3(100, 100, 100);
 
     // ******************************************************
     // Load the cubemap
@@ -144,6 +150,12 @@ bool load_content()
 		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
 	};
 
+	// add extra geom	
+	meshes["plane"] = mesh(geometry_builder::create_plane());
+	meshes["box"] = mesh(geometry_builder::create_box());
+
+
+
     // ***************
     // Create cube_map
     // ***************
@@ -155,6 +167,26 @@ bool load_content()
     // Build effect
     eff.build();
 
+	materials["skybox"].set_diffuse(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	for (auto &e : materials)
+	{
+		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		e.second.set_shininess(2.0f);
+	}
+	directional_light light;
+	// ambient intensity (0.3, 0.3, 0.3)
+	light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+	// Light colour white
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// Light direction (1.0, 1.0, -1.0)
+	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+
+	tex = texture("..\\resources\\textures\\checked.gif");
+	
     // *********************
     // Load in skybox effect
     // *********************
@@ -164,11 +196,9 @@ bool load_content()
     // Build effect
     sky_eff.build();
 
- //   // Set camera properties
-	//freeCam.set_position(vec3(0.0f, 0.0f, 10.0f));
-	//freeCam.set_target(vec3(0.0f, 0.0f, 0.0f));
- //   auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	//freeCam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, &light);
+	list.push_back(root);
+
     return true;
 }
 
@@ -230,7 +260,11 @@ bool update(float delta_time)
     // *******************************************************************
     // Set skybox position to camera position (camera in centre of skybox)
     // *******************************************************************
-	skybox.get_transform().position = (cam->get_position());
+	
+	root->update(root, mat4(1));
+
+	// MUST WORK OUT HOW TO TRANSFORM ONLY SKYBOX.
+	//skybox.get_transform().position = (cam->get_position());
 
     return true;
 }
@@ -242,48 +276,19 @@ bool render()
     // *********************************
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
-    
-    // ******************
-    // Bind skybox effect
-    // ******************
-	renderer::bind(sky_eff);
 
-    // ****************************
-    // Calculate MVP for the skybox
-    // ****************************
-	auto M = skybox.get_transform().get_transform_matrix();
-	auto V = cam->get_view();
-	auto P = cam->get_projection();
-	auto MVP = P * V * M;
-
-    // **********************
-    // Set MVP matrix uniform
-    // **********************
-	glUniformMatrix4fv(eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
-
-    // *******************
-    // Set cubemap uniform
-    // *******************
-	glUniform1i(eff.get_uniform_location("cubemap"), 0);
-
-    // *************
-    // Render skybox
-    // *************
-	renderer::render(skybox);
-    
-    // ********************************
-    // Enable depth test and depth mask
-    // ********************************
+	root->render(root);
+ 
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 
     // Bind effect
     renderer::bind(eff);
     // Create MVP matrix
-    M = sphere.get_transform().get_transform_matrix();
-	V = cam->get_view();
-	P = cam->get_projection();
-    MVP = P * V * M;
+    auto M = sphere.get_transform().get_transform_matrix();
+	auto V = cam->get_view();
+	auto P = cam->get_projection();
+    auto MVP = P * V * M;
     // Set MVP matrix uniform
     glUniformMatrix4fv(
         eff.get_uniform_location("MVP"),
@@ -306,5 +311,18 @@ void main()
     application.set_update(update);
     application.set_render(render);
     // Run application
-    application.run();	
+    application.run();
+
+	for (int i = 0; i < list.size(); ++i)
+	{
+		delete list[i];
+	}
+	list.clear();
+
+
+	for (int i = 0; i < cameraList.size(); ++i)
+	{
+		delete cameraList[i];
+	}
+	cameraList.clear();
 }

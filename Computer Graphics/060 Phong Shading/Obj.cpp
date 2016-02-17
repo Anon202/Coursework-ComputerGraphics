@@ -141,12 +141,12 @@ void Obj::render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 {
 	// flag
-	// return and skip all children
+	// return and skill all children
 
-	extern camera* cam;
+	
 
 	// continue
-
+	extern camera* cam;
 
 	/*
 	const int numChildren = root->children.size();
