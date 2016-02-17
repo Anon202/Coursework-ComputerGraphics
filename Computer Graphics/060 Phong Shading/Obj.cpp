@@ -2,7 +2,7 @@
 
 Obj::Obj(){}
 
-Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh& me, material& mate, texture& texture) //effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
+Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh* me, material* mate, texture* texture, effect* eff, mat4 PV, vec3 eyeP, directional_light* light)
 {
 
 	/*mat4 mlocal;
@@ -28,16 +28,16 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh& me, material& mate, t
 
 
 	this->mlocal = trans;
-	this->m = &me;
-	this->mat = &mate;
-	this->tex = &texture;
+	this->m = me;
+	this->mat = mate;
+	this->tex = texture;
 
 
-	/*
-	this->eff = &eff;
+	/*   pointer */
+	this->eff = eff;
 	this->PV = PV;
-	this->eyeP = &eyeP;
-	this->light = &light;*/
+	this->eyeP = eyeP;
+	this->light = light;
 
 
 }
@@ -71,6 +71,7 @@ void Obj::addChild(Obj* child, string name)
 
 }
 
+#if 0
 void Obj::render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 {
 	Obj *root = this;
@@ -130,14 +131,15 @@ void Obj::render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 	// Render mesh
 	renderer::render(*m);
 }
+#endif
 
-#if 0
+#if		1
 void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_light& light)
 {
 	// flag
 	// return and skip all children
 
-
+	extern free_camera cam;
 
 	// continue
 
@@ -150,72 +152,97 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 		render( child );
 	}
 	*/
+
 	
-	//for (auto &e : root->children)
-	//{
-		//Obj* child = e.second;
-		
-
-		// Bind effect
-		renderer::bind(eff);
-		// Create MVP matrix
-		auto MVP = root->PV * root->mworld;
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(
-			root->eff.get_uniform_location("MVP"), // Location of uniform
-			1, // Number of values - 1 mat4
-			GL_FALSE, // Transpose the matrix?
-			value_ptr(MVP)); // Pointer to matrix data
-
-		// ********************
-		// Set M matrix uniform
-		// ********************
-		glUniformMatrix4fv(root->eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(root->mworld));
-
-		// ***********************
-		// Set N matrix uniform
-		// - remember - 3x3 matrix
-		// ***********************
-		mat3 N = this->m->get_transform().get_normal_matrix();
-		glUniformMatrix3fv(root->eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
+	mat4 P = cam.get_projection();
+	mat4 V = cam.get_view();
+	mat4 PV = P * V;
 
 
-		// *************
-		// Bind material
-		// *************
-		renderer::bind(this->m->get_material(), "mat");
+
+	vec3 eyeP = cam.get_position();
 
 
-		// **********
-		// Bind light
-		// **********
-		renderer::bind(light, "light");
+	//root->mworld = mat4(1);
 
-		// ************
-		// Bind texture
-		// ************
-		renderer::bind(*tex, 0);
+	auto MVP = P * V * root->mworld;
+
+	//// Bind effect
+	renderer::bind(*root->eff);
+	// Create MVP matrix
+	//auto MVP = root->PV * root->mworld;
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(
+		root->eff->get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(MVP)); // Pointer to matrix data
+
+	// ********************
+	// Set M matrix uniform
+	// ********************
+	glUniformMatrix4fv(root->eff->get_uniform_location("M"), 1, GL_FALSE, value_ptr(root->mworld));
+
+	// ***********************
+	// Set N matrix uniform
+	// - remember - 3x3 matrix
+	// ***********************
+	mat3 N = root->m->get_transform().get_normal_matrix();
+	glUniformMatrix3fv(root->eff->get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 
-		// ***************
-		// Set tex uniform
-		// ***************
-		glUniform1i(root->eff.get_uniform_location("tex"), 0);
+	// *************
+	// Bind material
+	// *************
+	renderer::bind(root->m->get_material(), "mat");
 
 
-		// *****************************
-		// Set eye position
-		// - Get this from active camera
-		// *****************************
-		glUniform3f(root->eff.get_uniform_location("eye_pos"), root->eyeP.x, root->eyeP.y, root->eyeP.z);
+	// **********
+	// Bind light
+	// **********
+	renderer::bind(*root->light, "light");
+
+	// ************
+	// Bind texture
+	// ************
+	renderer::bind(*root->tex, 0);
 
 
-		// Render mesh
-		renderer::render(*m);
+	// ***************
+	// Set tex uniform
+	// ***************
+	glUniform1i(root->eff->get_uniform_location("tex"), 0);
 
 
-		//render(child);
-	//}
+	// *****************************
+	// Set eye position
+	// - Get this from active camera
+	// *****************************
+	glUniform3f(root->eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);// root->eyeP->x, root->eyeP->y, root->eyeP->z);
+
+
+	// Render mesh
+	renderer::render(*root->m);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	for (auto &e : root->children)
+	{
+		Obj* child = e.second;
+		render(child);
+	}
 
 }
 #endif

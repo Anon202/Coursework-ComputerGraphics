@@ -9,21 +9,21 @@ using namespace glm;
 
 class Obj
 {
-	Obj *parent;
+	Obj *				parent;
 
-	mat4 mlocal;
-	mat4 mworld;
-	mesh* m;
-	material* mat;
-	texture* tex;
+	mat4				mlocal;
+	mat4				mworld;
+	mesh*				m;
+	material*			mat;
+	texture*			tex;
 
 	//////
-	effect* eff;
-	mat4 PV;
-	vec3* eyeP;
-	directional_light* light;
+	effect*				eff;
+	mat4				PV;
+	vec3				eyeP;
+	directional_light*	light;
 
-	vec3 cent;
+	vec3				cent;
 	float r;
 
 	map<string, Obj*> children;
@@ -32,11 +32,23 @@ class Obj
 
 public:
 	Obj				();
-	Obj(vec3 pos, vec3 rot, float theta, vec3 scale, mesh& me, material& mate, texture& texture);//, effect& eff, mat4& PV, vec3& eyeP, directional_light& light);
+	Obj(vec3 pos, 
+		vec3 rot, float theta, 
+		vec3 scale, 
+		mesh* me, 
+		material* mate, 
+		texture* texture, 
+		effect* eff, 
+		mat4 PV, 
+		vec3 eyeP, 
+		directional_light* light);
 
+	static
 	void update		(Obj* root,		mat4 m);
-	//void render		(Obj* root);
-	void render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light);
+
+	static
+	void render		(Obj* root);
+	//void render(effect& eff, mat4& PV, vec3& eyeP, directional_light& light);
 	
 	void addChild(Obj* child, string name);
 

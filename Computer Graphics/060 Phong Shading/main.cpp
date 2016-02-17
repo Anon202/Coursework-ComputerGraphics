@@ -18,7 +18,10 @@ texture tex;
 free_camera cam;
 directional_light light;
 
-map<string, Obj> tree;
+Obj* root = NULL;
+vector<Obj*> list;
+
+//map<string, Obj> tree;
 
 // initialise params
 GLFWwindow* window;
@@ -179,8 +182,9 @@ bool load_content()
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
 
+	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, PV, eyeP, &light);
 
-	tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex);//, &eff, PV, &eyeP, &light);
+	//tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex, eff, PV, eyeP, light);
 	//tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
 
 	//tree["root"].addChild(&tree["box"], "box");
@@ -256,7 +260,9 @@ bool update(float delta_time)
 	// *****************
 	glfwGetCursorPos(window, &current_x, &current_y);
 
-	tree["root"].update(&tree["root"], mat4(1.0f));
+	//tree["root"].update(&tree["root"], mat4(1.0f));
+
+	root->update(root, mat4(1) );
 
 	return true;
 }
@@ -264,13 +270,36 @@ bool update(float delta_time)
 bool render()
 {
 
-	mat4 P = cam.get_projection();
-	mat4 V = cam.get_view();
-	mat4 PV = P * V;
+	//mat4 T = translate(mat4(1.0f),  vec3(0,0,0));  // translate pos
+	//mat4 R = mat4(1);    // rotation
+	//mat4 S = scale(mat4(1.0f), vec3(100, 100, 100));  // scale
+	//mat4 M = T * (R * S);
 
-	vec3 eyeP = cam.get_position();
+	//auto V = cam.get_view();
+	//auto P = cam.get_projection();
+	//auto MVP = P * V * M;
+
+	//renderer::bind(eff);
+
+	//// Set MVP matrix uniform
+	//glUniformMatrix4fv(
+	//	eff.get_uniform_location("MVP"), // Location of uniform
+	//	1, // Number of values - 1 mat4
+	//	GL_FALSE, // Transpose the matrix?
+	//	value_ptr(MVP)); // Pointer to matrix data
+	// Render geometry
+
+	//mat4 P = cam.get_projection();
+	//mat4 V = cam.get_view();
+	//mat4 PV = P * V;
+
+	//vec3 eyeP = cam.get_position();
 	
-	tree["root"].render(eff, PV, eyeP, light);
+	//tree["root"].render(eff, PV, eyeP, light);
+
+	//tree["root"].render(&tree["root"]);
+
+	root->render(root);
 
 	return true;
 }
