@@ -17,9 +17,9 @@ effect eff;
 texture tex;
 //free_camera cam;
 
-camera * cam = NULL;
+camera* cam = NULL;
 
-///vector<camera*> cam;
+vector<camera*> cameraList;
 
 directional_light light;
 
@@ -58,6 +58,31 @@ bool initialise()
 	// ******************************
 	glfwGetCursorPos(window, &xpos, &ypos);
 
+
+	//free_camera cam;
+
+	cam = new target_camera();
+	cameraList.push_back(cam);
+	// create target camera
+	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+	
+
+	cam = new free_camera();
+	cameraList.push_back(cam); // add to list (so can be deleted at end)
+
+
+	// Set camera properties for free camera (default)
+	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+	
+
+
 	return true;
 }
 
@@ -65,9 +90,8 @@ bool initialise()
 bool load_content()
 {
 	
-	//free_camera cam;
+	
 
-	cam = new free_camera();
 
 
 	// Create plane mesh
@@ -184,11 +208,7 @@ bool load_content()
 	// Build effect
 	eff.build();
 
-	// Set camera properties
-	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
-	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
-	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	
 
 	mat4 P = cam->get_projection();
 	mat4 V = cam->get_view();
@@ -246,16 +266,9 @@ bool update(float delta_time)
 
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_U))
-		cam = new free_camera();
+		cam = cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_J))
-		cam = new chase_camera();
-
-
-	//cam->set_position(vec3(50.0f, 10.0f, 50.0f));
-	//cam->set_target(vec3(0.0f, 0.0f, 0.0f));
-	//auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	//cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
-
+		cam = cameraList[1];
 
 	// *************************
 	// Rotate cameras by delta
@@ -368,4 +381,11 @@ void main()
 		delete list[i];
 	}
 	list.clear();
+
+	for (int i = 0; i < cameraList.size(); ++i)
+	{
+		delete cameraList[i];
+	}
+	cameraList.clear();
+	
 }
