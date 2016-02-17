@@ -2,7 +2,7 @@
 
 Obj::Obj(){}
 
-Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh* me, material* mate, texture* texture, effect* eff, mat4 PV, vec3 eyeP, directional_light* light)
+Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh* me, material* mate, texture* texture, effect* eff, camera* c, directional_light* light) //mat4 P, mat4 V, vec3 eyeP, directional_light* light)
 {
 
 	/*mat4 mlocal;
@@ -35,8 +35,10 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal, mesh* me, material* mate, t
 
 	/*   pointer */
 	this->eff = eff;
-	this->PV = PV;
-	this->eyeP = eyeP;
+	this->myCam = c;
+	//this->P = P;
+	//this->V = V;
+	//this->eyeP = eyeP;
 	this->light = light;
 
 
@@ -139,7 +141,7 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 	// flag
 	// return and skip all children
 
-	extern free_camera cam;
+	//extern free_camera cam;
 
 	// continue
 
@@ -154,18 +156,18 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 	*/
 
 	
-	mat4 P = cam.get_projection();
-	mat4 V = cam.get_view();
-	mat4 PV = P * V;
-
-
-
-	vec3 eyeP = cam.get_position();
+	mat4 P = root->myCam->get_projection();
+	mat4 V = root->myCam->get_view();
+	
+	vec3 eyeP = root->myCam->get_position();
 
 
 	//root->mworld = mat4(1);
 
+	//auto MVP = root->P * root->V * root->mworld;
+
 	auto MVP = P * V * root->mworld;
+
 
 	//// Bind effect
 	renderer::bind(*root->eff);
@@ -218,7 +220,8 @@ void Obj::render( Obj* root ) // effect& eff, mat4& PV, vec3& eyeP, directional_
 	// Set eye position
 	// - Get this from active camera
 	// *****************************
-	glUniform3f(root->eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);// root->eyeP->x, root->eyeP->y, root->eyeP->z);
+	//vec3 eyeP = root->myCam->get_position();
+	glUniform3f(root->eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
 
 	// Render mesh

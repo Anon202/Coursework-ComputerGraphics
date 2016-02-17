@@ -19,8 +19,11 @@ class Obj
 
 	//////
 	effect*				eff;
-	mat4				PV;
-	vec3				eyeP;
+	//mat4				P;
+	//mat4				V;
+	//vec3				eyeP;
+
+	camera*				myCam;
 	directional_light*	light;
 
 	vec3				cent;
@@ -39,8 +42,10 @@ public:
 		material* mate, 
 		texture* texture, 
 		effect* eff, 
-		mat4 PV, 
-		vec3 eyeP, 
+		//mat4 P,
+		//mat4 V, 
+		//vec3 eyeP,
+		camera* c,
 		directional_light* light);
 
 	static

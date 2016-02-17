@@ -155,11 +155,7 @@ bool load_content()
 	mat4 PV = P * V;
 
 	vec3 eyeP = cam.get_position();*/
-	mat4 P = cam.get_projection();
-	mat4 V = cam.get_view();
-	mat4 PV = P * V;
-
-	vec3 eyeP = cam.get_position();
+	
 
 
 
@@ -181,8 +177,20 @@ bool load_content()
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
+	mat4 P = cam.get_projection();
+	mat4 V = cam.get_view();
 
-	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, PV, eyeP, &light);
+	vec3 eyeP = cam.get_position();
+
+
+	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
+
+	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, &cam, &light);
+
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, &cam, &light);
+	
+	
+	root->addChild(box, "box");
 
 	//tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex, eff, PV, eyeP, light);
 	//tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
