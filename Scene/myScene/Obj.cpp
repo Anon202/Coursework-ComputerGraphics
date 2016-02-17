@@ -17,8 +17,6 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	mat4 trans = T * (R* S);
 
-
-
 	this->mlocal = trans;
 	this->m = me;
 	this->mat = mate;

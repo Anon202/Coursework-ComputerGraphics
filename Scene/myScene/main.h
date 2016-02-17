@@ -8,5 +8,5 @@ using namespace glm;
 
 class main
 {
-	camera* cam;
+	//camera* cam;
 };

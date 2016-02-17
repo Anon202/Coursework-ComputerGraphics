@@ -329,36 +329,6 @@ bool update(float delta_time)
 
 bool render()
 {
-
-	//mat4 T = translate(mat4(1.0f),  vec3(0,0,0));  // translate pos
-	//mat4 R = mat4(1);    // rotation
-	//mat4 S = scale(mat4(1.0f), vec3(100, 100, 100));  // scale
-	//mat4 M = T * (R * S);
-
-	//auto V = cam->get_view();
-	//auto P = cam->get_projection();
-	//auto MVP = P * V * M;
-
-	//renderer::bind(eff);
-
-	//// Set MVP matrix uniform
-	//glUniformMatrix4fv(
-	//	eff.get_uniform_location("MVP"), // Location of uniform
-	//	1, // Number of values - 1 mat4
-	//	GL_FALSE, // Transpose the matrix?
-	//	value_ptr(MVP)); // Pointer to matrix data
-	// Render geometry
-
-	//mat4 P = cam->get_projection();
-	//mat4 V = cam->get_view();
-	//mat4 PV = P * V;
-
-	//vec3 eyeP = cam->get_position();
-	
-	//tree["root"].render(eff, PV, eyeP, light);
-
-	//tree["root"].render(&tree["root"]);
-
 	root->render(root);
 
 	return true;

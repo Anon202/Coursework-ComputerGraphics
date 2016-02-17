@@ -1,15 +1,26 @@
 #include "main.h"
+#include "Obj.h"
 
+
+// will not need when fin
 mesh sphere;
 mesh skybox;
 effect eff;
 effect sky_eff;
 cubemap cube_map;
-free_camera freeCam;
+//free_camera freeCam;
+//
 
+// globals needed camera list object list cam and root pointer/// window pointer.  -- be good to use GLFWwindow* window = renderer::get_window(); so only 1 window? maybe
+
+camera* cam = NULL;
+
+vector<camera*> cameraList;
+
+Obj* root = NULL;
+vector<Obj*> list;
 
 // initialise params
-GLFWwindow* window;
 double xpos = 0;
 double ypos = 0;
 
@@ -26,7 +37,7 @@ bool initialise()
 	// ********************************
 	// Set input mode - hide the cursor
 	// ********************************
-	window = renderer::get_window();
+	GLFWwindow* window = renderer::get_window();
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -34,6 +45,31 @@ bool initialise()
 	// Capture initial mouse position
 	// ******************************
 	glfwGetCursorPos(window, &xpos, &ypos);
+
+
+	// initialise the cameras and store in pointer list
+
+	// static target camera at pos [0]
+	cam = new target_camera();
+	cameraList.push_back(cam);  // add to list so as to not loose the pointer to the camera
+
+	// create target camera
+	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+
+	// free_camera!
+	cam = new free_camera();
+	cameraList.push_back(cam); // add to list (so can be deleted at end)
+
+
+	// Set camera properties for free camera (default)
+	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
 
 	return true;
 }
@@ -128,78 +164,73 @@ bool load_content()
     // Build effect
     sky_eff.build();
 
-    // Set camera properties
-	freeCam.set_position(vec3(0.0f, 0.0f, 10.0f));
-	freeCam.set_target(vec3(0.0f, 0.0f, 0.0f));
-    auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	freeCam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+ //   // Set camera properties
+	//freeCam.set_position(vec3(0.0f, 0.0f, 10.0f));
+	//freeCam.set_target(vec3(0.0f, 0.0f, 0.0f));
+ //   auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+	//freeCam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
     return true;
 }
 
 bool update(float delta_time)
 {
-	// The ratio of pixels to rotation - remember the fov
-	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
-	static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
+	
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))
+		cam = cameraList[0];
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_F))
+		cam = cameraList[1];
 
-	// *******************************
-	// Get the current cursor position
-	// *******************************
-	glfwGetCursorPos(window, &new_x, &new_y);
+	free_camera* freeCam = NULL;
+	freeCam = dynamic_cast<free_camera*>(cam);
 
-	// ***************************************************
-	// Calculate delta of cursor positions from last frame
-	// ***************************************************
-	if (firstMouse)
+	if (freeCam)
 	{
-		current_x = xpos;
-		current_y = ypos;
-		firstMouse = false;
+		GLFWwindow* window = renderer::get_window();
+
+		// The ratio of pixels to rotation - remember the fov
+		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+		static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
+
+		glfwGetCursorPos(window, &new_x, &new_y);	// Get the current cursor position
+
+		if (firstMouse)							 // if first mouse take cursor positons from initalised vars
+		{
+			current_x = xpos;
+			current_y = ypos;
+			firstMouse = false;
+		}
+
+		double delta_x = new_x - current_x;		 // Calculate delta of cursor positions from last frame
+		double delta_y = new_y - current_y;
+
+		delta_x *= ratio_width;					 // Multiply deltas by ratios - gets actual change in orientation
+		delta_y *= -ratio_height;
+
+		freeCam->rotate((float)delta_x, (float)delta_y);  // Rotate cameras by delta :: delta_y - x-axis rotation :: delta_x - y-axis rotation
+
+
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+			freeCam->move(vec3(0.0f, 0.0f, 1.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+			freeCam->move(vec3(-1.0f, 0.0f, 0.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+			freeCam->move(vec3(1.0f, 0.0f, 0.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+			freeCam->move(vec3(0.0f, 0.0f, -1.0f));
+
+
+		glfwGetCursorPos(window, &current_x, &current_y);  // update cursor pos
 	}
 
-	double delta_x = new_x - current_x;
-	double delta_y = new_y - current_y;
 
-	// *************************************************************
-	// Multiply deltas by ratios - gets actual change in orientation
-	// *************************************************************
-	delta_x *= ratio_width;
-	delta_y *= -ratio_height;
+	cam->update(delta_time);  // update the camera
 
-	// *************************
-	// Rotate cameras by delta
-	// delta_y - x-axis rotation
-	// delta_x - y-axis rotation
-	// *************************
-	freeCam.rotate((float)delta_x, (float)delta_y);
-
-	// *******************************
-	// Use keyboard to move the camera
-	// - WSAD
-	// *******************************
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
-		freeCam.move(vec3(0.0f, 0.0f, 1.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
-		freeCam.move(vec3(-1.0f, 0.0f, 0.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
-		freeCam.move(vec3(1.0f, 0.0f, 0.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
-		freeCam.move(vec3(0.0f, 0.0f, -1.0f));
-
-	// *****************
-	// Update the camera
-	// *****************
-	freeCam.update(delta_time);
-
-	// *****************
-	// Update cursor pos
-	// *****************
-	glfwGetCursorPos(window, &current_x, &current_y);
+	
 
     // *******************************************************************
     // Set skybox position to camera position (camera in centre of skybox)
     // *******************************************************************
-	skybox.get_transform().position = (freeCam.get_position());
+	skybox.get_transform().position = (cam->get_position());
 
     return true;
 }
@@ -221,8 +252,8 @@ bool render()
     // Calculate MVP for the skybox
     // ****************************
 	auto M = skybox.get_transform().get_transform_matrix();
-	auto V = freeCam.get_view();
-	auto P = freeCam.get_projection();
+	auto V = cam->get_view();
+	auto P = cam->get_projection();
 	auto MVP = P * V * M;
 
     // **********************
@@ -250,8 +281,8 @@ bool render()
     renderer::bind(eff);
     // Create MVP matrix
     M = sphere.get_transform().get_transform_matrix();
-	V = freeCam.get_view();
-	P = freeCam.get_projection();
+	V = cam->get_view();
+	P = cam->get_projection();
     MVP = P * V * M;
     // Set MVP matrix uniform
     glUniformMatrix4fv(
