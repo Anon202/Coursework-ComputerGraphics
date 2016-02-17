@@ -7,6 +7,7 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
+
 class Obj
 {
 	Obj *				parent;
@@ -23,7 +24,7 @@ class Obj
 	//mat4				V;
 	//vec3				eyeP;
 
-	camera*				myCam;
+	//camera*				myCam;
 	directional_light*	light;
 
 	vec3				cent;
@@ -42,10 +43,10 @@ public:
 		material* mate, 
 		texture* texture, 
 		effect* eff, 
-		//mat4 P,
-		//mat4 V, 
-		//vec3 eyeP,
-		camera* c,
+		//const mat4 P,
+		//const mat4 V, 
+		//const vec3 eyeP,
+		//camera* c,
 		directional_light* light);
 
 	static

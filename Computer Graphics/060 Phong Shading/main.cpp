@@ -15,7 +15,12 @@ map<string, material> materials;
 
 effect eff;
 texture tex;
-free_camera cam;
+//free_camera cam;
+
+camera * cam = NULL;
+
+///vector<camera*> cam;
+
 directional_light light;
 
 Obj* root = NULL;
@@ -35,6 +40,9 @@ double new_x = 0;
 double new_y = 0;
 
 bool firstMouse = true;
+
+
+
 
 bool initialise()
 {
@@ -57,6 +65,10 @@ bool initialise()
 bool load_content()
 {
 	
+	//free_camera cam;
+
+	cam = new free_camera();
+
 
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -150,11 +162,11 @@ bool load_content()
 	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
 
 	/*
-	mat4 P = cam.get_projection();
-	mat4 V = cam.get_view();
+	mat4 P = cam->get_projection();
+	mat4 V = cam->get_view();
 	mat4 PV = P * V;
 
-	vec3 eyeP = cam.get_position();*/
+	vec3 eyeP = cam->get_position();*/
 	
 
 
@@ -165,6 +177,7 @@ bool load_content()
 	//tetra = Obj()
 
 
+
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
 	eff.add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
@@ -172,30 +185,31 @@ bool load_content()
 	eff.build();
 
 	// Set camera properties
-	cam.set_position(vec3(50.0f, 10.0f, 50.0f));
-	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
+	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
-	mat4 P = cam.get_projection();
-	mat4 V = cam.get_view();
+	mat4 P = cam->get_projection();
+	mat4 V = cam->get_view();
 
-	vec3 eyeP = cam.get_position();
+	vec3 eyeP = cam->get_position();
 
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, &cam, &light);
+	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, &light);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, &cam, &light);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, &light);
 	
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], &tex, &eff, &light);
 	
 	root->addChild(box, "box");
+	box->addChild(pyra, "pyramid");
 
-	//tree["root"] = Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), meshes["plane"], materials["plane"], tex, eff, PV, eyeP, light);
-	//tree["box"] = Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), meshes["box"], materials["box"], tex, eff, PV, eyeP, light);
-
-	//tree["root"].addChild(&tree["box"], "box");
+	list.push_back(root);
+	list.push_back(box);
+	list.push_back(pyra);
 
 	return true;
 }
@@ -231,26 +245,51 @@ bool update(float delta_time)
 	delta_y *= -ratio_height;
 
 
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_U))
+		cam = new free_camera();
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_J))
+		cam = new chase_camera();
+
+
+	//cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	//cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	//auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+	//cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
+
 	// *************************
 	// Rotate cameras by delta
 	// delta_y - x-axis rotation
 	// delta_x - y-axis rotation
 	// *************************
-	cam.rotate((float)delta_x, (float)delta_y);
+	free_camera* fcam = NULL;
+	fcam = dynamic_cast<free_camera*>(cam);
 
 
-	// *******************************
-	// Use keyboard to move the camera
-	// - WSAD
-	// *******************************
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
-		cam.move(vec3(0.0f, 0.0f, 1.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
-		cam.move(vec3(-1.0f, 0.0f, 0.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
-		cam.move(vec3(1.0f, 0.0f, 0.0f));
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
-		cam.move(vec3(0.0f, 0.0f, -1.0f));
+
+	if (fcam)
+	{
+		fcam->rotate((float)delta_x, (float)delta_y);
+
+
+		// *******************************
+		// Use keyboard to move the camera
+		// - WSAD
+		// *******************************
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+			fcam->move(vec3(0.0f, 0.0f, 1.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+			fcam->move(vec3(-1.0f, 0.0f, 0.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+			fcam->move(vec3(1.0f, 0.0f, 0.0f));
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+			fcam->move(vec3(0.0f, 0.0f, -1.0f));
+	}
+	else
+	{
+		
+	}
+
 
 
 	// ***********
@@ -260,7 +299,7 @@ bool update(float delta_time)
 	// *****************
 	// Update the camera
 	// *****************
-	cam.update(delta_time);
+	cam->update(delta_time);
 
 
 	// *****************
@@ -283,8 +322,8 @@ bool render()
 	//mat4 S = scale(mat4(1.0f), vec3(100, 100, 100));  // scale
 	//mat4 M = T * (R * S);
 
-	//auto V = cam.get_view();
-	//auto P = cam.get_projection();
+	//auto V = cam->get_view();
+	//auto P = cam->get_projection();
 	//auto MVP = P * V * M;
 
 	//renderer::bind(eff);
@@ -297,11 +336,11 @@ bool render()
 	//	value_ptr(MVP)); // Pointer to matrix data
 	// Render geometry
 
-	//mat4 P = cam.get_projection();
-	//mat4 V = cam.get_view();
+	//mat4 P = cam->get_projection();
+	//mat4 V = cam->get_view();
 	//mat4 PV = P * V;
 
-	//vec3 eyeP = cam.get_position();
+	//vec3 eyeP = cam->get_position();
 	
 	//tree["root"].render(eff, PV, eyeP, light);
 
@@ -323,4 +362,10 @@ void main()
 	application.set_render(render);
 	// Run application
 	application.run();
+
+	for (int i = 0; i < list.size(); ++i)
+	{
+		delete list[i];
+	}
+	list.clear();
 }

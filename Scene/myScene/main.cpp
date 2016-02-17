@@ -1,9 +1,4 @@
-#include <graphics_framework.h>
-#include <glm/glm.hpp>
-
-using namespace std;
-using namespace graphics_framework;
-using namespace glm;
+#include "main.h"
 
 mesh sphere;
 mesh skybox;
@@ -72,14 +67,11 @@ bool load_content()
 		vec3(1.0, 1.0, 1.0), // 4
 		vec3(-1.0, 1.0, 1.0), //1
 
-
-
 		// Face 6
 		vec3(-1.0, -1.0, 1.0), // 2
 		vec3(1.0, -1.0, 1.0), // 3
 		vec3(1.0, -1.0, -1.0), // 8
 		vec3(-1.0, -1.0, -1.0), //7
-
 
 		// Face 2
 		vec3(-1.0, -1.0, -1.0), //7
@@ -87,21 +79,16 @@ bool load_content()
 		vec3(1.0, 1.0, -1.0),   //6
 		vec3(-1.0, 1.0, -1.0),  // 5
 
-
 		// Face 1
 		vec3(1.0, -1.0, 1.0), // 3
 		vec3(-1.0, -1.0, 1.0), // 2
 		vec3(-1.0, 1.0, 1.0), //1
 		vec3(1.0, 1.0, 1.0), // 4
-	
-				
-      
- 
-    
     };
 
-    geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+    geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
     skybox = mesh(geom);
+
     // ***********************************
     // Scale box by 100 - allows a distance
     // ***********************************
@@ -124,7 +111,6 @@ bool load_content()
     // ***************
     // Create cube_map
     // ***************
-
 	cube_map = cubemap(filenames);
 
     // Load in shaders
@@ -152,7 +138,6 @@ bool load_content()
 
 bool update(float delta_time)
 {
-
 	// The ratio of pixels to rotation - remember the fov
 	static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
 	static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
@@ -161,7 +146,6 @@ bool update(float delta_time)
 	// Get the current cursor position
 	// *******************************
 	glfwGetCursorPos(window, &new_x, &new_y);
-
 
 	// ***************************************************
 	// Calculate delta of cursor positions from last frame
@@ -182,7 +166,6 @@ bool update(float delta_time)
 	delta_x *= ratio_width;
 	delta_y *= -ratio_height;
 
-
 	// *************************
 	// Rotate cameras by delta
 	// delta_y - x-axis rotation
@@ -190,16 +173,12 @@ bool update(float delta_time)
 	// *************************
 	freeCam.rotate((float)delta_x, (float)delta_y);
 
-
 	// *******************************
 	// Use keyboard to move the camera
 	// - WSAD
 	// *******************************
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
-	{
 		freeCam.move(vec3(0.0f, 0.0f, 1.0f));
-		//skybox.get_transform().translate(vec3(0.0f, 0.0f, 1.0f));
-	}
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
 		freeCam.move(vec3(-1.0f, 0.0f, 0.0f));
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
@@ -212,13 +191,10 @@ bool update(float delta_time)
 	// *****************
 	freeCam.update(delta_time);
 
-
 	// *****************
 	// Update cursor pos
 	// *****************
 	glfwGetCursorPos(window, &current_x, &current_y);
-
-    
 
     // *******************************************************************
     // Set skybox position to camera position (camera in centre of skybox)
@@ -299,5 +275,5 @@ void main()
     application.set_update(update);
     application.set_render(render);
     // Run application
-    application.run();
+    application.run();	
 }
