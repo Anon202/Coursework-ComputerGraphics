@@ -38,7 +38,7 @@ public:
 		effect* eff,
 		directional_light* light);
 
-	void update(Obj* root, mat4 m);
+	void update(Obj* root, mat4 m, bool sky);
 
 	void render(Obj* root);
 

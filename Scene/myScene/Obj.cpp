@@ -25,16 +25,25 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->light = light;
 }
 
-void Obj::update(Obj* root, mat4 mparent)
+void Obj::update(Obj* root, mat4 mparent, bool sky)
 {
 	// used to recurse through children and concatenate transforms
 
-	root->mworld = root->mlocal * mparent;
+	//transform by camera positon
+
+	extern camera* cam;			 // camera pointer 
+
+	if (sky)  // if sky box, transfor
+	{
+		vec3 difference = cam->get_position() - root->m->get_transform().position;
+		mat4 trans = translate(mat4(1.0f), difference);
+		root->mworld = trans * root->mlocal;		
+	}		
 
 	for (auto &e : root->children)
 	{
 		Obj* child = e.second;
-		update(child, root->mworld);
+		update(child, root->mworld, false);
 	}
 }
 

@@ -199,6 +199,8 @@ bool load_content()
 	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, &light);
 	list.push_back(root);
 
+	//Obj* plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), &eff, &
+
     return true;
 }
 
@@ -239,6 +241,7 @@ bool update(float delta_time)
 		freeCam->rotate((float)delta_x, (float)delta_y);  // Rotate cameras by delta :: delta_y - x-axis rotation :: delta_x - y-axis rotation
 
 
+
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
 			freeCam->move(vec3(0.0f, 0.0f, 1.0f));
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
@@ -254,6 +257,9 @@ bool update(float delta_time)
 
 
 	cam->update(delta_time);  // update the camera
+	
+	bool sky = true;
+	root->update(root, mat4(1), sky);
 
 	
 
@@ -261,23 +267,21 @@ bool update(float delta_time)
     // Set skybox position to camera position (camera in centre of skybox)
     // *******************************************************************
 	
-	root->update(root, mat4(1));
+	
 
 	// MUST WORK OUT HOW TO TRANSFORM ONLY SKYBOX.
-	//skybox.get_transform().position = (cam->get_position());
+	//skybox.get_transform().position = cam->get_position();
 
     return true;
 }
 
 bool render()
 {
-    // *********************************
-    // Disable depth test and depth mask
-    // *********************************
 	glDisable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
 
-	root->render(root);
+
+	root->render(root);  // is sky true (enable/disable depth)
  
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
