@@ -31,7 +31,9 @@ void Obj::update(Obj* root, mat4 mparent, bool sky)
 
 	//transform by camera positon
 
-	extern camera* cam;			 // camera pointer 
+	extern SceneManager* myScene;
+
+	camera* cam = myScene->cam;			 // camera pointer 
 
 	if (sky)  // if sky box, transform has to move with camera. 
 	{
@@ -62,7 +64,9 @@ void Obj::render(Obj* root, bool sky)
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	extern camera* cam;			 // camera pointer 
+	extern SceneManager* myScene;
+
+    camera* cam = myScene->cam;			 // camera pointer 
 
 	// get matrices + eye postion from the camera
 	mat4 P = cam->get_projection(); 

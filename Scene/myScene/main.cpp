@@ -1,6 +1,4 @@
 #include "main.h"
-#include "Obj.h"
-
 
 // will not need when fin
 mesh sphere;
@@ -12,16 +10,18 @@ cubemap cube_map;
 texture tex;
 // globals needed camera list object list cam and root pointer/// window pointer.  -- be good to use GLFWwindow* window = renderer::get_window(); so only 1 window? maybe
 
-camera* cam = NULL;
 
-vector<camera*> cameraList;
+//directional_light light;
 
-Obj* root = NULL;
+//camera* cam = NULL;
 
-Obj* plane = NULL;
+//vector<camera*> cameraList;
+//vector<texture*> texList;
+
+//Obj* root = NULL;
+
+//Obj* plane = NULL;
 vector<Obj*> list;
-
-directional_light light;
 
 
 
@@ -40,10 +40,11 @@ double new_y = 0;
 
 bool firstMouse = true;
 
-
+SceneManager* myScene = new SceneManager();
 
 bool initialise()
 {
+	
 	// ********************************
 	// Set input mode - hide the cursor
 	// ********************************
@@ -60,34 +61,35 @@ bool initialise()
 	// initialise the cameras and store in pointer list
 
 	// static target camera at pos [0]
-	cam = new target_camera();
-	cameraList.push_back(cam);  // add to list so as to not loose the pointer to the camera
+	myScene->cam = new target_camera();
+	myScene->cameraList.push_back(myScene->cam);  // add to list so as to not loose the pointer to the camera
 
 	// create target camera
-	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
-	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	myScene->cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
 
 	// free_camera!
-	cam = new free_camera();
-	cameraList.push_back(cam); // add to list (so can be deleted at end)
+	myScene->cam = new free_camera();
+	myScene->cameraList.push_back(myScene->cam); // add to list (so can be deleted at end)
 
 
 	// Set camera properties for free camera (default)
-	cam->set_position(vec3(50.0f, 10.0f, 50.0f));
-	cam->set_target(vec3(0.0f, 0.0f, 0.0f));
-	cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	myScene->cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
-
+	myScene->Create();
 	return true;
 }
 
 bool load_content()
 {
-
 	
+
+
 
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -124,26 +126,24 @@ bool load_content()
 	// Set lighting values
 	// *******************
 	// ambient intensity (0.3, 0.3, 0.3)
-	light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
-	// Light colour white
-	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	directional_light* light = myScene->light;  // create local pointer to the scenes light
+	//vector<Obj*> list = myScene->list;
 
-	// Light direction (1.0, 1.0, -1.0)
-	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+	
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, &light);
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, light);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, &light);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, light);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], &tex, &eff, &light);
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], &tex, &eff, light);
 
-	plane->addChild(box, "box");
+	myScene->plane->addChild(box, "box");
 	box->addChild(pyra, "pyramid");
 
-	list.push_back(plane);
+	list.push_back(myScene->plane);
 	list.push_back(box);
 	list.push_back(pyra);
 
@@ -230,8 +230,8 @@ bool load_content()
     // Build effect
     sky_eff.build();
 
-	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, &light);
-	list.push_back(root);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, light);
+	list.push_back(myScene->root);
 
 
 	// plane geometry not working
@@ -245,12 +245,12 @@ bool update(float delta_time)
 {
 	
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))
-		cam = cameraList[0];
+		myScene->cam = myScene->cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_F))
-		cam = cameraList[1];
+		myScene->cam = myScene->cameraList[1];
 
 	free_camera* freeCam = NULL;
-	freeCam = dynamic_cast<free_camera*>(cam);
+	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
 	if (freeCam)
 	{
@@ -292,22 +292,21 @@ bool update(float delta_time)
 		glfwGetCursorPos(window, &current_x, &current_y);  // update cursor pos
 	}
 
-
-	cam->update(delta_time);  // update the camera
+	myScene->cam->update(delta_time);  // update the camera
 	
 	bool sky = true;					// Set skybox flag so root position to camera position(camera in centre of skybox)
-	root->update(root, mat4(1), sky);
+	myScene->root->update(myScene->root, mat4(1), sky);
 
-	plane->update(plane, mat4(1), false);
+	myScene->plane->update(myScene->plane, mat4(1), false);
     return true;
 }
 
 bool render()
 {
 
-	root->render(root, true);  // is sky true (enable/disable depth)
+	myScene->root->render(myScene->root, true);  // is sky true (enable/disable depth)
 
-	plane->render(plane, false); // check -p;lane
+	myScene->plane->render(myScene->plane, false); // check -p;lane
 
     return true;
 }
@@ -325,15 +324,10 @@ void main()
     application.run();
 
 	for (int i = 0; i < list.size(); ++i)
-	{
 		delete list[i];
-	}
+
 	list.clear();
 
-
-	for (int i = 0; i < cameraList.size(); ++i)
-	{
-		delete cameraList[i];
-	}
-	cameraList.clear();
+	myScene->Release(); // method to free memory and delete pointers
+	delete myScene;
 }

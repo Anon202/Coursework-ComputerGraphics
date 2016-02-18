@@ -2,11 +2,11 @@
 
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
+#include "SceneManager.h"
 
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
-
 
 class Obj
 {
@@ -26,6 +26,8 @@ class Obj
 	map<string, Obj*>   children;  // map of children object pointers
 
 	bool visible;
+
+	//enum objType;
 
 public:
 	Obj	();
