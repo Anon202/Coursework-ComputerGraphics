@@ -7,23 +7,7 @@ effect eff;
 effect sky_eff;
 cubemap cube_map;
 
-texture tex;
 // globals needed camera list object list cam and root pointer/// window pointer.  -- be good to use GLFWwindow* window = renderer::get_window(); so only 1 window? maybe
-
-
-//directional_light light;
-
-//camera* cam = NULL;
-
-//vector<camera*> cameraList;
-//vector<texture*> texList;
-
-//Obj* root = NULL;
-
-//Obj* plane = NULL;
-vector<Obj*> list;
-
-
 
 map<string, mesh> meshes;
 map<string, material> materials;
@@ -119,33 +103,26 @@ bool load_content()
 	// **************************
 	// Load texture - checked.gif
 	// **************************
-	tex = texture("..\\resources\\textures\\checked.gif");
-
-
-	// *******************
-	// Set lighting values
-	// *******************
-	// ambient intensity (0.3, 0.3, 0.3)
 
 	directional_light* light = myScene->light;  // create local pointer to the scenes light
-	//vector<Obj*> list = myScene->list;
+	texture* texturePtr = new texture("..\\resources\\textures\\checked.gif");
 
-	
+	myScene->texList.push_back(texturePtr);
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, light);
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], texturePtr, &eff, light);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, light);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], texturePtr, &eff, light);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], &tex, &eff, light);
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], texturePtr, &eff, light);
 
 	myScene->plane->addChild(box, "box");
 	box->addChild(pyra, "pyramid");
 
-	list.push_back(myScene->plane);
-	list.push_back(box);
-	list.push_back(pyra);
+	myScene->list.push_back(myScene->plane);
+	myScene->list.push_back(box);
+	myScene->list.push_back(pyra);
 
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
@@ -230,8 +207,8 @@ bool load_content()
     // Build effect
     sky_eff.build();
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, light);
-	list.push_back(myScene->root);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], texturePtr, &sky_eff, light);
+	myScene->list.push_back(myScene->root);
 
 
 	// plane geometry not working
@@ -323,10 +300,10 @@ void main()
     // Run application
     application.run();
 
-	for (int i = 0; i < list.size(); ++i)
-		delete list[i];
+	for (int i = 0; i < myScene->list.size(); ++i)          //// getting a memory leak without this regardless of release method...
+		delete myScene->list[i];
 
-	list.clear();
+	myScene->list.clear();
 
 	myScene->Release(); // method to free memory and delete pointers
 	delete myScene;

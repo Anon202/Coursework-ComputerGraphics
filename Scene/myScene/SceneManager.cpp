@@ -6,6 +6,7 @@ SceneManager::SceneManager()
 	cam = NULL;
 	root = NULL;
 	plane = NULL;
+	
 }
 
 
@@ -19,6 +20,7 @@ void SceneManager::Create()
 
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
+
 }
 
 void SceneManager::Release()
@@ -30,6 +32,7 @@ void SceneManager::Release()
 		delete list[i];
 
 	list.clear();
+
 
 	for (int i = 0; i < cameraList.size(); ++i)
 		delete cameraList[i];
