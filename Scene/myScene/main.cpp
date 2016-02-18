@@ -1,18 +1,14 @@
 #include "main.h"
 
-// will not need when fin
-
 mesh skybox;
 effect eff;
 effect sky_eff;
 cubemap cube_map;
 
-// globals needed camera list object list cam and root pointer/// window pointer.  -- be good to use GLFWwindow* window = renderer::get_window(); so only 1 window? maybe
-
 map<string, mesh> meshes;
 map<string, material> materials;
 
-SceneManager* myScene;
+SceneManager* myScene;  // pointer to a scene manager!
 
 bool initialise()
 {
@@ -33,7 +29,7 @@ bool initialise()
 	
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	myScene = new SceneManager(xpos, ypos);
+	myScene = new SceneManager(xpos, ypos); // pass in (copied in constructor)
 
 
 
@@ -66,14 +62,14 @@ bool initialise()
 
 bool load_content()
 {
+	//map<string, mesh> meshes = myScene->meshes;
+
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
 	// Create scene
 	meshes["box"] = mesh(geometry_builder::create_box());
 	meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
-
-
 
 	// Red box
 	materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -200,6 +196,8 @@ bool load_content()
 
 	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], texturePtr, &sky_eff, light);
 	myScene->list.push_back(myScene->root);
+
+	//myScene->plane->addChild(myScene->root, "root");
 
 
 	// plane geometry not working

@@ -17,12 +17,6 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 	firstMouse = false;
 }
-//
-//
-//static void GrabNewMouse()
-//{
-//
-//}
 
 void SceneManager::Create()
 {

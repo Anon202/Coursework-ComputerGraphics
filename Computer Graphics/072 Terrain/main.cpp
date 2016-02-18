@@ -11,9 +11,9 @@ free_camera cam;
 
 directional_light light;
 
-texture tex[4];
+//texture *tex[];
 
-
+array<texture*, 4> tex;
 
 // initialise params
 GLFWwindow* window;
@@ -137,6 +137,8 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
         }
     }
 
+	////// GL POLYGON MODE
+
     // Resize the normals buffer
     normals.resize(positions.size());
 
@@ -257,11 +259,10 @@ bool load_content()
     // Use geometry to create terrain mesh
     terr = mesh(geom);
 
-
-	tex[0] = texture("..\\resources\\textures\\sand.dds");
-	tex[1] = texture("..\\resources\\textures\\grass.dds");
-	tex[2] = texture("..\\resources\\textures\\rock.dds");
-	tex[3] = texture("..\\resources\\textures\\snow.dds");
+	tex[0] = new texture("..\\resources\\textures\\sand.dds");
+	tex[1] = new texture("..\\resources\\textures\\grass.dds");
+	tex[2] = new texture("..\\resources\\textures\\rock.dds");
+	tex[3] = new texture("..\\resources\\textures\\snow.dds");
 
     // ************************
     // Load in necessary effect
@@ -426,10 +427,10 @@ bool render()
 	// ************
 	// Bind texture
 	// ************
-	renderer::bind(tex[0], 0);
-	renderer::bind(tex[1], 1);
-	renderer::bind(tex[2], 2);
-	renderer::bind(tex[3], 3);
+	renderer::bind(*tex[0], 0);
+	renderer::bind(*tex[1], 1);
+	renderer::bind(*tex[2], 2);
+	renderer::bind(*tex[3], 3);
 
 	
 
@@ -456,4 +457,9 @@ void main()
     application.set_render(render);
     // Run application
     application.run();
+
+	for (int i = 0; i < tex.size(); ++i)
+		delete tex[i];
+
+	tex.empty();
 }
