@@ -89,6 +89,10 @@ void main()
 	// **********************
 
 	colour = primary*tex_colour + specular;
+	
+	// check 
+	//colour = primary*tex_colour;
+	
 	colour.a = 1.0f;
 	
 

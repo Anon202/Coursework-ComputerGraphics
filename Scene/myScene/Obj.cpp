@@ -38,7 +38,11 @@ void Obj::update(Obj* root, mat4 mparent, bool sky)
 		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
 		mat4 trans = translate(mat4(1.0f), difference);		
 		root->mworld = trans * root->mlocal;										// update transform
-	}		
+	}
+	else
+	{
+		root->mworld = root->mlocal * mparent;
+	}
 
 	for (auto &e : root->children)
 	{
@@ -103,7 +107,7 @@ void Obj::render(Obj* root, bool sky)
 		value_ptr(N));
 
 	// Bind Materials/lights/texture
-	renderer::bind(root->m->get_material(), "mat");
+	renderer::bind(*root->mat, "mat");
 	renderer::bind(*root->light, "light");
 	renderer::bind(*root->tex, 0);
 	
