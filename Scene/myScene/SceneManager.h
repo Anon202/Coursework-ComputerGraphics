@@ -33,6 +33,14 @@ public:
 	map<string, mesh> meshes;
 	map<string, material> materials;
 
+	
+	double initialX;	// vars for mouse positions initial
+	double initialY;
+	double current_x;   // var for current mouse pos
+	double current_y;
+
+	bool firstMouse;
+
 
 	//	static void Create();
 	//public:
@@ -44,7 +52,7 @@ public:
 	//
 
 
-	SceneManager();
+	SceneManager(double initialMouseX, double initialMouseY);
 
 	void Create();
 	void Release();

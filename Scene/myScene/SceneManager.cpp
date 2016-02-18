@@ -1,14 +1,28 @@
 #include "SceneManager.h"
 
 
-SceneManager::SceneManager()
+SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
 	cam = NULL;
 	root = NULL;
 	plane = NULL;
 	
-}
 
+	// copy vars
+	initialX = initialMouseX;
+	initialY = initialMouseY;
+
+	current_x = 0;   /// initialise current position of mouse
+	current_y = 0;
+
+	firstMouse = false;
+}
+//
+//
+//static void GrabNewMouse()
+//{
+//
+//}
 
 void SceneManager::Create()
 {

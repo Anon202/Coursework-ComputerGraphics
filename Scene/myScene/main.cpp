@@ -1,7 +1,7 @@
 #include "main.h"
 
 // will not need when fin
-mesh sphere;
+
 mesh skybox;
 effect eff;
 effect sky_eff;
@@ -12,22 +12,13 @@ cubemap cube_map;
 map<string, mesh> meshes;
 map<string, material> materials;
 
-// initialise params
-double xpos = 0;
-double ypos = 0;
-
-double current_x = 0;
-double current_y = 0;
-
-double new_x = 0;
-double new_y = 0;
-
-bool firstMouse = true;
-
-SceneManager* myScene = new SceneManager();
+SceneManager* myScene;
 
 bool initialise()
 {
+	double xpos = 0; // create initial vars for mouse position
+	double ypos = 0;
+
 	
 	// ********************************
 	// Set input mode - hide the cursor
@@ -39,7 +30,11 @@ bool initialise()
 	// ******************************
 	// Capture initial mouse position
 	// ******************************
+	
 	glfwGetCursorPos(window, &xpos, &ypos);
+
+	myScene = new SceneManager(xpos, ypos);
+
 
 
 	// initialise the cameras and store in pointer list
@@ -65,16 +60,12 @@ bool initialise()
 	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
-	myScene->Create();
+	myScene->Create();  // run create method for scene man
 	return true;
 }
 
 bool load_content()
 {
-	
-
-
-
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
@@ -220,8 +211,7 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_F))
 		myScene->cam = myScene->cameraList[1];
@@ -229,25 +219,32 @@ bool update(float delta_time)
 	free_camera* freeCam = NULL;
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
+	
+	
+
 	if (freeCam)
 	{
+
 		GLFWwindow* window = renderer::get_window();
 
 		// The ratio of pixels to rotation - remember the fov
 		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
 		static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
 
+		double new_x = 0;
+		double new_y = 0;
+
 		glfwGetCursorPos(window, &new_x, &new_y);	// Get the current cursor position
 
-		if (firstMouse)							 // if first mouse take cursor positons from initalised vars
+		if (myScene->firstMouse)							 // if first mouse take cursor positons from initalised vars
 		{
-			current_x = xpos;
-			current_y = ypos;
-			firstMouse = false;
+			myScene->current_x = myScene->initialX;
+			myScene->current_y = myScene->initialY;
+			myScene->firstMouse = false;
 		}
 
-		double delta_x = new_x - current_x;		 // Calculate delta of cursor positions from last frame
-		double delta_y = new_y - current_y;
+		double delta_x = new_x - myScene->current_x;		 // Calculate delta of cursor positions from last frame
+		double delta_y = new_y - myScene->current_y;
 
 		delta_x *= ratio_width;					 // Multiply deltas by ratios - gets actual change in orientation
 		delta_y *= -ratio_height;
@@ -266,7 +263,7 @@ bool update(float delta_time)
 			freeCam->move(vec3(0.0f, 0.0f, -1.0f));
 
 
-		glfwGetCursorPos(window, &current_x, &current_y);  // update cursor pos
+		glfwGetCursorPos(window, &myScene->current_x, &myScene->current_y);  // update cursor pos
 	}
 
 	myScene->cam->update(delta_time);  // update the camera
@@ -307,4 +304,5 @@ void main()
 
 	myScene->Release(); // method to free memory and delete pointers
 	delete myScene;
+	myScene = NULL;
 }
