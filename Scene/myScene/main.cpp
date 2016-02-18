@@ -19,6 +19,11 @@ vector<camera*> cameraList;
 Obj* root = NULL;
 vector<Obj*> list;
 
+
+map<string, mesh> meshes;
+map<string, material> materials;
+
+Obj *ball = NULL;
 // initialise params
 double xpos = 0;
 double ypos = 0;
@@ -32,7 +37,6 @@ double new_y = 0;
 bool firstMouse = true;
 
 
-map<string, material> materials;
 
 bool initialise()
 {
@@ -78,10 +82,147 @@ bool initialise()
 
 bool load_content()
 {
-	map<string, mesh> meshes;
+
+	directional_light light;
+
+
+	// Create plane mesh
+	meshes["plane"] = mesh(geometry_builder::create_plane());
+
+	// Create scene
+	meshes["box"] = mesh(geometry_builder::create_box());
+	meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
+
+
+
+	// Red box
+	materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+
+	// Blue pyramid
+	materials["pyramid"].set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+
+
+	for (auto &e : materials)
+	{
+		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+		e.second.set_shininess(2.0f);
+	}
+
+
+	// **************************
+	// Load texture - checked.gif
+	// **************************
+	tex = texture("..\\resources\\textures\\checked.gif");
+
+
+	// *******************
+	// Set lighting values
+	// *******************
+	// ambient intensity (0.3, 0.3, 0.3)
+	light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+	// Light colour white
+	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// Light direction (1.0, 1.0, -1.0)
+	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+
+	/*
+	mat4 P = cam->get_projection();
+	mat4 V = cam->get_view();
+	mat4 PV = P * V;
+
+	vec3 eyeP = cam->get_position();*/
+
+
+
+
+
+	//meshes["pyramid"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
+	//meshes["pyramid"].get_transform().translate(vec3(-10.0f, 7.5f, -30.0f));
+	//tetra = Obj()
+
+
+
+	// Load in shaders
+	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+	// Build effect
+	eff.build();
+
+
+
+	mat4 P = cam->get_projection();
+	mat4 V = cam->get_view();
+
+	vec3 eyeP = cam->get_position();
+
+
+	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
+
+	ball = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, &light);
+
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], &tex, &eff, &light);
+
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], &tex, &eff, &light);
+
+	ball->addChild(box, "box");
+	box->addChild(pyra, "pyramid");
+
+	list.push_back(ball);
+	list.push_back(box);
+	list.push_back(pyra);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Create a sphere
-    sphere = mesh(geometry_builder::create_sphere(25, 25));
+ //   sphere = mesh(geometry_builder::create_sphere(25, 25));
+
+
+	//// add extra geom
+	//mesh meshPlane;
+	////meshPlane  = mesh(geometry_builder::create_plane());
+	//meshPlane = mesh(geometry_builder::create_box());
+	////meshes["box"] = mesh(geometry_builder::create_box());
+
+	//material planeMat;
+	//planeMat.set_diffuse(vec4(1.0f, 0.0f, 0.0f, 0.0f));
+ //   planeMat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	//planeMat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//planeMat.set_shininess(2.0f);
+
+
+	//materials["skybox"].set_diffuse(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	//materials["ball"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 0.0f));
+
+
+	////meshPlane.set_material(planeMat);
+
+	//for (auto &e : materials)
+	//{
+	//	e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	//	e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//	e.second.set_shininess(2.0f);
+	//}
+
+
+	//directional_light light;
+	//// ambient intensity (0.3, 0.3, 0.3)
+	//light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+
+	//// Light colour white
+	//light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	//// Light direction (1.0, 1.0, -1.0)
+	//light.set_direction(vec3(1.0f, 1.0f, -1.0f));
+
+	//tex = texture("..\\resources\\textures\\checked.gif");
+
+
     // ******************************
     // Create box geometry for skybox
     // ******************************
@@ -129,13 +270,6 @@ bool load_content()
     geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
 	skybox = mesh(geom);
 
-	//meshes["skybox"] = skybox;
-
-    // ***********************************
-    // Scale box by 100 - allows a distance
-    // ***********************************
-	//skybox.get_transform().scale = vec3(100, 100, 100);
-
     // ******************************************************
     // Load the cubemap
     // - create array of six filenames +x, -x, +y, -y, +z, -z
@@ -150,42 +284,21 @@ bool load_content()
 		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
 	};
 
-	// add extra geom	
-	meshes["plane"] = mesh(geometry_builder::create_plane());
-	meshes["box"] = mesh(geometry_builder::create_box());
-
-
-
     // ***************
     // Create cube_map
     // ***************
 	cube_map = cubemap(filenames);
 
     // Load in shaders
-    eff.add_shader("shader.vert", GL_VERTEX_SHADER);
-    eff.add_shader("shader.frag", GL_FRAGMENT_SHADER);
+   /* eff.add_shader("shader.vert", GL_VERTEX_SHADER);
+    eff.add_shader("shader.frag", GL_FRAGMENT_SHADER);*/
     // Build effect
+
+	/*eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
     eff.build();
+*/
 
-	materials["skybox"].set_diffuse(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-
-	for (auto &e : materials)
-	{
-		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		e.second.set_shininess(2.0f);
-	}
-	directional_light light;
-	// ambient intensity (0.3, 0.3, 0.3)
-	light.set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
-
-	// Light colour white
-	light.set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-
-	// Light direction (1.0, 1.0, -1.0)
-	light.set_direction(vec3(1.0f, 1.0f, -1.0f));
-
-	tex = texture("..\\resources\\textures\\checked.gif");
 	
     // *********************
     // Load in skybox effect
@@ -199,7 +312,17 @@ bool load_content()
 	root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], &tex, &sky_eff, &light);
 	list.push_back(root);
 
-	//Obj* plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), &eff, &
+	//ball = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &sphere, &materials["ball"], &tex, &eff, &light);
+	////Obj *plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.0f, 0.0f, 0.0f), &meshPlane, &planeMat, &tex, &eff, &light);
+
+	//
+	////root->addChild(ball, "ball");
+	//list.push_back(ball);
+
+
+	// plane geometry not working
+	//root->addChild(plane, "plane");
+	//list.push_back(plane);
 
     return true;
 }
@@ -258,49 +381,37 @@ bool update(float delta_time)
 
 	cam->update(delta_time);  // update the camera
 	
-	bool sky = true;
+	bool sky = true;					// Set skybox flag so root position to camera position(camera in centre of skybox)
 	root->update(root, mat4(1), sky);
-
-	
-
-    // *******************************************************************
-    // Set skybox position to camera position (camera in centre of skybox)
-    // *******************************************************************
-	
-	
-
-	// MUST WORK OUT HOW TO TRANSFORM ONLY SKYBOX.
-	//skybox.get_transform().position = cam->get_position();
 
     return true;
 }
 
 bool render()
 {
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
 
+	root->render(root, true);  // is sky true (enable/disable depth)
 
-	root->render(root);  // is sky true (enable/disable depth)
+	ball->render(ball, false); // check -p;lane
  
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_TRUE);
 
-    // Bind effect
-    renderer::bind(eff);
-    // Create MVP matrix
-    auto M = sphere.get_transform().get_transform_matrix();
-	auto V = cam->get_view();
-	auto P = cam->get_projection();
-    auto MVP = P * V * M;
-    // Set MVP matrix uniform
-    glUniformMatrix4fv(
-        eff.get_uniform_location("MVP"),
-        1,
-        GL_FALSE,
-        value_ptr(MVP));
-    // Render mesh
-    renderer::render(sphere);
+ //   // Bind effect
+ //   renderer::bind(eff);
+ //   // Create MVP matrix
+ //   auto M = sphere.get_transform().get_transform_matrix();
+	//auto V = cam->get_view();
+	//auto P = cam->get_projection();
+ //   auto MVP = P * V * M;
+ //   // Set MVP matrix uniform
+ //   glUniformMatrix4fv(
+ //       eff.get_uniform_location("MVP"),
+ //       1,
+ //       GL_FALSE,
+ //       value_ptr(MVP));
+ //   // Render mesh
+ //   renderer::render(sphere);
 
     return true;
 }

@@ -40,7 +40,7 @@ public:
 
 	void update(Obj* root, mat4 m, bool sky);
 
-	void render(Obj* root);
+	void render(Obj* root, bool sky);
 
 	void addChild(Obj* child, string name);
 

@@ -158,10 +158,10 @@ bool load_content()
 		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		e.second.set_shininess(2.0f);
 	}
-
-	meshes["box"].set_material(materials["box"]);
 	meshes["tetra"].set_material(materials["tetra"]);
-	meshes["pyramid"].set_material(materials["pyramid"]);
+	//meshes["box"].set_material(materials["box"]);
+	
+	//meshes["pyramid"].set_material(materials["pyramid"]);
 	meshes["disk"].set_material(materials["disk"]);
 	meshes["cylinder"].set_material(materials["cylinder"]);
 	meshes["sphere"].set_material(materials["sphere"]);

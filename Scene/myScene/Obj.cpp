@@ -33,11 +33,11 @@ void Obj::update(Obj* root, mat4 mparent, bool sky)
 
 	extern camera* cam;			 // camera pointer 
 
-	if (sky)  // if sky box, transfor
+	if (sky)  // if sky box, transform has to move with camera. 
 	{
-		vec3 difference = cam->get_position() - root->m->get_transform().position;
-		mat4 trans = translate(mat4(1.0f), difference);
-		root->mworld = trans * root->mlocal;		
+		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
+		mat4 trans = translate(mat4(1.0f), difference);		
+		root->mworld = trans * root->mlocal;										// update transform
 	}		
 
 	for (auto &e : root->children)
@@ -53,13 +53,11 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
-void Obj::render(Obj* root)
+void Obj::render(Obj* root, bool sky)
 {
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-
-
 	extern camera* cam;			 // camera pointer 
 
 	// get matrices + eye postion from the camera
@@ -72,6 +70,12 @@ void Obj::render(Obj* root)
 
 	// calculate MVP from world
 	auto MVP = P * V * root->mworld;
+
+	if (sky)
+	{
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+	}
 
 	// Bind the effect
 	renderer::bind(*root->eff);
@@ -112,11 +116,17 @@ void Obj::render(Obj* root)
 	// render mesh
 	renderer::render(*root->m);
 
+	if (sky)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+	}
+
 	// recurse for children
 	for (auto &e : root->children)
 	{
 		Obj* child = e.second;
-		render(child);
+		render(child, false);
 	}
 
 }
