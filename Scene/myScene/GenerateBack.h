@@ -22,7 +22,8 @@ public:
 
 	void generate_skybox(
 		mesh &skybox,
-		cubemap &cube_map);
+		cubemap &cube_map,
+		float skyNum);
 
 };
 

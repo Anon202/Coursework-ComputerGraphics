@@ -45,7 +45,10 @@ SceneManager::~SceneManager()
 
 	//this->list->clear();
 	
+	for (int i = 0; i < effectList.size(); ++i)
+		delete effectList[i];
 
+	effectList.clear();
 
 	for (int i = 0; i < cameraList.size(); ++i)
 		delete cameraList[i];

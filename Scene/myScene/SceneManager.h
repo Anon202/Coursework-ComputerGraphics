@@ -31,7 +31,7 @@ public:
 	vector<camera*> cameraList;
 	vector<vector<texture*>> texList;
 	
-	
+	vector<effect*> effectList;
 
 	vector<Obj*> list;
 
@@ -48,24 +48,8 @@ public:
 	bool firstMouse;
 
 
-	//	static void Create();
-	//public:
-	//	static void Release();
-	//
-	//	static void Update();
-	//
-	//	static void Draw();
-	//
-
-
 	SceneManager(double initialMouseX, double initialMouseY);
 	~SceneManager();
 	void Create();
-	//void Release();
-
-private:
-	//static Obj* root;
-	//static effect* basic;
-	
 };
 

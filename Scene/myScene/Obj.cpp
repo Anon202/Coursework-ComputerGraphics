@@ -10,7 +10,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	directional_light* light, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
-	mat4 R = rotate(mat4(1.0f), theta, vec3(1.0, 0.0, 0.0));
+	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
 
@@ -23,7 +23,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->light = light;
 	this->myType = myType;
 	this->tex = texture;
-
+	this->theta = theta;
 	
 }
 
@@ -41,7 +41,10 @@ void Obj::update(Obj* root, mat4 mparent)
 	{
 		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
 		mat4 trans = translate(mat4(1.0f), difference);		
-		root->mworld = trans * root->mlocal;										// update transform
+		
+		mat4 rotation = rotate(mat4(1.0f), root->theta, vec3(0.0, 1.0, 0.0));
+
+		root->mworld = trans * rotation * root->mlocal;										// update transform
 	}
 	else
 	{
@@ -113,7 +116,7 @@ void Obj::render(Obj* root)//, bool sky)
 		value_ptr(N));
 
 
-	if (waterObj)
+	if (waterObj)  // water flag to assign uniform moving water!
 	{
 		static float dd = 0.0f;
 		dd += 0.002f;

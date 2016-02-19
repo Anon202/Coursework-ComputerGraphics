@@ -6,7 +6,7 @@ GenerateBack::GenerateBack()
 	
 }
 
-void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map)
+void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum)
 {
 	geometry geom;
 	geom.set_type(GL_QUADS);
@@ -56,14 +56,19 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map)
 	// Load the cubemap
 	// - create array of six filenames +x, -x, +y, -y, +z, -z
 	// ******************************************************
+	string folderName;
+
+		folderName = "alien";
+
+
 	array<string, 6> filenames =
 	{
-		"..\\resources\\textures\\cubemaps\\alien\\posx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posz.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posx.png",
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negx.png",
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posy.png",
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negy.png",
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posz.png",
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negz.png"
 	};
 
 	// ***************

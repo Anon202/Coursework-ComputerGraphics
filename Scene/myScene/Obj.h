@@ -23,6 +23,8 @@ class Obj
 	float r;
 	//texture*			tex;
 
+	float theta;
+
 	vector<texture*> tex;
 	map<string, Obj*>   children;  // map of children object pointers
 

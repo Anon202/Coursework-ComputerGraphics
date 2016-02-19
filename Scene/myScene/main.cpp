@@ -1,12 +1,10 @@
 #include "main.h"
 
 mesh skybox;
-effect eff;
-effect sky_eff;
-effect water_eff;
-
-effect terr_eff;
 cubemap cube_map;
+
+mesh skyboxIn;
+cubemap cube_mapIn;
 
 map<string, mesh> meshes;
 map<string, material> materials;
@@ -33,8 +31,6 @@ bool initialise()
 	glfwGetCursorPos(window, &xpos, &ypos);
 
 	myScene = new SceneManager(xpos, ypos); // pass in (copied in constructor)
-
-
 
 	// initialise the cameras and store in pointer list
 
@@ -114,15 +110,16 @@ bool load_content()
 		e.second.set_shininess(2.0f);
 	}
 
-	
-	terr_eff.add_shader("shader.vert", GL_VERTEX_SHADER);
-	terr_eff.add_shader("shader.frag", GL_FRAGMENT_SHADER);
-	terr_eff.add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
+	effect *terr_eff = new effect;
+	terr_eff->add_shader("shader.vert", GL_VERTEX_SHADER);
+	terr_eff->add_shader("shader.frag", GL_FRAGMENT_SHADER);
+	terr_eff->add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
 	// Build effect
-	terr_eff.build();
+	terr_eff->build();
+	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["terr"], &materials["plane"], terrTextList, &terr_eff, light, terrn);
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["terr"], &materials["plane"], terrTextList, terr_eff, light, terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -135,13 +132,30 @@ bool load_content()
 
 	myScene->texList.push_back(waterText);
 
+
+	effect *water_eff = new effect;
+	water_eff->add_shader("..\\resources\\shaders\\phong2.vert", GL_VERTEX_SHADER);
+	water_eff->add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
+	water_eff->build();
+	myScene->effectList.push_back(water_eff);
+
+	effect *eff = new effect;
+
+	// Load in shaders
+	eff->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
+	eff->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+	// Build effect
+	eff->build();
+	myScene->effectList.push_back(eff);
+
+
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, &water_eff, light, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, water_eff, light, waterObj);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, &eff, light, object);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, eff, light, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], objTextList, &eff, light, object);
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], objTextList, eff, light, object);
 
 	myScene->plane->addChild(box, "box");
 
@@ -153,42 +167,25 @@ bool load_content()
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
 
-	water_eff.add_shader("..\\resources\\shaders\\phong2.vert", GL_VERTEX_SHADER);
-	water_eff.add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
-	water_eff.build();
-
-
-	// Load in shaders
-	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
-	eff.add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
-	// Build effect
-	eff.build();
-
-
     // ******************************
     // Create box geometry for skybox
     // ******************************
-	myScene->terr->generate_skybox(skybox, cube_map);
-  
+	myScene->terr->generate_skybox(skybox, cube_map, 1);  // SKY NUMBER ONE
+	//myScene->terr->generate_skybox(skyboxIn, cube_mapIn, 0);  // SKY NUMBER ONE
 	
     // *********************
     // Load in skybox effect
     // *********************
-	sky_eff.add_shader("..\\resources\\shaders\\skybox.vert", GL_VERTEX_SHADER);
-	sky_eff.add_shader("..\\resources\\shaders\\skybox.frag", GL_FRAGMENT_SHADER);
+	effect *sky_eff = new effect;
+	sky_eff->add_shader("..\\resources\\shaders\\skybox.vert", GL_VERTEX_SHADER);
+	sky_eff->add_shader("..\\resources\\shaders\\skybox.frag", GL_FRAGMENT_SHADER);
 
     // Build effect
-    sky_eff.build();
+    sky_eff->build();
+	myScene->effectList.push_back(sky_eff);
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], objTextList, &sky_eff, light, sky);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], objTextList, sky_eff, light, sky);
 	myScene->list.push_back(myScene->root);
-
-	//myScene->plane->addChild(myScene->root, "root");
-
-
-	// plane geometry not working
-	//root->addChild(plane, "plane");
-	//list.push_back(plane);
 
     return true;
 }
