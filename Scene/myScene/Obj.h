@@ -27,7 +27,7 @@ class Obj
 
 	bool visible;
 
-	//enum objType;
+	float myType;
 
 public:
 	Obj	();
@@ -38,11 +38,12 @@ public:
 		material* mate,
 		texture* texture,
 		effect* eff,
-		directional_light* light);
+		directional_light* light,
+		float myType);
 
-	void update(Obj* root, mat4 m, bool sky);
+	void update(Obj* root, mat4 m);
 
-	void render(Obj* root, bool sky);
+	void render(Obj* root);
 
 	void addChild(Obj* child, string name);
 

@@ -251,7 +251,7 @@ bool load_content()
     geometry geom;
 
     // Load height map
-    texture height_map("..\\resources\\textures\\heightmaps\\terrain.png");
+    texture height_map("..\\resources\\textures\\heightmaps\\myHeightMap.png");
 
     // Generate terrain
     generate_terrain(geom, height_map, 20, 20, 2.0f);
@@ -291,7 +291,7 @@ bool load_content()
 	mat.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	mat.set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
 	mat.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	mat.set_shininess(25.0f);
+	mat.set_shininess(100.0f);
 	terr.set_material(mat);
 
 	// ambient intensity (0.3, 0.3, 0.3)
@@ -427,17 +427,30 @@ bool render()
 	// ************
 	// Bind texture
 	// ************
+
+
+
+/*
 	renderer::bind(*tex[0], 0);
 	renderer::bind(*tex[1], 1);
 	renderer::bind(*tex[2], 2);
-	renderer::bind(*tex[3], 3);
+	renderer::bind(*tex[3], 3);*/
 
+	for (int i = 0; i < tex.size(); ++i)
+	{
+		renderer::bind(*tex[i], i);
+		stringstream stream;
+		stream << "tex[" << i << "]";
+		
+		glUniform1i(eff.get_uniform_location(stream.str()), i);
+
+	}
 	
-
-	glUniform1i(eff.get_uniform_location("tex[0]"), 0);
-	glUniform1i(eff.get_uniform_location("tex[1]"), 1);
-	glUniform1i(eff.get_uniform_location("tex[2]"), 2);
-	glUniform1i(eff.get_uniform_location("tex[3]"), 3);
+	
+	
+	//glUniform1i(eff.get_uniform_location("tex[1]"), 1);
+	//glUniform1i(eff.get_uniform_location("tex[2]"), 2);
+	//glUniform1i(eff.get_uniform_location("tex[3]"), 3);
 
 
     // Render terrain

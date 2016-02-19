@@ -9,6 +9,7 @@ map<string, mesh> meshes;
 map<string, material> materials;
 
 SceneManager* myScene;  // pointer to a scene manager!
+enum objType { sky, terrain, water, object }; // global enum
 
 bool initialise()
 {
@@ -98,11 +99,11 @@ bool load_content()
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], texturePtr, &eff, light);
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], texturePtr, &eff, light, object);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], texturePtr, &eff, light);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], texturePtr, &eff, light, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], texturePtr, &eff, light);
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], texturePtr, &eff, light, object);
 
 	myScene->plane->addChild(box, "box");
 	box->addChild(pyra, "pyramid");
@@ -194,7 +195,7 @@ bool load_content()
     // Build effect
     sky_eff.build();
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], texturePtr, &sky_eff, light);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], texturePtr, &sky_eff, light, sky);
 	myScene->list.push_back(myScene->root);
 
 	//myScene->plane->addChild(myScene->root, "root");
@@ -266,19 +267,18 @@ bool update(float delta_time)
 
 	myScene->cam->update(delta_time);  // update the camera
 	
-	bool sky = true;					// Set skybox flag so root position to camera position(camera in centre of skybox)
-	myScene->root->update(myScene->root, mat4(1), sky);
+	myScene->root->update(myScene->root, mat4(1));
 
-	myScene->plane->update(myScene->plane, mat4(1), false);
+	myScene->plane->update(myScene->plane, mat4(1));
     return true;
 }
 
 bool render()
 {
 
-	myScene->root->render(myScene->root, true);  // is sky true (enable/disable depth)
+	myScene->root->render(myScene->root);  // is sky true (enable/disable depth)
 
-	myScene->plane->render(myScene->plane, false); // check -p;lane
+	myScene->plane->render(myScene->plane); // check -p;lane
 
     return true;
 }
@@ -295,7 +295,7 @@ void main()
     // Run application
     application.run();
 
-	for (int i = 0; i < myScene->list.size(); ++i)          //// getting a memory leak without this regardless of release method...
+	for (uint i = 0; i < myScene->list.size(); ++i)          //// getting a memory leak without this regardless of release method...
 		delete myScene->list[i];
 
 	myScene->list.clear();

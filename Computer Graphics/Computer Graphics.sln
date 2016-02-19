@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libENUgraphics", "libENUgraphics\libENUgraphics.vcxproj", "{A943724C-1DC0-4711-9539-B78A8D6ECEC7}"
 EndProject
@@ -147,6 +147,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "textures", "textures", "{CF
 		resources\textures\Mars.dds = resources\textures\Mars.dds
 		resources\textures\mtnRange_CO.bmp = resources\textures\mtnRange_CO.bmp
 		resources\textures\mtnRange_HT.bmp = resources\textures\mtnRange_HT.bmp
+		..\Scene\resources\textures\heightmaps\myHeightMap.png = ..\Scene\resources\textures\heightmaps\myHeightMap.png
 		resources\textures\N2d_000.tga = resources\textures\N2d_000.tga
 		resources\textures\nhk_16.tga = resources\textures\nhk_16.tga
 		resources\textures\nhk_32.tga = resources\textures\nhk_32.tga
@@ -654,7 +655,7 @@ Global
 		{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
 		{4C6F7C7F-C253-48FE-A553-4410B949E275} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
-		{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
 		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
+		{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
 	EndGlobalSection
 EndGlobal

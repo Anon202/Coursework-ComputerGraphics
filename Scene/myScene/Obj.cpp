@@ -1,5 +1,5 @@
 #include "Obj.h"
-
+enum objType { sky, terrain, water, object }; // global enum
 
 Obj::Obj()
 {
@@ -8,7 +8,7 @@ Obj::Obj()
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, texture* texture,
 	effect* eff,
-	directional_light* light)
+	directional_light* light, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
 	mat4 R = rotate(mat4(1.0f), theta, vec3(1.0, 0.0, 0.0));
@@ -23,9 +23,13 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->tex = texture;
 	this->eff = eff;
 	this->light = light;
+
+	this->myType = myType;
+
+	
 }
 
-void Obj::update(Obj* root, mat4 mparent, bool sky)
+void Obj::update(Obj* root, mat4 mparent)
 {
 	// used to recurse through children and concatenate transforms
 
@@ -35,7 +39,7 @@ void Obj::update(Obj* root, mat4 mparent, bool sky)
 
 	camera* cam = myScene->cam;			 // camera pointer 
 
-	if (sky)  // if sky box, transform has to move with camera. 
+	if (root->myType == sky)  // if sky box, transform has to move with camera. 
 	{
 		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
 		mat4 trans = translate(mat4(1.0f), difference);		
@@ -49,7 +53,7 @@ void Obj::update(Obj* root, mat4 mparent, bool sky)
 	for (auto &e : root->children)
 	{
 		Obj* child = e.second;
-		update(child, root->mworld, false);
+		update(child, root->mworld);
 	}
 }
 
@@ -59,7 +63,7 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
-void Obj::render(Obj* root, bool sky)
+void Obj::render(Obj* root)//, bool sky)
 {
 	/*
 	 * method to recurse through branch and render all objects
@@ -79,7 +83,7 @@ void Obj::render(Obj* root, bool sky)
 	// calculate MVP from world
 	auto MVP = P * V * root->mworld;
 
-	if (sky)
+	if (root->myType == sky)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
@@ -118,13 +122,14 @@ void Obj::render(Obj* root, bool sky)
 	// set texture uniform
 	glUniform1i(root->eff->get_uniform_location("tex"), 0);
 
+
 	// set eye position (from active camera)
 	glUniform3f(root->eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
 	// render mesh
 	renderer::render(*root->m);
 
-	if (sky)
+	if (root->myType == sky)
 	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
@@ -134,7 +139,7 @@ void Obj::render(Obj* root, bool sky)
 	for (auto &e : root->children)
 	{
 		Obj* child = e.second;
-		render(child, false);
+		render(child);
 	}
 
 }

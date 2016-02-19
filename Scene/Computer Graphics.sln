@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libENUgraphics", "libENUgraphics\libENUgraphics.vcxproj", "{A943724C-1DC0-4711-9539-B78A8D6ECEC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{96425147-A5FD-4D64-8E08-00A3BF701D94}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\heightmaps\myHeightMap.png = resources\textures\heightmaps\myHeightMap.png
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B}"
 	ProjectSection(SolutionItems) = preProject
