@@ -47,8 +47,10 @@ void SceneManager::Release()
 
 	cameraList.clear();
 
-	for (int i = 0; i < texList.size(); ++i)
-		delete texList[i];
-
+	for (int i = 0; i < texList.size(); ++i)			// texlist is a vector list of a vector list of texture pointers
+	{
+		for (int j = 0; j < texList[i].size(); ++j)     // for each element in texlist delete each element of list inside
+			delete texList[i][j]; 
+	}
 	texList.clear();
 }

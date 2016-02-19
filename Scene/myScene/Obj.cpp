@@ -6,7 +6,7 @@ Obj::Obj()
 }
 
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
-	mesh* me, material* mate, texture* texture,
+	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff,
 	directional_light* light, float myType)
 {
@@ -17,14 +17,13 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	mat4 trans = T * (R* S);
 
-	this->mlocal = trans;
+	this->mlocal = trans;		// copy vars
 	this->m = me;
 	this->mat = mate;
-	this->tex = texture;
 	this->eff = eff;
 	this->light = light;
-
 	this->myType = myType;
+	this->tex = texture;
 
 	
 }
@@ -117,10 +116,19 @@ void Obj::render(Obj* root)//, bool sky)
 	// Bind Materials/lights/texture
 	renderer::bind(*root->mat, "mat");
 	renderer::bind(*root->light, "light");
-	renderer::bind(*root->tex, 0);
+	
+	for (int i = 0; i < root->tex.size(); ++i)  // bind every texture from object's list
+	{
+		renderer::bind(*tex[i], i);
+		stringstream stream;
+		stream << "tex[" << i << "]";
+
+		glUniform1i(root->eff->get_uniform_location(stream.str()), i);
+	}
+		//renderer::bind(*root->tex, 0);
 	
 	// set texture uniform
-	glUniform1i(root->eff->get_uniform_location("tex"), 0);
+	//glUniform1i(root->eff->get_uniform_location("tex"), 0);
 
 
 	// set eye position (from active camera)

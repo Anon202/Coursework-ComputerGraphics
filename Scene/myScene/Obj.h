@@ -14,7 +14,6 @@ class Obj
 	mat4				mworld;
 	mesh*				m;
 	material*			mat;
-	texture*			tex;
 	effect*				eff;
 	directional_light*	light;
 
@@ -22,7 +21,9 @@ class Obj
 
 	vec3				cent;    // to create bounding spheres
 	float r;
+	//texture*			tex;
 
+	vector<texture*> tex;
 	map<string, Obj*>   children;  // map of children object pointers
 
 	bool visible;
@@ -36,7 +37,7 @@ public:
 		vec3 scale,
 		mesh* me,
 		material* mate,
-		texture* texture,
+		vector<texture*> texture,
 		effect* eff,
 		directional_light* light,
 		float myType);
