@@ -9,6 +9,8 @@ cubemap cube_mapIn;
 map<string, mesh> meshes;
 map<string, material> materials;
 
+float rho = 0.0f;
+
 SceneManager* myScene;  // pointer to a scene manager!
 
 bool initialise()
@@ -192,6 +194,10 @@ bool load_content()
 
 bool update(float delta_time)
 {
+	// rotation angle increment
+	rho += pi<float>() * delta_time * 0.005f;
+
+
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_F))
@@ -282,7 +288,7 @@ void main()
 
 	myScene->list.clear();
 
-	//myScene->Release(); // method to free memory and delete pointers
+	// method to free memory and delete pointers
 	delete myScene;
 	myScene = NULL;
 }

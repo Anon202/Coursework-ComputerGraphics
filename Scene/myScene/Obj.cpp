@@ -34,15 +34,16 @@ void Obj::update(Obj* root, mat4 mparent)
 	//transform by camera positon
 
 	extern SceneManager* myScene;
+	extern float rho;
 
 	camera* cam = myScene->cam;			 // camera pointer 
 
 	if (root->myType == sky)  // if sky box, transform has to move with camera. 
 	{
 		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
-		mat4 trans = translate(mat4(1.0f), difference);		
+		mat4 trans = translate(mat4(1.0f), difference);
 		
-		mat4 rotation = rotate(mat4(1.0f), root->theta, vec3(0.0, 1.0, 0.0));
+		mat4 rotation = rotate(mat4(1.0f), rho, vec3(0.0, 1.0, 0.0));
 
 		root->mworld = trans * rotation * root->mlocal;										// update transform
 	}
@@ -64,7 +65,7 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
-void Obj::render(Obj* root)//, bool sky)
+void Obj::render(Obj* root)
 {
 	/*
 	 * method to recurse through branch and render all objects
