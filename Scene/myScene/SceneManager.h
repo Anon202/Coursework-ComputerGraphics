@@ -24,7 +24,7 @@ public:
 
 	vector<camera*> cameraList;
 	vector<vector<texture*>> texList;
-	enum objType { sky, terrain, water, object }; //  enum
+	enum objType { sky, terrn, water, object }; //  enum
 	
 
 	vector<Obj*> list;

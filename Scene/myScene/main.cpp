@@ -3,13 +3,15 @@
 mesh skybox;
 effect eff;
 effect sky_eff;
+
+effect terr_eff;
 cubemap cube_map;
 
 map<string, mesh> meshes;
 map<string, material> materials;
 
 SceneManager* myScene;  // pointer to a scene manager!
-enum objType { sky, terrain, water, object }; // global enum
+enum objType { sky, terrn, water, object }; // global enum
 
 bool initialise()
 {
@@ -61,9 +63,234 @@ bool initialise()
 	return true;
 }
 
+
+void generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
+{
+	// Contains our position data
+	vector<vec3> positions;
+	// Contains our normal data
+	vector<vec3> normals;
+	// Contains our texture coordinate data
+	vector<vec2> tex_coords;
+	// Contains our texture weights
+	vector<vec4> tex_weights;
+	// Contains our index data
+	vector<unsigned int> indices;
+
+	// ***************************************
+	// Extract the texture data from the image
+	// ***************************************
+	glBindTexture(GL_TEXTURE_2D, height_map.get_id());
+	auto data = new vec4[height_map.get_width() * height_map.get_height()];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void*)data);
+
+
+	// Determine ratio of height map to geometry
+	float width_point = static_cast<float>(width) / static_cast<float>(height_map.get_width());
+	float depth_point = static_cast<float>(depth) / static_cast<float>(height_map.get_height());
+
+	// Point to work on
+	vec3 point;
+
+	// ***********************************************************************
+	// Part 1 - Iterate through each point, calculate vertex and add to vector
+	// ***********************************************************************
+	for (int x = 0; x < height_map.get_width(); ++x)
+	{
+		// *****************************
+		// Calculate x position of point
+		// *****************************
+		float w2 = width / 2;
+		point.x = -w2 + (width_point * x);
+
+		for (int z = 0; z < height_map.get_height(); ++z)
+		{
+			// *****************************
+			// Calculate z position of point
+			// *****************************
+			float d2 = depth / 2;
+			point.z = -d2 + (depth_point*z);
+
+			// ****************************************************
+			// Y position based on red component of height map data
+			// ****************************************************
+
+			point.y = data[(z * height_map.get_width()) + x].y * height_scale;
+			// **************************
+			// Add point to position data
+			// **************************
+			positions.push_back(point);
+		}
+	}
+
+	// ***********************
+	// Part 1 - Add index data
+	// ***********************
+	for (unsigned int x = 0; x < height_map.get_width() - 1; ++x)
+	{
+		for (unsigned int y = 0; y < height_map.get_height() - 1; ++y)
+		{
+			// *************************
+			// Get four corners of patch
+			// *************************
+			int top_left = (y * height_map.get_width()) + x;
+			int top_right = (y * height_map.get_width()) + x + 1;
+			int bottom_left = ((y + 1)*height_map.get_width()) + x;
+			int bottom_right = ((y + 1)*height_map.get_height()) + x + 1;
+
+			// ********************************
+			// Push back indices for triangle 1
+			// ********************************
+			indices.push_back(top_left);
+			indices.push_back(bottom_right);
+			indices.push_back(bottom_left);
+
+			// ********************************
+			// Push back indices for triangle 2
+			// ********************************
+			indices.push_back(top_left);
+			indices.push_back(top_right);
+			indices.push_back(bottom_right);
+
+		}
+	}
+
+	////// GL POLYGON MODE
+
+	// Resize the normals buffer
+	normals.resize(positions.size());
+
+	// *********************************************
+	// Part 2 - Calculate normals for the height map
+	// *********************************************
+	for (unsigned int i = 0; i < indices.size() / 3; ++i)
+	{
+		// ****************************
+		// Get indices for the triangle
+		// ****************************
+		int idx1 = indices[i * 3];
+		int idx2 = indices[i * 3 + 1];
+		int idx3 = indices[i * 3 + 2];
+
+		// ***********************************
+		// Calculate two sides of the triangle
+		// ***********************************
+		vec3 side1 = positions[idx1] - positions[idx3];
+		vec3 side2 = positions[idx1] - positions[idx2];
+
+
+		// ******************************************
+		// Normal is cross product of these two sides
+		// ******************************************
+		vec3 n = cross(side2, side1);
+
+		// **********************************************************************
+		// Add to normals in the normal buffer using the indices for the triangle
+		// **********************************************************************
+		normals[idx1] += n;
+		normals[idx2] += n;
+		normals[idx3] += n;
+
+	}
+
+	// *************************
+	// Part 2 - Normalize all the normals
+	// *************************
+	for (auto &n : normals)
+	{
+		n = normalize(n);
+	}
+
+	// *********************************************
+	// Part 3 - Add texture coordinates for geometry
+	// *********************************************
+	for (unsigned int x = 0; x < height_map.get_width(); ++x)
+	{
+		for (unsigned int z = 0; z < height_map.get_height(); ++z)
+		{
+			vec2 v;
+			v.x = width_point * x;
+			v.y = depth_point * z;
+			tex_coords.push_back(v);
+		}
+	}
+
+	// **************************************************
+	// Part 4 - Calculate texture weights for each vertex
+	// **************************************************
+	for (unsigned int x = 0; x < height_map.get_width(); ++x)
+	{
+		for (unsigned int z = 0; z < height_map.get_height(); ++z)
+		{
+			// ********************
+			// Calculate tex weight
+			// ********************
+			vec4 w;
+			w.x = clamp((1.0 - (length(data[height_map.get_width() * z + x].y) / 0.25)), 0.0, 1.0);
+			w.y = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.15) / 0.25)), 0.0, 1.0);
+			w.z = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.5) / 0.25)), 0.0, 1.0);
+			w.w = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.9) / 0.25)), 0.0, 1.0);
+
+			// ********************************
+			// Sum the components of the vector
+			// ********************************
+			float total = w.x + w.y + w.z + w.w;
+
+			// ********************
+			// Divide weight by sum
+			// ********************
+			w = w / total;
+
+			// *************************
+			// Add tex weight to weights
+			// *************************
+			tex_weights.push_back(w);
+		}
+	}
+
+	// *************************************
+	// Add necessary buffers to the geometry
+	// *************************************
+	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	geom.add_index_buffer(indices);
+	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
+	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	geom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
+
+	// ***********
+	// Delete data
+	// ***********
+	delete data;
+}
+
+
 bool load_content()
 {
-	//map<string, mesh> meshes = myScene->meshes;
+	directional_light* light = myScene->light;  // create local pointer to the scenes light
+	
+
+	// CREATE TERRAIN
+	geometry terrGeom; // geom to load into
+	
+	// Load height map
+	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMap.png");
+
+	// Generate terrain
+	generate_terrain(terrGeom, height_map, 20, 20, 2.0f);
+
+	// create terrain object
+
+	// Use geometry to create terrain mesh
+	meshes["terr"] = mesh(terrGeom);
+	
+	vector<texture*> terrTextList;				// local list of textures
+
+	terrTextList.push_back( new texture("..\\resources\\textures\\sand.dds"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\grass.dds"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\rock.dds"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\snow.dds"));
+
+	myScene->texList.push_back(terrTextList);
 
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -87,20 +314,24 @@ bool load_content()
 		e.second.set_shininess(2.0f);
 	}
 
+	
+	terr_eff.add_shader("shader.vert", GL_VERTEX_SHADER);
+	terr_eff.add_shader("shader.frag", GL_FRAGMENT_SHADER);
+	terr_eff.add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
+	// Build effect
+	terr_eff.build();
 
-	// **************************
-	// Load texture - checked.gif
-	// **************************
 
-	directional_light* light = myScene->light;  // create local pointer to the scenes light
-	vector<texture*> objTextList; // local list of textures
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], terrTextList, &terr_eff, light, terrn);
+
+	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
 
 	myScene->texList.push_back(objTextList);
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], objTextList, &eff, light, object);
+	//myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], objTextList, &eff, light, object);
 
 	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, &eff, light, object);
 

@@ -428,14 +428,6 @@ bool render()
 	// Bind texture
 	// ************
 
-
-
-/*
-	renderer::bind(*tex[0], 0);
-	renderer::bind(*tex[1], 1);
-	renderer::bind(*tex[2], 2);
-	renderer::bind(*tex[3], 3);*/
-
 	for (int i = 0; i < tex.size(); ++i)
 	{
 		renderer::bind(*tex[i], i);
@@ -446,13 +438,6 @@ bool render()
 
 	}
 	
-	
-	
-	//glUniform1i(eff.get_uniform_location("tex[1]"), 1);
-	//glUniform1i(eff.get_uniform_location("tex[2]"), 2);
-	//glUniform1i(eff.get_uniform_location("tex[3]"), 3);
-
-
     // Render terrain
     renderer::render(terr);
 
