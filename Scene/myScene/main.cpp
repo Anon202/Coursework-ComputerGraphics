@@ -3,6 +3,7 @@
 mesh skybox;
 effect eff;
 effect sky_eff;
+effect water_eff;
 
 effect terr_eff;
 cubemap cube_map;
@@ -11,7 +12,6 @@ map<string, mesh> meshes;
 map<string, material> materials;
 
 SceneManager* myScene;  // pointer to a scene manager!
-enum objType { sky, terrn, water, object }; // global enum
 
 bool initialise()
 {
@@ -266,6 +266,7 @@ void generate_terrain(geometry &geom, const texture &height_map, unsigned int wi
 
 bool load_content()
 {
+
 	directional_light* light = myScene->light;  // create local pointer to the scenes light
 	
 
@@ -293,7 +294,7 @@ bool load_content()
 	myScene->texList.push_back(terrTextList);
 
 	// Create plane mesh
-	meshes["plane"] = mesh(geometry_builder::create_plane());
+	meshes["plane"] = mesh(geometry_builder::create_plane(200,200));
 
 	// Create scene
 	meshes["box"] = mesh(geometry_builder::create_box());
@@ -322,27 +323,41 @@ bool load_content()
 	terr_eff.build();
 
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], terrTextList, &terr_eff, light, terrn);
+	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["terr"], &materials["plane"], terrTextList, &terr_eff, light, terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
 
 	myScene->texList.push_back(objTextList);
 
+
+	vector<texture*> waterText;
+	waterText.push_back(new texture("..\\resources\\textures\\checked.gif"));
+
+	myScene->texList.push_back(waterText);
+
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	//myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], objTextList, &eff, light, object);
+	Obj *water = new Obj(vec3(0.0f, 0.3f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, &water_eff, light, waterObj);
 
 	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, &eff, light, object);
 
 	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], objTextList, &eff, light, object);
 
 	myScene->plane->addChild(box, "box");
-	box->addChild(pyra, "pyramid");
 
+	myScene->plane->addChild(water, "water");
+
+	box->addChild(pyra, "pyramid");
+	myScene->list.push_back(water);
 	myScene->list.push_back(myScene->plane);
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
+
+	water_eff.add_shader("..\\resources\\shaders\\phong2.vert", GL_VERTEX_SHADER);
+	water_eff.add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
+	water_eff.build();
+
 
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);

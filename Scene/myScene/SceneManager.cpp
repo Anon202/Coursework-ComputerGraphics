@@ -20,6 +20,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 void SceneManager::Create()
 {
+
 	light = new directional_light; 
 	light->set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 

@@ -10,6 +10,8 @@ using namespace graphics_framework;
 using namespace glm;
 
 class Obj;				// forward declaration of object
+
+enum objType { sky, terrn, waterObj, object }; //  enum
 class SceneManager
 {
 	
@@ -24,7 +26,7 @@ public:
 
 	vector<camera*> cameraList;
 	vector<vector<texture*>> texList;
-	enum objType { sky, terrn, water, object }; //  enum
+	
 	
 
 	vector<Obj*> list;

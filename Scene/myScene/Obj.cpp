@@ -1,5 +1,4 @@
 #include "Obj.h"
-enum objType { sky, terrain, water, object }; // global enum
 
 Obj::Obj()
 {
@@ -113,13 +112,21 @@ void Obj::render(Obj* root)//, bool sky)
 		GL_FALSE,
 		value_ptr(N));
 
+
+	if (waterObj)
+	{
+		static float dd = 0.0f;
+		dd += 0.002f;
+		glUniform1f(root->eff->get_uniform_location("myTime"), dd );
+	}
+
 	// Bind Materials/lights/texture
 	renderer::bind(*root->mat, "mat");
 	renderer::bind(*root->light, "light");
 	
 	for (int i = 0; i < root->tex.size(); ++i)  // bind every texture from object's list
 	{
-		renderer::bind(*tex[i], i);
+		renderer::bind(*root->tex[i], i);
 		stringstream stream;
 		stream << "tex[" << i << "]";
 
