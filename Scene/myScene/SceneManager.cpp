@@ -6,8 +6,9 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	cam = NULL;
 	root = NULL;
 	plane = NULL;
-	
+	terr = NULL;
 
+	
 	// copy vars
 	initialX = initialMouseX;
 	initialY = initialMouseY;
@@ -16,11 +17,12 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	current_y = 0;
 
 	firstMouse = false;
+
 }
 
 void SceneManager::Create()
 {
-
+	
 	light = new directional_light; 
 	light->set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
 
@@ -30,17 +32,19 @@ void SceneManager::Create()
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
 
+
 }
 
-void SceneManager::Release()
+SceneManager::~SceneManager()
 {
 	delete light;
 	light = NULL;
 
-	for (int i = 0; i < list.size(); ++i)
-		delete list[i];
+	/*for (uint i = 0; i < this->list.size(); ++i)
+		delete &list[i];*/
 
-	list.clear();
+	//this->list->clear();
+	
 
 
 	for (int i = 0; i < cameraList.size(); ++i)
