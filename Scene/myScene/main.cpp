@@ -86,7 +86,7 @@ bool load_content()
 	vector<texture*> terrTextList;				// local list of textures
 
 	terrTextList.push_back( new texture("..\\resources\\textures\\sand.dds"));
-	terrTextList.push_back( new texture("..\\resources\\textures\\grass.dds"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\oranger.jpg"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\rock.dds"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\snow.dds"));
 
@@ -131,13 +131,13 @@ bool load_content()
 
 
 	vector<texture*> waterText;
-	waterText.push_back(new texture("..\\resources\\textures\\checked.gif"));
+	waterText.push_back(new texture("..\\resources\\textures\\water.jpg"));
 
 	myScene->texList.push_back(waterText);
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	Obj *water = new Obj(vec3(0.0f, 0.3f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, &water_eff, light, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, &water_eff, light, waterObj);
 
 	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, &eff, light, object);
 
@@ -168,69 +168,8 @@ bool load_content()
     // ******************************
     // Create box geometry for skybox
     // ******************************
-    geometry geom;
-    geom.set_type(GL_QUADS);
-    vector<vec3> positions
-    { 
-		// Face 4
-		vec3(-1.0, 1.0, -1.0), // 5
-		vec3(-1.0, 1.0, 1.0), //1
-		vec3(-1.0, -1.0, 1.0), // 2
-		vec3(-1.0, -1.0, -1.0), //7
-
-		// Face 3
-		vec3(1.0, 1.0, 1.0), // 4
-		vec3(1.0, 1.0, -1.0), //6
-		vec3(1.0, -1.0, -1.0), // 8
-		vec3(1.0, -1.0, 1.0), // 3
-
-		// Face 5
-		vec3(-1.0, 1.0, -1.0), // 5
-		vec3(1.0, 1.0, -1.0), //6
-		vec3(1.0, 1.0, 1.0), // 4
-		vec3(-1.0, 1.0, 1.0), //1
-
-		// Face 6
-		vec3(-1.0, -1.0, 1.0), // 2
-		vec3(1.0, -1.0, 1.0), // 3
-		vec3(1.0, -1.0, -1.0), // 8
-		vec3(-1.0, -1.0, -1.0), //7
-
-		// Face 2
-		vec3(-1.0, -1.0, -1.0), //7
-		vec3(1.0, -1.0, -1.0),  // 8
-		vec3(1.0, 1.0, -1.0),   //6
-		vec3(-1.0, 1.0, -1.0),  // 5
-
-		// Face 1
-		vec3(1.0, -1.0, 1.0),	// 3
-		vec3(-1.0, -1.0, 1.0),	// 2
-		vec3(-1.0, 1.0, 1.0),	//1
-		vec3(1.0, 1.0, 1.0),    // 4
-    };
-
-    geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
-	skybox = mesh(geom);
-
-    // ******************************************************
-    // Load the cubemap
-    // - create array of six filenames +x, -x, +y, -y, +z, -z
-    // ******************************************************
-	array<string, 6> filenames =
-	{
-		"..\\resources\\textures\\cubemaps\\alien\\posx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posz.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
-	};
-
-    // ***************
-    // Create cube_map
-    // ***************
-	cube_map = cubemap(filenames);
-
+	myScene->terr->generate_skybox(skybox, cube_map);
+  
 	
     // *********************
     // Load in skybox effect

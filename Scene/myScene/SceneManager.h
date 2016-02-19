@@ -2,14 +2,14 @@
 
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
-#include "GenTerrain.h"
+#include "GenerateBack.h"
 
 
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
-class GenTerrain;
+class GenerateBack;
 class Obj;				// forward declaration of object
 
 
@@ -22,7 +22,7 @@ public:
 	Obj* root;
 	Obj* plane;
 
-	GenTerrain* terr;
+	GenerateBack* terr;
 
 	directional_light* light;
 

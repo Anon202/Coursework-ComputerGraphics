@@ -9,16 +9,20 @@ using namespace std;
 using namespace graphics_framework;
 using namespace glm;
 
-class GenTerrain
+class GenerateBack
 {
 public:
-	GenTerrain();
+	GenerateBack();
 	void generate_terrain(
 		geometry &geom,
 		const texture &height_map,
 		unsigned int width,
 		unsigned int depth,
 		float height_scale);
+
+	void generate_skybox(
+		mesh &skybox,
+		cubemap &cube_map);
 
 };
 

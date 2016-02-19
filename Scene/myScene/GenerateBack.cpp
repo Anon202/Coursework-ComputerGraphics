@@ -1,13 +1,79 @@
-#include "GenTerrain.h"
+#include "GenerateBack.h"
 
 
-GenTerrain::GenTerrain()
+GenerateBack::GenerateBack()
 {
 	
 }
 
+void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map)
+{
+	geometry geom;
+	geom.set_type(GL_QUADS);
+	vector<vec3> positions
+	{
+		// Face 4
+		vec3(-1.0, 1.0, -1.0), // 5
+		vec3(-1.0, 1.0, 1.0), //1
+		vec3(-1.0, -1.0, 1.0), // 2
+		vec3(-1.0, -1.0, -1.0), //7
 
-void GenTerrain::generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
+		// Face 3
+		vec3(1.0, 1.0, 1.0), // 4
+		vec3(1.0, 1.0, -1.0), //6
+		vec3(1.0, -1.0, -1.0), // 8
+		vec3(1.0, -1.0, 1.0), // 3
+
+		// Face 5
+		vec3(-1.0, 1.0, -1.0), // 5
+		vec3(1.0, 1.0, -1.0), //6
+		vec3(1.0, 1.0, 1.0), // 4
+		vec3(-1.0, 1.0, 1.0), //1
+
+		// Face 6
+		vec3(-1.0, -1.0, 1.0), // 2
+		vec3(1.0, -1.0, 1.0), // 3
+		vec3(1.0, -1.0, -1.0), // 8
+		vec3(-1.0, -1.0, -1.0), //7
+
+		// Face 2
+		vec3(-1.0, -1.0, -1.0), //7
+		vec3(1.0, -1.0, -1.0),  // 8
+		vec3(1.0, 1.0, -1.0),   //6
+		vec3(-1.0, 1.0, -1.0),  // 5
+
+		// Face 1
+		vec3(1.0, -1.0, 1.0),	// 3
+		vec3(-1.0, -1.0, 1.0),	// 2
+		vec3(-1.0, 1.0, 1.0),	//1
+		vec3(1.0, 1.0, 1.0),    // 4
+	};
+
+	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
+	skybox = mesh(geom);
+
+	// ******************************************************
+	// Load the cubemap
+	// - create array of six filenames +x, -x, +y, -y, +z, -z
+	// ******************************************************
+	array<string, 6> filenames =
+	{
+		"..\\resources\\textures\\cubemaps\\alien\\posx.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negx.png",
+		"..\\resources\\textures\\cubemaps\\alien\\posy.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negy.png",
+		"..\\resources\\textures\\cubemaps\\alien\\posz.png",
+		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
+	};
+
+	// ***************
+	// Create cube_map
+	// ***************
+	cube_map = cubemap(filenames);
+
+}
+
+void GenerateBack::generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
 {
 	// Contains our position data
 	vector<vec3> positions;
@@ -205,3 +271,4 @@ void GenTerrain::generate_terrain(geometry &geom, const texture &height_map, uns
 	// ***********
 	delete data;
 }
+
