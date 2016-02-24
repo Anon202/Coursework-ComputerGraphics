@@ -10,11 +10,11 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	directional_light* light, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
-	this->R = rotate(mat4(1.0f), theta, rot);
+	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
 
-	mat4 trans = T * (R* S);
+	mat4 trans = T * (rotationMatrix* S);
 
 	this->mlocal = trans;		// copy vars
 	this->m = me;
@@ -24,61 +24,29 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
-	//this->R = R;
+	this->rotV = rot;
 	
 }
 
-/*
-void Obj::update(Obj* root, mat4 mparent)
+void Obj::update(Obj* parent, float delta_time)
 {
 	// used to recurse through children and concatenate transforms
 
 	//transform by camera positon
 
 	extern SceneManager* myScene;
-	extern float rho;
-
-	camera* cam = myScene->cam;			 // camera pointer 
-
-	if (root->myType == sky)  // if sky box, transform has to move with camera. 
-	{
-		vec3 difference = cam->get_position() - root->m->get_transform().position;  // get difference in position
-		mat4 trans = translate(mat4(1.0f), difference);
-		
-		mat4 rotation = rotate(mat4(1.0f), rho, vec3(0.0, 1.0, 0.0));
-
-		root->mworld = trans * rotation * root->mlocal;										// update transform
-	}
-	else
-	{
-		root->mworld = root->mlocal * mparent;
-	}
-
-	for (auto &e : root->children)
-	{
-		Obj* child = e.second;
-		update(child, myType == sky ? mat4(1.0f) : root->mworld);
-	}
-}
-*/
-void Obj::update(Obj* parent)
-{
-	// used to recurse through children and concatenate transforms
-
-	//transform by camera positon
-
-	extern SceneManager* myScene;
-	extern float rho;
 
 	camera* cam = myScene->cam;			 // camera pointer 
 
 	mworld = mlocal;
 
-	if (myType == sky){
+	if (myType == sky)
+	{
 		vec3 difference = cam->get_position() - m->get_transform().position;  // get difference in position
 		mat4 trans = translate(mat4(1.0f), difference);
 
-		mat4 rotation = R;//rotate(mat4(1.0f), rho, vec3(0.0, 1.0, 0.0));
+		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
+		theta += pi<float>() * delta_time * 0.005f;   // increment theta over time
 
 		mworld = trans * rotation * mworld;
 	}
@@ -89,11 +57,10 @@ void Obj::update(Obj* parent)
 				mworld *= parent->mworld;
 	}
 
-
 	for (auto &e : children)
 	{
 		Obj* child = e.second;
-		child->update(this);
+		child->update(this, delta_time);
 	}
 }
 
@@ -103,7 +70,7 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
-void Obj::render(Obj* root)
+void Obj::render()
 {
 	/*
 	 * method to recurse through branch and render all objects
@@ -174,11 +141,6 @@ void Obj::render(Obj* root)
 
 		glUniform1i(eff->get_uniform_location(stream.str()), i);
 	}
-		//renderer::bind(*root->tex, 0);
-	
-	// set texture uniform
-	//glUniform1i(root->eff->get_uniform_location("tex"), 0);
-
 
 	// set eye position (from active camera)
 	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
@@ -196,7 +158,7 @@ void Obj::render(Obj* root)
 	for (auto &e : children)
 	{
 		Obj* child = e.second;
-		child->render(this);
+		child->render();
 	}
 
 }

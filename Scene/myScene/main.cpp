@@ -1,7 +1,5 @@
 #include "main.h"
 
-float rho = 0.0f;
-
 SceneManager* myScene;  // pointer to a scene manager!
 
 bool initialise()
@@ -200,7 +198,7 @@ bool load_content()
 	myScene->effectList.push_back(sky_eff);
 
 	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.6f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
 
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "rodddot");
@@ -212,9 +210,6 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	// rotation angle increment
-	rho += pi<float>() * delta_time * 0.005f;
-
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -273,7 +268,7 @@ bool update(float delta_time)
 
 	myScene->cam->update(delta_time);  // update the camera
 	
-	myScene->skybx->update(NULL);
+	myScene->skybx->update(NULL, delta_time); // null as no parent
 
 	//myScene->root->update(NULL);
     return true;
@@ -282,7 +277,7 @@ bool update(float delta_time)
 bool render()
 {
 
-	myScene->skybx->render(myScene->skybx);  // is sky true (enable/disable depth)
+	myScene->skybx->render();  // is sky true (enable/disable depth)
 
 	//myScene->root->render(myScene->root);
 

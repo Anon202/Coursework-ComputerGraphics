@@ -25,13 +25,14 @@ class Obj
 
 	float theta;
 
-	vector<texture*> tex;
+	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
 
 	bool visible;
 	
 
-	mat4 R;
+	mat4 rotationMatrix;
+	vec3 rotV;
 	float myType;
 
 public:
@@ -47,9 +48,9 @@ public:
 		float myType);
 
 	//void update(Obj* root, mat4 m);
-	void update(Obj* parent);
+	void update(Obj* parent, float time);
 
-	void render(Obj* root);
+	void render();
 
 	void addChild(Obj* child, string name);
 

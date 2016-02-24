@@ -47,7 +47,6 @@ public:
 
 	bool firstMouse;
 
-
 	SceneManager(double initialMouseX, double initialMouseY);
 	~SceneManager();
 	void Create();
