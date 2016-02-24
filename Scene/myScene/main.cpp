@@ -1,14 +1,5 @@
 #include "main.h"
 
-mesh skybox;
-cubemap cube_map;
-
-mesh skyboxIn;
-cubemap cube_mapIn;
-
-map<string, mesh> meshes;
-map<string, material> materials;
-
 float rho = 0.0f;
 
 SceneManager* myScene;  // pointer to a scene manager!
@@ -74,12 +65,12 @@ bool load_content()
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMap.png");
 
 	// Generate terrain
-	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 2.0f);
+	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 6.0f);
 
 	// create terrain object
 
 	// Use geometry to create terrain mesh
-	meshes["terr"] = mesh(terrGeom);
+	myScene->meshes["terr"] = mesh(terrGeom);
 	
 	vector<texture*> terrTextList;				// local list of textures
 
@@ -91,26 +82,29 @@ bool load_content()
 	myScene->texList.push_back(terrTextList);
 
 	// Create plane mesh
-	meshes["plane"] = mesh(geometry_builder::create_plane(200,200));
+	myScene->meshes["plane"] = mesh(geometry_builder::create_plane(200, 200));
 
 	// Create scene
-	meshes["box"] = mesh(geometry_builder::create_box());
-	meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
+	myScene->meshes["box"] = mesh(geometry_builder::create_box());
+	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
 
 	// Red box
-	materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	myScene->materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	// Blue pyramid
-	materials["pyramid"].set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	myScene->materials["pyramid"].set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 
 
-	for (auto &e : materials)
+	for (auto &e : myScene->materials)
 	{
 		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		e.second.set_shininess(2.0f);
 	}
+
+	// water needs high spec
+	myScene->materials["water"].set_shininess(0.5f);
 
 	effect *terr_eff = new effect;
 	terr_eff->add_shader("shader.vert", GL_VERTEX_SHADER);
@@ -121,7 +115,7 @@ bool load_content()
 	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->plane = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["terr"], &materials["plane"], terrTextList, terr_eff, light, terrn);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &myScene->meshes["terr"], &myScene->materials["plane"], terrTextList, terr_eff, light, terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -136,7 +130,7 @@ bool load_content()
 
 
 	effect *water_eff = new effect;
-	water_eff->add_shader("..\\resources\\shaders\\phong2.vert", GL_VERTEX_SHADER);
+	water_eff->add_shader("..\\resources\\shaders\\water.vert", GL_VERTEX_SHADER);
 	water_eff->add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
 	water_eff->build();
 	myScene->effectList.push_back(water_eff);
@@ -153,27 +147,27 @@ bool load_content()
 
 	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
 
-	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &meshes["plane"], &materials["plane"], waterText, water_eff, light, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["plane"], &myScene->materials["plane"], waterText, water_eff, light, waterObj);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &meshes["box"], &materials["box"], objTextList, eff, light, object);
+	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &meshes["pyramid"], &materials["pyramid"], objTextList, eff, light, object);
+	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
-	myScene->plane->addChild(box, "box");
+	myScene->root->addChild(box, "box");
 
-	myScene->plane->addChild(water, "water");
+	myScene->root->addChild(water, "water");
 
 	box->addChild(pyra, "pyramid");
 	myScene->list.push_back(water);
-	myScene->list.push_back(myScene->plane);
+	myScene->list.push_back(myScene->root);
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
 
     // ******************************
     // Create box geometry for skybox
     // ******************************
-	myScene->terr->generate_skybox(skybox, cube_map, 1);  // SKY NUMBER ONE
-	//myScene->terr->generate_skybox(skyboxIn, cube_mapIn, 0);  // SKY NUMBER ONE
+	myScene->terr->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
+	//myScene->terr->generate_skybox(skyboxIn, cube_mapIn, 0);  
 	
     // *********************
     // Load in skybox effect
@@ -186,8 +180,10 @@ bool load_content()
     sky_eff->build();
 	myScene->effectList.push_back(sky_eff);
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &skybox, &materials["skybox"], objTextList, sky_eff, light, sky);
-	myScene->list.push_back(myScene->root);
+	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
+	
+	//myScene->root->addChild(myScene->skybx, "skybox");  // not workign
+	myScene->list.push_back(myScene->skybx);
 
     return true;
 }
@@ -255,18 +251,18 @@ bool update(float delta_time)
 
 	myScene->cam->update(delta_time);  // update the camera
 	
-	myScene->root->update(myScene->root, mat4(1));
+	myScene->skybx->update(myScene->skybx, mat4(1));
 
-	myScene->plane->update(myScene->plane, mat4(1));
+	myScene->root->update(myScene->root, mat4(1));
     return true;
 }
 
 bool render()
 {
 
-	myScene->root->render(myScene->root);  // is sky true (enable/disable depth)
+	myScene->skybx->render(myScene->skybx);  // is sky true (enable/disable depth)
 
-	myScene->plane->render(myScene->plane); // check -p;lane
+	myScene->root->render(myScene->root);
 
     return true;
 }

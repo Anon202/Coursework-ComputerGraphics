@@ -4,8 +4,8 @@
 SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
 	cam = NULL;
+	skybx = NULL;
 	root = NULL;
-	plane = NULL;
 	terr = NULL;
 
 	

@@ -8,8 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{96425147-A5FD-4D64-8E08-00A3BF701D94}"
 	ProjectSection(SolutionItems) = preProject
 		resources\textures\heightmaps\myHeightMap.png = resources\textures\heightmaps\myHeightMap.png
-		resources\shaders\phong2.vert = resources\shaders\phong2.vert
 		resources\shaders\water.frag = resources\shaders\water.frag
+		resources\shaders\water.vert = resources\shaders\water.vert
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B}"

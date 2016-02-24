@@ -87,6 +87,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GenerateBack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -96,6 +97,7 @@
     <None Include="shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GenerateBack.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Obj.h" />
     <ClInclude Include="SceneManager.h" />

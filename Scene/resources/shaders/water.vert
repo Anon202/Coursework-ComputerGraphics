@@ -27,7 +27,7 @@ void main()
 {
 	vec3 position2 = position;
 
-	float y = sin(position2.x * 10.01 + myTime) * 0.3 + sin(position.z * 5.01f + myTime) * 0.2;
+	float y = sin(position2.x * 10.01 + myTime) * 0.3 + cos(position.z * 5.01f + myTime) * 0.2;
 
 	position2.y += y;
 

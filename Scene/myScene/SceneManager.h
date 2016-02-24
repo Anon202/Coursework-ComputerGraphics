@@ -19,8 +19,8 @@ class SceneManager
 	
 public:
 	
+	Obj* skybx;
 	Obj* root;
-	Obj* plane;
 
 	GenerateBack* terr;
 
@@ -38,7 +38,7 @@ public:
 
 	map<string, mesh> meshes;
 	map<string, material> materials;
-
+	map<string, cubemap> cubemaps;
 	
 	double initialX;	// vars for mouse positions initial
 	double initialY;
