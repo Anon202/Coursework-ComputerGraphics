@@ -170,11 +170,11 @@ void Obj::render()
 	renderer::bind(*mat, "mat");
 
 	
-	if (myType == pointLightObj)
+	if (myType == pointLightObj)  ////!!!!!
 	{
-		renderer::bind(*pointLight, "light");
-
-		// add uniforms for point light here
+		renderer::bind(*pointLight, "light");		
+		vec3 pos = m->get_transform().position;
+		glUniform3f(eff->get_uniform_location("lightPosition"), pos.x, pos.y, pos.z);
 	}
 	else
 	{

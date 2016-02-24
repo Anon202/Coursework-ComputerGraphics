@@ -34,7 +34,7 @@ void SceneManager::Create()
 
 	
 	pointLight = new point_light;
-	pointLight->set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	pointLight->set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	pointLight->set_range(20);
 	pointLight->set_position(vec3(0.0, 0.0, 0.0));
 	pointLight->set_constant_attenuation(0.5f);
@@ -49,11 +49,15 @@ SceneManager::~SceneManager()
 	delete light;
 	light = NULL;
 
-	/*for (uint i = 0; i < this->list.size(); ++i)
-		delete &list[i];*/
+	delete pointLight;
+	pointLight = NULL;
 
-	//this->list->clear();
-	
+
+/*	for (uint i = 0; i < list.size(); ++i)
+		delete list[i];
+
+	list.clear();
+	*/
 	for (int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];
 

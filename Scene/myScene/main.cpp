@@ -302,7 +302,7 @@ bool update(float delta_time)
 	myScene->cam->update(delta_time);  // update the camera
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
-
+	
 	//myScene->root->update(NULL);
     return true;
 }
@@ -329,6 +329,7 @@ void main()
     // Run application
     application.run();
 
+	
 	for (uint i = 0; i < myScene->list.size(); ++i)          //// getting a memory leak without this regardless of release method...
 		delete myScene->list[i];
 
