@@ -40,10 +40,14 @@ layout (location = 0) out vec4 colour;
 
 void main()
 {
+
+	vec4 tex_colour = texture2D(tex, tex_coord);
 	// *******************************************
 	// Get distance between point light and vertex
 	// *******************************************
 	float d = distance(point.position, position);
+
+
 
 	// ****************************
 	// Calculate attenuation factor
@@ -69,6 +73,12 @@ void main()
 	// ******************************************************************************
 	
 	//lightCol = vec4(0.5f, 1.0f, 1.0f, 1.0f);
+
+	if (d < 20)
+		lightCol = point.light_colour*tex_colour;
+	else
+		lightCol = vec4(0.0, 0.0, 0.0, 1.0)*tex_colour;
+
 
 	float dotD = dot(normal, light_dir);
 	float k = max(dotD, 0);
@@ -97,7 +107,7 @@ void main()
 	// **************
 	// Sample texture
 	// **************
-	vec4 tex_colour = texture2D(tex, tex_coord);
+	
 
 
 

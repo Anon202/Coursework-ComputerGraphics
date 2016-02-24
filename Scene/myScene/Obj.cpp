@@ -36,7 +36,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	// trying mat
 	
 }
-
+/*
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff,
@@ -61,7 +61,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	// trying mat
 
-}
+}*/
 
 void Obj::update(Obj* parent, float delta_time)
 {
@@ -169,15 +169,21 @@ void Obj::render()
 	// Bind Materials/lights/texture
 	renderer::bind(*mat, "mat");
 
-	/*if (pointLightObj)
+	/*
+	if (pointLightObj)
 	{
-		renderer::bind(*pointLight, "light");
+		//renderer::bind(*pointLight, "light");
 
 		// add uniforms for point light here
 	}
-	else*/
+	else
+	{
 		renderer::bind(*light, "light");
-	
+	}*/
+
+	renderer::bind(*light, "light");
+
+
 	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
 	{
 		renderer::bind(*tex[i], i);

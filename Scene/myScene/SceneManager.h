@@ -25,7 +25,7 @@ public:
 	GenerateBack* terr;
 
 	directional_light* light;
-	point_light* pointLight;
+	//point_light* pointLight;
 
 	camera* cam;
 
