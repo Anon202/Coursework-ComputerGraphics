@@ -63,7 +63,7 @@ void main()
 	colour.a = 1.0f;
 }*/
 
-/*
+
 #version 440
 
 // Point light information
@@ -180,4 +180,4 @@ void main()
 	colour = primary*tex_colour + specular;
 	colour.a = 1.0f;
 
-}*/
+}

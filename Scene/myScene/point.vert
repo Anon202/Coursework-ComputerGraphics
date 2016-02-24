@@ -33,7 +33,7 @@ void main()
 	vertex_tex_coord = tex_coord;
 
 }
-
+*/
 #version 440
 
 // The model matrix
@@ -72,4 +72,4 @@ void main()
 	tex_coord_out = tex_coord_in;
 
 
-}*/
+}

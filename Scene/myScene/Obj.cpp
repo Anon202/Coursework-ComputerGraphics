@@ -36,7 +36,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	// trying mat
 	
 }
-/*
+
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff,
@@ -61,7 +61,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	// trying mat
 
-}*/
+}
 
 void Obj::update(Obj* parent, float delta_time)
 {
