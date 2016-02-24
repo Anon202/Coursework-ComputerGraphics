@@ -1,12 +1,9 @@
 #pragma once
 
-#include <graphics_framework.h>
-#include <glm\glm.hpp>
+
 #include "SceneManager.h"
 
-using namespace std;
-using namespace graphics_framework;
-using namespace glm;
+
 
 class Obj
 {
@@ -30,8 +27,6 @@ class Obj
 
 	bool visible;
 	
-
-	mat4 rotationMatrix;
 	vec3 rotV;
 	float myType;
 
@@ -47,7 +42,6 @@ public:
 		directional_light* light,
 		float myType);
 
-	//void update(Obj* root, mat4 m);
 	void update(Obj* parent, float time);
 
 	void render();

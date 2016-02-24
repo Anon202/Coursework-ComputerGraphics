@@ -1,4 +1,15 @@
+
+
+
+
+#include <graphics_framework.h>
+#include <glm\glm.hpp>
 #include "Obj.h"
+
+
+using namespace std;
+using namespace graphics_framework;
+using namespace glm;
 
 Obj::Obj()
 {
@@ -14,7 +25,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mat4 S = scale(mat4(1.0f), scal);
 
 
-	mat4 trans = T * (rotationMatrix* S);
+	mat4 trans = T * (R* S);
 
 	this->mlocal = trans;		// copy vars
 	this->m = me;
@@ -25,6 +36,8 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->tex = texture;
 	this->theta = theta;
 	this->rotV = rot;
+
+	// trying mat
 	
 }
 
@@ -46,15 +59,17 @@ void Obj::update(Obj* parent, float delta_time)
 		mat4 trans = translate(mat4(1.0f), difference);
 
 		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
-		theta += pi<float>() * delta_time * 0.005f;   // increment theta over time
+		theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
 
 		mworld = trans * rotation * mworld;
 	}
 
 
 	if (parent){
-			if(parent->myType != sky && myType != sky)
-				mworld *= parent->mworld;
+		if (parent->myType != sky && myType != sky)
+		{
+			mworld *= parent->mworld;
+		}
 	}
 
 	for (auto &e : children)

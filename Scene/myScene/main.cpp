@@ -83,10 +83,13 @@ bool load_content()
 	myScene->meshes["water"] = mesh(geometry_builder::create_plane(200, 200));
 
 	// Create scene
-	myScene->meshes["box"] = mesh(geometry_builder::create_box());
+	myScene->meshes["box"] = mesh(geometry_builder::create_box());				// house shape
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
+
 	
-	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder());
+	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder());  // pillar
+
+	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
 
 	// Red box
 	myScene->materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -160,16 +163,18 @@ bool load_content()
 	myScene->effectList.push_back(norm_eff);
 
 	Obj *pillar = new Obj(vec3(-5.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
+	Obj *pillar2 = new Obj(vec3(15.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 
 	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, light, waterObj);
 
-	Obj *box = new Obj(vec3(-25.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
+	Obj *box = new Obj(vec3(30.0f, 15.0f,60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 10.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
 	myScene->root->addChild(box, "box");
 
 	myScene->root->addChild(pillar, "pillar");
+	pillar->addChild(pillar2, "pillar2");
 
 	myScene->root->addChild(water, "water");
 
@@ -179,6 +184,7 @@ bool load_content()
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
 	myScene->list.push_back(pillar);
+	myScene->list.push_back(pillar2);
 
     // ******************************
     // Create box geometry for skybox
@@ -219,7 +225,6 @@ bool update(float delta_time)
 	free_camera* freeCam = NULL;
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
-	
 	
 
 	if (freeCam)
