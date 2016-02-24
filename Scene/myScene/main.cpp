@@ -135,6 +135,8 @@ bool load_content()
 	vector<texture*> pillarText;
 	pillarText.push_back(new texture("..\\resources\\textures\\brick.jpg"));
 	pillarText.push_back(new texture("..\\resources\\textures\\brick_normalmap.jpg"));
+	myScene->texList.push_back(pillarText);
+
 
 	effect *water_eff = new effect;
 	water_eff->add_shader("..\\resources\\shaders\\water.vert", GL_VERTEX_SHADER);
@@ -184,7 +186,7 @@ bool load_content()
     // Create box geometry for skybox
     // ******************************
 	myScene->terr->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
-	//myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 0);
+	myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 1);
 	
     // *********************
     // Load in skybox effect
@@ -198,8 +200,11 @@ bool load_content()
 	myScene->effectList.push_back(sky_eff);
 
 	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
-	
-	//myScene->root->addChild(myScene->skybx, "skybox");  // not workign
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.6f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
+
+	myScene->list.push_back(skybx2);
+	myScene->skybx->addChild(skybx2, "rodddot");
+	skybx2->addChild(myScene->root, "root");  // not workign
 	myScene->list.push_back(myScene->skybx);
 
     return true;
@@ -268,9 +273,9 @@ bool update(float delta_time)
 
 	myScene->cam->update(delta_time);  // update the camera
 	
-	myScene->skybx->update(myScene->skybx, mat4(1));
+	myScene->skybx->update(NULL);
 
-	myScene->root->update(myScene->root, mat4(1));
+	//myScene->root->update(NULL);
     return true;
 }
 
@@ -279,7 +284,7 @@ bool render()
 
 	myScene->skybx->render(myScene->skybx);  // is sky true (enable/disable depth)
 
-	myScene->root->render(myScene->root);
+	//myScene->root->render(myScene->root);
 
     return true;
 }

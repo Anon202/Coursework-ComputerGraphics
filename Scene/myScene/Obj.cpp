@@ -10,7 +10,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	directional_light* light, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
-	mat4 R = rotate(mat4(1.0f), theta, rot);
+	this->R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
 
@@ -24,9 +24,11 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
+	//this->R = R;
 	
 }
 
+/*
 void Obj::update(Obj* root, mat4 mparent)
 {
 	// used to recurse through children and concatenate transforms
@@ -55,7 +57,43 @@ void Obj::update(Obj* root, mat4 mparent)
 	for (auto &e : root->children)
 	{
 		Obj* child = e.second;
-		update(child, root->mworld);
+		update(child, myType == sky ? mat4(1.0f) : root->mworld);
+	}
+}
+*/
+void Obj::update(Obj* parent)
+{
+	// used to recurse through children and concatenate transforms
+
+	//transform by camera positon
+
+	extern SceneManager* myScene;
+	extern float rho;
+
+	camera* cam = myScene->cam;			 // camera pointer 
+
+	mworld = mlocal;
+
+	if (myType == sky){
+		vec3 difference = cam->get_position() - m->get_transform().position;  // get difference in position
+		mat4 trans = translate(mat4(1.0f), difference);
+
+		mat4 rotation = R;//rotate(mat4(1.0f), rho, vec3(0.0, 1.0, 0.0));
+
+		mworld = trans * rotation * mworld;
+	}
+
+
+	if (parent){
+			if(parent->myType != sky && myType != sky)
+				mworld *= parent->mworld;
+	}
+
+
+	for (auto &e : children)
+	{
+		Obj* child = e.second;
+		child->update(this);
 	}
 }
 
@@ -80,23 +118,23 @@ void Obj::render(Obj* root)
 	vec3 eyeP = cam->get_position();
 
 	// get normal matrix from mesh
-	mat3 N = root->m->get_transform().get_normal_matrix();
+	mat3 N = m->get_transform().get_normal_matrix();
 
 	// calculate MVP from world
-	auto MVP = P * V * root->mworld;
+	auto MVP = P * V * mworld;
 
-	if (root->myType == sky)
+	if (myType == sky)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_FALSE);
 	}
 
 	// Bind the effect
-	renderer::bind(*root->eff);
+	renderer::bind(*eff);
 
 	// Set MVP matrix uniform
 	glUniformMatrix4fv(
-		root->eff->get_uniform_location("MVP"), // Location of uniform
+		eff->get_uniform_location("MVP"), // Location of uniform
 		1,									    // Number of values - 1 mat4
 		GL_FALSE,							    // Transpose the matrix?
 		value_ptr(MVP));						// Pointer to matrix data
@@ -104,14 +142,14 @@ void Obj::render(Obj* root)
 
 	// Set M matrix Uniform
 	glUniformMatrix4fv(
-		root->eff->get_uniform_location("M"),
+		eff->get_uniform_location("M"),
 		1,
 		GL_FALSE,
-		value_ptr(root->mworld));
+		value_ptr(mworld));
 
 	// Set 3x3 normal matrix from mesh
 	glUniformMatrix3fv(
-		root->eff->get_uniform_location("N"),
+		eff->get_uniform_location("N"),
 		1,
 		GL_FALSE,
 		value_ptr(N));
@@ -121,20 +159,20 @@ void Obj::render(Obj* root)
 	{
 		static float dd = 0.0f;
 		dd += 0.002f;
-		glUniform1f(root->eff->get_uniform_location("myTime"), dd );
+		glUniform1f(eff->get_uniform_location("myTime"), dd );
 	}
 
 	// Bind Materials/lights/texture
-	renderer::bind(*root->mat, "mat");
-	renderer::bind(*root->light, "light");
+	renderer::bind(*mat, "mat");
+	renderer::bind(*light, "light");
 	
-	for (int i = 0; i < root->tex.size(); ++i)  // bind every texture from object's list
+	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
 	{
-		renderer::bind(*root->tex[i], i);
+		renderer::bind(*tex[i], i);
 		stringstream stream;
 		stream << "tex[" << i << "]";
 
-		glUniform1i(root->eff->get_uniform_location(stream.str()), i);
+		glUniform1i(eff->get_uniform_location(stream.str()), i);
 	}
 		//renderer::bind(*root->tex, 0);
 	
@@ -143,22 +181,22 @@ void Obj::render(Obj* root)
 
 
 	// set eye position (from active camera)
-	glUniform3f(root->eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
 	// render mesh
-	renderer::render(*root->m);
+	renderer::render(*m);
 
-	if (root->myType == sky)
+	if (myType == sky)
 	{
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 	}
 
 	// recurse for children
-	for (auto &e : root->children)
+	for (auto &e : children)
 	{
 		Obj* child = e.second;
-		render(child);
+		child->render(this);
 	}
 
 }

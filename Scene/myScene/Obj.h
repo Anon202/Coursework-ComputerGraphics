@@ -29,7 +29,9 @@ class Obj
 	map<string, Obj*>   children;  // map of children object pointers
 
 	bool visible;
+	
 
+	mat4 R;
 	float myType;
 
 public:
@@ -44,7 +46,8 @@ public:
 		directional_light* light,
 		float myType);
 
-	void update(Obj* root, mat4 m);
+	//void update(Obj* root, mat4 m);
+	void update(Obj* parent);
 
 	void render(Obj* root);
 

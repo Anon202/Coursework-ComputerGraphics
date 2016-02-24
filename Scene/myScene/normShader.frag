@@ -36,9 +36,9 @@ uniform material mat;
 // Position of the eye
 uniform vec3 eye_pos;
 // Texture to sample from
-uniform sampler2D tex;
+uniform sampler2D tex[2];
 // Normal map to sample from
-uniform sampler2D normal_map;
+//uniform sampler2D normal_map;
 
 // Incoming vertex position
 layout (location = 0) in vec3 position;
@@ -60,7 +60,7 @@ void main()
     // **************
     // Sample texture
     // **************
-	vec4 text_sample = texture2D(tex, tex_coord);
+	vec4 text_sample = texture2D(tex[0], tex_coord);
     
 	// ************************
     // Calculate view direction
@@ -70,7 +70,7 @@ void main()
 	// ********************************
 	// Calculate normal from normal map
 	// ********************************
-	vec3 transN = calc_normal(normal, tangent, binormal, normal_map, tex_coord);
+	vec3 transN = calc_normal(normal, tangent, binormal, tex[1], tex_coord);
 
     // ***************************
     // Calculate directional light
