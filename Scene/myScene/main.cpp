@@ -54,7 +54,7 @@ bool load_content()
 {
 
 	directional_light* light = myScene->light;  // create local pointer to the scenes light
-//	point_light* pointLight = myScene->pointLight;
+	point_light* pointLight = myScene->pointLight;
 
 	// CREATE TERRAIN
 	geometry terrGeom; // geom to load into
@@ -168,13 +168,15 @@ bool load_content()
 	norm_eff->build();
 	myScene->effectList.push_back(norm_eff);
 
-	/*
+	
 	effect *point_eff = new effect;
-	point_eff->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
-	point_eff->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+//	point_eff->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
+//	point_eff->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+	point_eff->add_shader("point.vert", GL_VERTEX_SHADER);
+	point_eff->add_shader("point.frag", GL_FRAGMENT_SHADER);
 	point_eff->build();
 	myScene->effectList.push_back(point_eff);
-	*/
+	
 
 	Obj *pillar = new Obj(vec3(-5.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 	Obj *pillar2 = new Obj(vec3(15.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
@@ -185,7 +187,7 @@ bool load_content()
 
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
-	Obj *ball = new Obj(vec3(30.0f, 30.0f, 80.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, light, object);// point_eff, pointLight, pointLightObj);
+	Obj *ball = new Obj(vec3(30.0f, 30.0f, 80.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, point_eff, pointLight, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 	myScene->root->addChild(box, "box");
 

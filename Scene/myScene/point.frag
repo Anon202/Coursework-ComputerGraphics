@@ -113,9 +113,8 @@ void main()
 
 #version 440
 
-// A directional light structure
-#ifndef point_light
-#define point_light
+#ifndef POINT_LIGHT
+#define POINT_LIGHT
 struct point_light
 {
 	vec4 light_colour;
@@ -126,9 +125,8 @@ struct point_light
 };
 #endif
 
-// A material structure
-#ifndef material
-#define material
+#ifndef MATERIAL
+#define MATERIAL
 struct material
 {
 	vec4 emissive;
