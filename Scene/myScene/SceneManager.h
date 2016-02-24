@@ -13,7 +13,7 @@ class GenerateBack;
 class Obj;				// forward declaration of object
 
 
-enum objType { sky, terrn, waterObj, object }; //  enum
+enum objType { sky, terrn, waterObj, object, pointLightObj }; //  enum
 class SceneManager
 {
 	
@@ -25,6 +25,7 @@ public:
 	GenerateBack* terr;
 
 	directional_light* light;
+	//point_light* pointLight;
 
 	camera* cam;
 

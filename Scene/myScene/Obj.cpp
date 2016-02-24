@@ -1,7 +1,3 @@
-
-
-
-
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
 #include "Obj.h"
@@ -40,6 +36,32 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	// trying mat
 	
 }
+/*
+Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
+	mesh* me, material* mate, vector<texture*> texture,
+	effect* eff,
+	point_light* light, float myType)
+{
+	mat4 T = translate(mat4(1.0f), pos);
+	mat4 R = rotate(mat4(1.0f), theta, rot);
+	mat4 S = scale(mat4(1.0f), scal);
+
+
+	mat4 trans = T * (R* S);
+
+	this->mlocal = trans;		// copy vars
+	this->m = me;
+	this->mat = mate;
+	this->eff = eff;
+	this->pointLight = light;
+	this->myType = myType;
+	this->tex = texture;
+	this->theta = theta;
+	this->rotV = rot;
+
+	// trying mat
+
+}*/
 
 void Obj::update(Obj* parent, float delta_time)
 {
@@ -146,7 +168,15 @@ void Obj::render()
 
 	// Bind Materials/lights/texture
 	renderer::bind(*mat, "mat");
-	renderer::bind(*light, "light");
+
+	/*if (pointLightObj)
+	{
+		renderer::bind(*pointLight, "light");
+
+		// add uniforms for point light here
+	}
+	else*/
+		renderer::bind(*light, "light");
 	
 	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
 	{

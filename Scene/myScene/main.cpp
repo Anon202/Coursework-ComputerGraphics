@@ -54,7 +54,7 @@ bool load_content()
 {
 
 	directional_light* light = myScene->light;  // create local pointer to the scenes light
-	
+	//point_light* pointLight = myScene->pointLight;
 
 	// CREATE TERRAIN
 	geometry terrGeom; // geom to load into
@@ -90,6 +90,7 @@ bool load_content()
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder());  // pillar
 
 	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
+	myScene->materials["ball"].set_diffuse(vec4(0.0, 0.5, 0.0f, 1.0f));
 
 	// Red box
 	myScene->materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -162,15 +163,24 @@ bool load_content()
 	norm_eff->build();
 	myScene->effectList.push_back(norm_eff);
 
+	/*
+	effect *point_eff = new effect;
+	point_eff->add_shader("point.frag", GL_FRAGMENT_SHADER);
+	point_eff->add_shader("point.frag", GL_FRAGMENT_SHADER);
+	point_eff->build();
+	myScene->effectList.push_back(point_eff);*/
+
 	Obj *pillar = new Obj(vec3(-5.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 	Obj *pillar2 = new Obj(vec3(15.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 
 	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, light, waterObj);
 
-	Obj *box = new Obj(vec3(30.0f, 15.0f,60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
+	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
 
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
+	Obj *ball = new Obj(vec3(30.0f, 30.0f, 80.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, light, object);// point_eff, pointLight, pointLightObj);
+	
 	myScene->root->addChild(box, "box");
 
 	myScene->root->addChild(pillar, "pillar");
@@ -179,12 +189,16 @@ bool load_content()
 	myScene->root->addChild(water, "water");
 
 	box->addChild(pyra, "pyramid");
+
+	box->addChild(ball, "ball");
+
 	myScene->list.push_back(water);
 	myScene->list.push_back(myScene->root);
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
 	myScene->list.push_back(pillar);
 	myScene->list.push_back(pillar2);
+	myScene->list.push_back(ball);
 
     // ******************************
     // Create box geometry for skybox
@@ -225,7 +239,13 @@ bool update(float delta_time)
 	free_camera* freeCam = NULL;
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
-	
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_9))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		
 
 	if (freeCam)
 	{

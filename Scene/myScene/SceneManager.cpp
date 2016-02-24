@@ -32,6 +32,9 @@ void SceneManager::Create()
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
 
+	/*pointLight = new point_light;
+	pointLight->set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	pointLight->set_range(20);*/
 
 }
 

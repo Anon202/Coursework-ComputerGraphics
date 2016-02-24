@@ -13,6 +13,7 @@ class Obj
 	material*			mat;
 	effect*				eff;
 	directional_light*	light;
+	//point_light*		pointLight;
 
 	Obj*				parent;
 
@@ -41,6 +42,16 @@ public:
 		effect* eff,
 		directional_light* light,
 		float myType);
+
+	/*Obj(vec3 pos,
+		vec3 rot, float theta,
+		vec3 scale,
+		mesh* me,
+		material* mate,
+		vector<texture*> texture,
+		effect* eff,
+		point_light* light,
+		float myType);*/
 
 	void update(Obj* parent, float time);
 
