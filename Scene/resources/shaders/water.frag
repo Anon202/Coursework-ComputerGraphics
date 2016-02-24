@@ -93,7 +93,7 @@ void main()
 	// check 
 	//colour = primary*tex_colour;
 	
-	colour.a = 0.5f;
+	colour.a = .75f;
 	
 
 }

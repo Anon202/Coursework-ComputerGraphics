@@ -57,9 +57,12 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	// - create array of six filenames +x, -x, +y, -y, +z, -z
 	// ******************************************************
 	string folderName;
-
+	if (skyNum == 1)
+	{
 		folderName = "alien";
-
+	}
+	else
+		folderName = "new";
 
 	array<string, 6> filenames =
 	{

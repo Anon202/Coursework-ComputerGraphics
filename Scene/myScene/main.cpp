@@ -82,11 +82,13 @@ bool load_content()
 	myScene->texList.push_back(terrTextList);
 
 	// Create plane mesh
-	myScene->meshes["plane"] = mesh(geometry_builder::create_plane(200, 200));
+	myScene->meshes["water"] = mesh(geometry_builder::create_plane(200, 200));
 
 	// Create scene
 	myScene->meshes["box"] = mesh(geometry_builder::create_box());
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
+	
+	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder());
 
 	// Red box
 	myScene->materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -94,7 +96,7 @@ bool load_content()
 	// Blue pyramid
 	myScene->materials["pyramid"].set_diffuse(vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
-
+	myScene->materials["cylinder"].set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
 
 	for (auto &e : myScene->materials)
 	{
@@ -104,7 +106,8 @@ bool load_content()
 	}
 
 	// water needs high spec
-	myScene->materials["water"].set_shininess(0.5f);
+	myScene->materials["water"].set_shininess(5.0f);
+	myScene->materials["cylinder"].set_shininess(25.0f);
 
 	effect *terr_eff = new effect;
 	terr_eff->add_shader("shader.vert", GL_VERTEX_SHADER);
@@ -115,7 +118,7 @@ bool load_content()
 	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &myScene->meshes["terr"], &myScene->materials["plane"], terrTextList, terr_eff, light, terrn);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(15.0f, 15.0f, 15.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, light, terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -128,6 +131,10 @@ bool load_content()
 
 	myScene->texList.push_back(waterText);
 
+
+	vector<texture*> pillarText;
+	pillarText.push_back(new texture("..\\resources\\textures\\brick.jpg"));
+	pillarText.push_back(new texture("..\\resources\\textures\\brick_normalmap.jpg"));
 
 	effect *water_eff = new effect;
 	water_eff->add_shader("..\\resources\\shaders\\water.vert", GL_VERTEX_SHADER);
@@ -144,16 +151,25 @@ bool load_content()
 	eff->build();
 	myScene->effectList.push_back(eff);
 
+	effect *norm_eff = new effect;
+	norm_eff->add_shader("normShader.vert", GL_VERTEX_SHADER);
+	norm_eff->add_shader("normShader.frag", GL_FRAGMENT_SHADER);
+	norm_eff->add_shader("..\\resources\\shaders\\parts\\direction.frag", GL_FRAGMENT_SHADER);
+	norm_eff->add_shader("..\\resources\\shaders\\parts\\normal_map.frag", GL_FRAGMENT_SHADER);
+	norm_eff->build();
+	myScene->effectList.push_back(norm_eff);
 
-	//root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(10.0f, 10.0f, 10.0f), &meshes["plane"], &materials["plane"], &tex, &eff, P, V, eyeP, &light);
+	Obj *pillar = new Obj(vec3(-5.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 
-	Obj *water = new Obj(vec3(0.0f, 0.5f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["plane"], &myScene->materials["plane"], waterText, water_eff, light, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, light, waterObj);
 
-	Obj *box = new Obj(vec3(-10.0f, 2.5f, -30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
+	Obj *box = new Obj(vec3(-25.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
+	Obj *pyra = new Obj(vec3(0.0f, 10.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
 	myScene->root->addChild(box, "box");
+
+	myScene->root->addChild(pillar, "pillar");
 
 	myScene->root->addChild(water, "water");
 
@@ -162,12 +178,13 @@ bool load_content()
 	myScene->list.push_back(myScene->root);
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
+	myScene->list.push_back(pillar);
 
     // ******************************
     // Create box geometry for skybox
     // ******************************
 	myScene->terr->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
-	//myScene->terr->generate_skybox(skyboxIn, cube_mapIn, 0);  
+	//myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 0);
 	
     // *********************
     // Load in skybox effect

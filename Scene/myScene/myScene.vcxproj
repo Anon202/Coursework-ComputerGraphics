@@ -93,6 +93,8 @@
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="normShader.frag" />
+    <None Include="normShader.vert" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
   </ItemGroup>
