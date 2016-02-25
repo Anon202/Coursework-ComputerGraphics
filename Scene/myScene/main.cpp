@@ -52,7 +52,7 @@ bool initialise()
 
 bool load_content()
 {
-
+	
 	directional_light* light = myScene->light;  // create local pointer to the scenes light
 	point_light* pointLight = myScene->pointLight;
 
@@ -110,7 +110,7 @@ bool load_content()
 
 
 	// set emissive for point
-	myScene->materials["ball"].set_emissive(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	myScene->materials["ball"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 
 	// water needs high spec
 	myScene->materials["water"].set_shininess(5.0f);
@@ -125,7 +125,7 @@ bool load_content()
 	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(15.0f, 15.0f, 15.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, light, terrn);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(15.0f, 15.0f, 15.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff,  terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -170,24 +170,22 @@ bool load_content()
 
 	
 	effect *point_eff = new effect;
-//	point_eff->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
-//	point_eff->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
 	point_eff->add_shader("point.vert", GL_VERTEX_SHADER);
 	point_eff->add_shader("point.frag", GL_FRAGMENT_SHADER);
 	point_eff->build();
 	myScene->effectList.push_back(point_eff);
 	
 
-	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
-	Obj *pillar2 = new Obj(vec3(50.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
+	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);
+	Obj *pillar2 = new Obj(vec3(50.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);
 
-	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, light, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff,  waterObj);
 
-	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, light, object);
+	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff,  object);
 
-	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, point_eff, pointLight, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 	myScene->root->addChild(box, "box");
 
@@ -225,8 +223,8 @@ bool load_content()
     sky_eff->build();
 	myScene->effectList.push_back(sky_eff);
 
-	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, light, sky);
+	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky);
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff,  sky);
 
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "rodddot");

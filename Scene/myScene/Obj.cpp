@@ -13,8 +13,7 @@ Obj::Obj()
 
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
-	effect* eff,
-	directional_light* light, float myType)
+	effect* eff, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
 	mat4 R = rotate(mat4(1.0f), theta, rot);
@@ -27,7 +26,6 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->m = me;
 	this->mat = mate;
 	this->eff = eff;
-	this->light = light;
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
@@ -35,32 +33,6 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	// trying mat
 	
-}
-
-Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
-	mesh* me, material* mate, vector<texture*> texture,
-	effect* eff,
-	point_light* light, float myType)
-{
-	mat4 T = translate(mat4(1.0f), pos);
-	mat4 R = rotate(mat4(1.0f), theta, rot);
-	mat4 S = scale(mat4(1.0f), scal);
-
-
-	mat4 trans = T * (R* S);
-
-	this->mlocal = trans;		// copy vars
-	this->m = me;
-	this->mat = mate;
-	this->eff = eff;
-	this->pointLight = light;
-	this->myType = myType;
-	this->tex = texture;
-	this->theta = theta;
-	this->rotV = rot;
-
-	// trying mat
-
 }
 
 void Obj::update(Obj* parent, float delta_time)
@@ -169,19 +141,8 @@ void Obj::render()
 	// Bind Materials/lights/texture
 	renderer::bind(*mat, "mat");
 
-	
-	if (myType == pointLightObj)  ////!!!!!
-	{
-		renderer::bind(*pointLight, "light");		
-		vec3 pos = vec3(mworld* vec4(m->get_transform().position, 1.0));  // get position of ball 
-		glUniform3f(eff->get_uniform_location("lightPosition"), pos.x, pos.y, pos.z);		
-	}
-	else
-	{
-		renderer::bind(*light, "light");
-	}
-
-	
+	renderer::bind(*myScene->light, "light");
+	renderer::bind(*myScene->pointLight, "point");
 
 
 	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
