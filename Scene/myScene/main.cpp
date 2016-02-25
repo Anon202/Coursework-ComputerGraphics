@@ -63,7 +63,7 @@ bool load_content()
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMap.png");
 
 	// Generate terrain
-	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 6.0f);
+	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 10.0f);
 
 	// create terrain object
 
@@ -87,7 +87,7 @@ bool load_content()
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
 
 	
-	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder());  // pillar
+	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(2.0f, 10.0f, 2.0f)));  // pillar
 
 	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
 	myScene->materials["ball"].set_diffuse(vec4(0.0, 0.5, 0.0f, 1.0f));
@@ -179,7 +179,7 @@ bool load_content()
 	
 
 	Obj *pillar = new Obj(vec3(-5.0f, 5.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
-	Obj *pillar2 = new Obj(vec3(15.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
+	Obj *pillar2 = new Obj(vec3(50.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, light, object);
 
 	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, light, waterObj);
 
@@ -187,7 +187,7 @@ bool load_content()
 
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, light, object);
 
-	Obj *ball = new Obj(vec3(30.0f, 30.0f, 80.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, point_eff, pointLight, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *ball = new Obj(vec3(30.0f, 30.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, point_eff, pointLight, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 	myScene->root->addChild(box, "box");
 

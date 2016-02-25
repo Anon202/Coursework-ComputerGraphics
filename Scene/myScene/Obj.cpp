@@ -77,8 +77,8 @@ void Obj::update(Obj* parent, float delta_time)
 
 	if (myType == sky)
 	{
-		vec3 difference = cam->get_position() - m->get_transform().position;  // get difference in position
-		mat4 trans = translate(mat4(1.0f), difference);
+		//vec3 difference = cam->get_position();// -m->get_transform().position;  // get difference in position
+		mat4 trans = translate(mat4(1.0f), cam->get_position());
 
 		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
 		theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
@@ -173,8 +173,8 @@ void Obj::render()
 	if (myType == pointLightObj)  ////!!!!!
 	{
 		renderer::bind(*pointLight, "light");		
-		vec3 pos = m->get_transform().position;
-		glUniform3f(eff->get_uniform_location("lightPosition"), pos.x, pos.y, pos.z);
+		vec3 pos = vec3(mworld* vec4(m->get_transform().position, 1.0));  // get position of ball 
+		glUniform3f(eff->get_uniform_location("lightPosition"), pos.x, pos.y, pos.z);		
 	}
 	else
 	{
