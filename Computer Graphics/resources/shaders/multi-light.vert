@@ -28,6 +28,6 @@ void main()
 	// **************************************
 	// Output other values to fragment shader
 	// **************************************
-	
+	vertex_position = vec3()
 
 }

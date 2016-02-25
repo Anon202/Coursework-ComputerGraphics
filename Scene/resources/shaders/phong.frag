@@ -88,7 +88,7 @@ void main()
 	// - remember alpha 1.0
 	// **********************
 
-	colour = primary*tex_colour + specular;
+	colour = primary*tex_colour; //+ specular;
 	
 	// check 
 	//colour = primary*tex_colour;

@@ -46,6 +46,9 @@ bool initialise()
 
 bool load_content()
 {
+	meshes["ball"] = mesh(geometry_builder::create_sphere());
+
+
 	// Create plane mesh
 	meshes["plane"] = mesh(geometry_builder::create_plane());
 
@@ -59,6 +62,7 @@ bool load_content()
 	meshes["torus"] = mesh(geometry_builder::create_torus(20, 20, 1.0f, 5.0f));
 
 	// Transform objects
+	meshes["ball"].get_transform().translate(vec3(-7.0f, 4.0f, -20.0f));
 	meshes["box"].get_transform().scale = vec3(5.0f, 5.0f, 5.0f);
 	meshes["box"].get_transform().translate(vec3(-10.0f, 2.5f, -30.0f));
 	meshes["tetra"].get_transform().scale = vec3(4.0f, 4.0f, 4.0f);
@@ -81,6 +85,8 @@ bool load_content()
 	// - all specular is white
 	// - all shininess is 25
 	// ***********************
+
+	materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0, 0.5));
 
 	// Red box
 	materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -118,6 +124,10 @@ bool load_content()
 	meshes["sphere"].set_material(materials["sphere"]);
 	meshes["torus"].set_material(materials["torus"]);
 
+
+	materials["ball"].set_emissive(vec4(1.0, 1.0, 1.0, 1.0));
+	meshes["ball"].set_material(materials["ball"]);
+
 	// **************************
 	// Load texture - checked.gif
 	// **************************
@@ -127,7 +137,7 @@ bool load_content()
 	// Set lighting values
 	// *******************
 	// Position (-25, 10, -10)
-	pos = vec3(-25.0f, 10.0f, -10.0f);
+	pos = meshes["ball"].get_transform().position;
 	light.set_position(pos);
 
 	// Light colour white
@@ -137,8 +147,8 @@ bool load_content()
 	light.set_range(20);
 
 	// Load in shaders
-	eff.add_shader("..\\resources\\shaders\\point.vert", GL_VERTEX_SHADER);
-	eff.add_shader("..\\resources\\shaders\\point.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("point.vert", GL_VERTEX_SHADER);
+	eff.add_shader("point.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	eff.build();
 

@@ -6,6 +6,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+map<string, material> materials;
 effect eff;
 texture tex;
 target_camera cam;
@@ -50,7 +51,27 @@ bool load_content()
 	// - all shininess is 25
 	// ***********************
 	// Red box
+	for (auto e : materials)
+	{
+		e.second.set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+		e.second.set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+		e.second.set_shininess(25.0f);
+	}
+	materials["box"].set_diffuse(vec4(1.0, 0.0, 0.0, 1.0));
+	materials["tetra"].set_diffuse(vec4(0.0, 1.0, 0.0, 1.0));
+	materials["disk"].set_diffuse(vec4(0.0, 0.0, 1.0, 1.0));
+	materials["pyramid"].set_diffuse(vec4(1.0, 1.0, 0.0, 1.0));
+	materials["cyan"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
+	materials["torus"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
 	
+
+	meshes["box"].set_material(materials["box"]);
+	meshes["tetra"].set_material(materials["tetra"]);
+	meshes["pyramid"].set_material(materials["pyramid"]);
+	meshes["disk"].set_material(materials["disk"]);
+	meshes["cylinder"].set_material(materials["cylinder"]);
+	meshes["sphere"].set_material(materials["sphere"]);
+	meshes["torus"].set_material(materials["torus"]);
 	// Green tetra
 	
 	// Blue pyramid
@@ -67,7 +88,7 @@ bool load_content()
 	// **************************
 	// Load texture - checked.gif
 	// **************************
-	
+	tex = texture("..\\resources\\textures\\checked.gif");
 
 	// *******************
 	// Set lighting values
@@ -76,7 +97,16 @@ bool load_content()
 	// Position (-25, 5, -15)
 	// Red
 	// 20 range
-	
+	points[0].set_position(vec3(-25, 5, -15));
+	points[1].set_position(vec3(-25, 5, -35));
+	points[2].set_position(vec3(-10, 5, -15));
+	points[3].set_position(vec3(-10, 5, -35));
+	for (auto e : points)
+	{
+		e.set_range(20);
+		e.set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+
 	// Point 1
 	// Position (-25, 5, -35)
 	// Red
@@ -92,6 +122,20 @@ bool load_content()
 	// Red
 	// 20 range
 	
+	spots[0].set_position(vec3(-25, 10, -15));
+	spots[0].set_direction(normalize(vec3(1, -1, -1)));
+	spots[1].set_position(vec3(-25, 10, -35));
+	spots[1].set_direction(normalize(vec3(1, -1, 1)));
+	spots[2].set_position(vec3(-10, 10, -15));
+	spots[2].set_direction(normalize(vec3(-1, -1, -1)));
+	spots[3].set_position(vec3(-10, 10, -35));
+	spots[3].set_direction(normalize(vec3(-1, -1, 1)));
+	for (auto e : spots)
+	{
+		e.set_range(20);
+		e.set_light_colour(vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		e.set_power(0.5);
+	}
 	// Spot 0
 	// Position (-25, 10, -15)
 	// Green
@@ -119,7 +163,11 @@ bool load_content()
 	// Direction (-1, -1, 1) normalized
 	// 20 range
 	// 0.5 power
-	
+	spots[4].set_position(vec3(-17.5, 15, -25));
+	spots[4].set_light_colour(vec4(0.0, 0.0, 1.0, 1.0));
+	spots[4].set_direction(vec3(0, -1, 0));
+	spots[4].set_range(30);
+	spots[4].set_power(1.0);
 	// Spot 4
 	// Position (-17.5, 15, -25)
 	// Blue
@@ -184,44 +232,45 @@ bool render()
 		// ********************
 		// Set M matrix uniform
 		// ********************
-		
+		glUniformMatrix4fv(eff.get_uniform_location("M"), 1, GL_FALSE, value_ptr(M));
+
 
 		// ***********************
 		// Set N matrix uniform
 		// - remember - 3x3 matrix
 		// ***********************
-		
+		mat3 N = m.get_transform().get_normal_matrix();
+
+		glUniformMatrix3fv(eff.get_uniform_location("N"), 1, GL_FALSE, value_ptr(N));
 
 		// *************
 		// Bind material
 		// *************
-		
+		renderer::bind(m.get_material(), "mat");
 
-		// *****************
-		// Bind point lights
-		// *****************
-		
 
-		// ****************
-		// Bind spot lights
-		// ****************
-		
+		// **********
+		// Bind light
+		// **********
+		renderer::bind(points, "points");
+		renderer::bind(spots, "spots");
 
 		// ************
 		// Bind texture
 		// ************
-		
+		renderer::bind(tex, 0);
 
 		// ***************
 		// Set tex uniform
 		// ***************
-		
+		glUniform1i(eff.get_uniform_location("tex"), 0);
 
 		// *****************************
 		// Set eye position
 		// - Get this from active camera
 		// *****************************
-		
+		vec3 eyeP = cam.get_position();
+		glUniform3f(eff.get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
 		// Render mesh
 		renderer::render(m);

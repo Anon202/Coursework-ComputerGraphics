@@ -35,7 +35,7 @@ void SceneManager::Create()
 	
 	pointLight = new point_light;
 	pointLight->set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	pointLight->set_range(20);
+	pointLight->set_range(30);
 	pointLight->set_position(vec3(0.0, 0.0, 0.0));
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
