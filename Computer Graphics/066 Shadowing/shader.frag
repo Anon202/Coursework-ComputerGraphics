@@ -74,6 +74,8 @@ void main()
     // Calculate spot light
     // ********************
     colour = calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
+
+	//colour = vec4(1.0, 0.0, 0.0, 1.0);
 	// *********************
 	// Scale colour by shade
 	// *********************

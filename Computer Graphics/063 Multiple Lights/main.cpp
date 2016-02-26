@@ -101,11 +101,15 @@ bool load_content()
 	points[1].set_position(vec3(-25, 5, -35));
 	points[2].set_position(vec3(-10, 5, -15));
 	points[3].set_position(vec3(-10, 5, -35));
-	for (auto e : points)
-	{
-		e.set_range(20);
-		e.set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	}
+
+	points[0].set_range(20);
+	points[0].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	points[1].set_range(20);
+	points[1].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	points[2].set_range(20);
+	points[2].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	points[3].set_range(20);
+	points[3].set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	// Point 1
 	// Position (-25, 5, -35)
@@ -128,8 +132,7 @@ bool load_content()
 	spots[1].set_direction(normalize(vec3(1, -1, 1)));
 	spots[2].set_position(vec3(-10, 10, -15));
 	spots[2].set_direction(normalize(vec3(-1, -1, -1)));
-	spots[3].set_position(vec3(-10, 10, -35));
-	spots[3].set_direction(normalize(vec3(-1, -1, 1)));
+
 	for (auto e : spots)
 	{
 		e.set_range(20);
@@ -163,18 +166,19 @@ bool load_content()
 	// Direction (-1, -1, 1) normalized
 	// 20 range
 	// 0.5 power
-	spots[4].set_position(vec3(-17.5, 15, -25));
-	spots[4].set_light_colour(vec4(0.0, 0.0, 1.0, 1.0));
-	spots[4].set_direction(vec3(0, -1, 0));
-	spots[4].set_range(30);
-	spots[4].set_power(1.0);
+	spots[3].set_position(vec3(-10, 10, -35));
+	spots[3].set_direction(normalize(vec3(-1, -1, 1)));
 	// Spot 4
 	// Position (-17.5, 15, -25)
 	// Blue
 	// Direction (0, -1, 0)
 	// 30 range
 	// 1.0 power
-	
+	spots[4].set_position(vec3(-17.5, 15, -25));
+	spots[4].set_light_colour(vec4(0.0, 0.0, 1.0, 1.0));
+	spots[4].set_direction(vec3(0, -1, 0));
+	spots[4].set_range(30);
+	spots[4].set_power(1.0);
 
 	// Load in shaders
 	eff.add_shader("..\\resources\\shaders\\multi-light.vert", GL_VERTEX_SHADER);

@@ -211,7 +211,22 @@ bool render()
         // *******************
         // Set light transform
         // *******************
+		
 
+		auto T = glm::translate(glm::mat4(1.0f), spot.get_position());
+		auto R = glm::mat4_cast(glm::quat(spot.get_direction()));
+		auto matrix = T * R;
+		auto lV = shadow.get_view();
+
+		auto lMVP = P * lV * matrix;
+
+		//mat4 rot = rotate
+
+		glUniformMatrix4fv(
+			main_eff.get_uniform_location("lightMVP"),
+			1,
+			GL_FALSE,
+			value_ptr(lMVP));
 
         // Bind material
         renderer::bind(m.get_material(), "mat");
@@ -228,7 +243,7 @@ bool render()
         // Bind shadow map texture
         // - use texture unit 1
         // ***********************
-        
+		renderer::bind(shadow.buffer->get_depth(), 1);
 
         // Render mesh
         renderer::render(m);

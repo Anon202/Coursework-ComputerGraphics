@@ -94,6 +94,7 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
     vec4 primary = mat.emissive + diffuse;
 
     vec4 colour = primary * tex_colour + specular;
+	colour.a = 1;
 	
 
 	return colour;
@@ -105,7 +106,7 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 	// ********************************
 	// Calculate direction to the light
 	// ********************************
-	vec3 L = spot.direction - position;
+	vec3 L = normalize( spot.position - position);
 	vec3 R = spot.direction;
 	
 	
@@ -152,9 +153,10 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 
     vec4 colour = primary * tex_colour + specular;
 
+	colour.a = 1;
 
 	
-	return vec4(0.0, 0.0, 0.0, 1.0);// colour;
+	return colour;
 }
 
 void main()
@@ -181,7 +183,7 @@ void main()
 	// ***************
 	// Sum spot lights
 	// ***************
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 5; ++i)
 		colour += calculate_spot(spots[i], mat, position, normal, view_dir, tex_colour);
 	
 

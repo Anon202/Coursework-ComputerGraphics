@@ -42,7 +42,7 @@ layout (location = 0) out vec4 colour;
 
 void main()
 {
-	vec3 L = spot.direction - position;
+	vec3 L = normalize(spot.position - position);
 	vec3 R = spot.direction;
 	
     vec3 view_dir = normalize(eye_pos - position);
@@ -92,7 +92,7 @@ void main()
 
     vec4 primary = mat.emissive + diffuse;
 
-   colour = primary * tex_colour + specular;
+    colour = primary * tex_colour + specular;
 
 
 }
