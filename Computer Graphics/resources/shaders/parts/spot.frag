@@ -33,6 +33,7 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 	// Calculate direction to the light
 	// ********************************
 
+
 	// ***************************
 	// Calculate distance to light
 	// ***************************

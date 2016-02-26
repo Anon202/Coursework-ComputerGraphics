@@ -6,6 +6,7 @@ using namespace graphics_framework;
 using namespace glm;
 
 map<string, mesh> meshes;
+material mat;
 effect shadow_eff;
 texture tex;
 target_camera cam;
@@ -18,6 +19,7 @@ bool load_content()
     // Create shadow map
     // - use screen size
     // *****************
+	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 
     // Create plane mesh
     meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -25,19 +27,25 @@ bool load_content()
     // *********************************************
     // Create "teapot" mesh by loading in teapot.3ds
     // *********************************************
+	meshes["teapot"] = mesh(geometry("..\\resources\\models\\teapot.3ds"));
 
     // ***********************************************
     // Need to rotate the teapot on x by negative pi/2
     // ***********************************************
+	float theta = -pi<float>()/2;
+
+	meshes["teapot"].get_transform().rotate(angleAxis(theta, vec3(1.0, 0.0, 0.0)));
 
     // *****************
     // Scale the teapot
     // - (0.1, 0.1, 0.1)
     // *****************
+	meshes["teapot"].get_transform().scale = vec3(0.1, 0.1, 0.1);
 
     // ************
     // Load texture
     // ************
+	tex = texture("..\\resources\\textures\\checked.gif");
 
     // ***********************
     // Set materials
@@ -48,7 +56,13 @@ bool load_content()
     // White plane
 
     // White teapot
+	mat.set_emissive(vec4(0.0, 0.0, 0.0, 1.0));
+	mat.set_shininess(25.0f);
+	mat.set_specular(vec4(1.0, 1.0, 1.0, 1.0));
+	mat.set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
 
+	meshes["teapot"].set_material(mat);
+	meshes["plane"].set_material(mat);
 
     // *******************
     // Set spot properties
@@ -58,6 +72,11 @@ bool load_content()
     // Direction (-1, -1, 0) normalized
     // 50 range
     // 10 power
+	spot.set_position(vec3(20, 30, 0));
+	spot.set_direction(normalize(vec3(-1, -1, 0)));
+	spot.set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
+	spot.set_range(50);
+	spot.set_power(10);
     
 
     // Load in shaders
@@ -82,6 +101,9 @@ bool update(float delta_time)
     // ****************************************************
     // Update the shadow map properties from the spot light
     // ****************************************************
+
+	shadow.light_position = spot.get_position();
+	shadow.light_dir = spot.get_direction();
     
 
     // Press s to save
@@ -99,13 +121,17 @@ bool render()
     // Set render target to shadow map
     // *******************************
 
+	renderer::set_render_target(shadow);
+
     // **********************
     // Clear depth buffer bit
     // **********************
+	glClear(GL_DEPTH_BUFFER_BIT);
 
     // ****************************
     // Set render mode to cull face
     // ****************************
+	glCullFace(GL_FRONT);
 
     // Bind shader
     renderer::bind(shadow_eff);
@@ -119,7 +145,7 @@ bool render()
         // *********************************
         // View matrix taken from shadow map
         // *********************************
-        auto V = mat4(1.0); // Change!!!
+        auto V = shadow.get_view(); // Change!!!
 
         auto P = cam.get_projection();
         auto MVP = P * V * M;
@@ -136,10 +162,12 @@ bool render()
     // ************************************
     // Set render target back to the screen
     // ************************************
+	renderer::set_render_target();
 
     // *********************
     // Set cull face to back
     // *********************
+	glCullFace(GL_BACK);
 
     return true;
 }

@@ -48,5 +48,7 @@ public:
 
 	void addChild(Obj* child, string name);
 
+	~Obj() { }
+
 };
 

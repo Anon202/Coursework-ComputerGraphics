@@ -46,18 +46,18 @@ void SceneManager::Create()
 
 SceneManager::~SceneManager()
 {
+
+	//for (uint i = 0; i < list.size(); ++i)
+	//	delete list[i];
+
+	//list.clear();
+
 	delete light;
 	light = NULL;
 
 	delete pointLight;
 	pointLight = NULL;
-
-
-/*	for (uint i = 0; i < list.size(); ++i)
-		delete list[i];
-
-	list.clear();
-	*/
+	
 	for (int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];
 

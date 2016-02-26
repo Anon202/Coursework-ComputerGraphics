@@ -169,11 +169,11 @@ bool load_content()
 	myScene->effectList.push_back(norm_eff);
 
 	
-	effect *point_eff = new effect;
-	point_eff->add_shader("point.vert", GL_VERTEX_SHADER);
-	point_eff->add_shader("point.frag", GL_FRAGMENT_SHADER);
-	point_eff->build();
-	myScene->effectList.push_back(point_eff);
+	effect *gouraud_eff = new effect;
+	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
+	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
+	gouraud_eff->build();
+	myScene->effectList.push_back(gouraud_eff);
 	
 
 	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);

@@ -77,7 +77,7 @@ namespace graphics_framework
 		glfwMakeContextCurrent(_instance->_window);
 
 		// Set swap interval - make the window refresh with the monitor
-		glfwSwapInterval(1);
+		glfwSwapInterval(0);
 
 		// Print OpenGL info
 		print_GL_info();
