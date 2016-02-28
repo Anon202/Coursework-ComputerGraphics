@@ -45,11 +45,11 @@ void SceneManager::Create()
 	pointLight->set_quadratic_attenuation(0.01f);
 
 	spot = new spot_light;
-	spot->set_position(vec3(31.5, 35.75, 63.0));
+	spot->set_position(vec3(-30.5, 200.0, 150.0));
 	spot->set_direction(normalize(vec3(-1, -1, 0)));
 	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
-	spot->set_range(50);
-	spot->set_power(10);
+	spot->set_range(200);
+	spot->set_power(50);
 }
 
 SceneManager::~SceneManager()
@@ -66,6 +66,9 @@ SceneManager::~SceneManager()
 	delete pointLight;
 	pointLight = NULL;
 	
+	delete spot;
+	spot = NULL;
+
 	for (int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];
 

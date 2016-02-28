@@ -16,6 +16,8 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	effect* eff, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
+	if (myType == spotty)
+		T = translate(mat4(1.0f), me->get_transform().position);
 	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
@@ -89,10 +91,11 @@ void Obj::render()
     camera* cam = myScene->cam;			 // camera pointer 
 
 	// get matrices + eye postion from the camera
-	mat4 P = cam->get_projection(); 
+	mat4 P = cam->get_projection();
 	mat4 V = cam->get_view();
 	vec3 eyeP = cam->get_position();
 
+	
 	// get normal matrix from mesh
 	mat3 N = m->get_transform().get_normal_matrix();
 
@@ -131,6 +134,22 @@ void Obj::render()
 		value_ptr(N));
 
 
+	auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
+	auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
+	auto matrix = T * R;
+	auto lV = myScene->shadow.get_view();
+
+	auto lMVP = P * lV * matrix;
+
+	if (myType == forShade)
+	{
+		glUniformMatrix4fv(
+			eff->get_uniform_location("lightMVP"),
+			1,
+			GL_FALSE,
+			value_ptr(lMVP));
+	}
+
 	if (waterObj)  // water flag to assign uniform moving water!
 	{
 		static float dd = 0.0f;
@@ -144,6 +163,7 @@ void Obj::render()
 	renderer::bind(*myScene->light, "light");
 	renderer::bind(*myScene->pointLight, "point");
 	renderer::bind(*myScene->spot, "spot");
+	renderer::bind(myScene->shadow.buffer->get_depth(), 1);
 
 
 	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
@@ -157,6 +177,9 @@ void Obj::render()
 
 	// set eye position (from active camera)
 	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+
+
+
 
 	// render mesh
 	renderer::render(*m);

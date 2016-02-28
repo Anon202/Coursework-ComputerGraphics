@@ -38,5 +38,5 @@ void main()
     // ***********************************
     // Transform position into light space
     // ***********************************
-    
+    vertex_light = (lightMVP * vec4(position, 1.0));
 }

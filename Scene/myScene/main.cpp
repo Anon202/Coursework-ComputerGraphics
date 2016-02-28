@@ -59,7 +59,7 @@ bool load_content()
 	geometry terrGeom; // geom to load into
 	
 	// Load height map
-	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMap.png");
+	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMapNEW.png");
 
 	// Generate terrain
 	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 10.0f);
@@ -86,11 +86,14 @@ bool load_content()
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
 
 	
-	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(2.0f, 5.0f, 2.0f)));  // pillar
+	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
 	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
 	myScene->materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
+	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(5.0f, 5.0f, 5.0f)));
+	myScene->meshes["spoot"].get_transform().position = (vec3(-30.5, 200.0, 150.0));
+	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
 	// Red box
 	myScene->materials["box"].set_diffuse(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -100,11 +103,23 @@ bool load_content()
 
 	myScene->materials["cylinder"].set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
 
+
+	// create platform
+	myScene->meshes["platform"] = mesh(geometry_builder::create_box(vec3(8, 0.5, 8)));
+	myScene->materials["platform"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
+
+	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(1.0, 0.5,2.0)));
+	myScene->materials["platBox"].set_diffuse(vec4(0.83, 0.91, 0.68, 1.0));
+
+	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(1.5, 3.0, 5.0)));
+	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
+
+
 	for (auto &e : myScene->materials)
 	{
 		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		e.second.set_shininess(2.0f);
+		e.second.set_shininess(10.0f);
 	}
 
 
@@ -124,7 +139,7 @@ bool load_content()
 	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(15.0f, 15.0f, 15.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff,  terrn);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff,  terrn);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -137,6 +152,10 @@ bool load_content()
 
 	myScene->texList.push_back(waterText);
 
+	vector<texture*> platText;
+	platText.push_back(new texture("..\\resources\\textures\\marble.jpg"));
+	//platText.push_back(new texture("..\\resources\\textures\\myNMap.png"));
+	myScene->texList.push_back(platText);
 
 	vector<texture*> pillarText;
 	pillarText.push_back(new texture("..\\resources\\textures\\brick.jpg"));
@@ -173,12 +192,25 @@ bool load_content()
 	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
 	gouraud_eff->build();
 	myScene->effectList.push_back(gouraud_eff);
+
+	effect *shadeff = new effect;
+	shadeff->add_shader("..\\resources\\shaders\\shadow.vert", GL_VERTEX_SHADER);
+	vector<string> frag_shaders
+	{
+		"shadowShader.frag",
+		"..\\resources\\shaders\\parts\\spot.frag",
+		"..\\resources\\shaders\\parts\\shadow.frag"
+	};
+	shadeff->add_shader(frag_shaders, GL_FRAGMENT_SHADER);
+	shadeff->build();
+	myScene->effectList.push_back(shadeff);
+
 	
 
 	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);
-	Obj *pillar2 = new Obj(vec3(50.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);
+	Obj *pillar2 = new Obj(vec3(-30.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff,  object);
 
-	Obj *water = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff,  waterObj);
+	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff,  waterObj);
 
 	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 
@@ -186,11 +218,31 @@ bool load_content()
 
 	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
+
+	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadeff, forShade);
+	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
+
+	Obj *platWall = new Obj(vec3(-160.0, 90.0, 100.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
+	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, forShade);
+	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, forShade);
+	
+	
+	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);// point_eff, pointLight, pointLightObj);
+	myScene->spot->set_position(myScene->meshes["spoot"].get_transform().position);
+
 	myScene->root->addChild(box, "box");
 	myScene->root->addChild(pillar, "pillar");
+
+	myScene->root->addChild(plat, "platform");
+	plat->addChild(platWall, "platWall");
+	plat->addChild(platBox, "platBox");
+	plat->addChild(pillarPlat, "pillarPlat");
+	plat->addChild(pillarPlat2, "pillarPlat2");
+
 	pillar->addChild(pillar2, "pillar2");
 
 	myScene->root->addChild(water, "water");
+	myScene->root->addChild(spoot, "spoot");
 
 	box->addChild(pyra, "pyramid");
 
@@ -203,6 +255,12 @@ bool load_content()
 	myScene->list.push_back(pillar);
 	myScene->list.push_back(pillar2);
 	myScene->list.push_back(ball);
+	myScene->list.push_back(plat);
+	myScene->list.push_back(platBox);
+	myScene->list.push_back(platWall);
+	myScene->list.push_back(pillarPlat);
+	myScene->list.push_back(pillarPlat2);
+	myScene->list.push_back(spoot);
 
     // ******************************
     // Create box geometry for skybox
@@ -242,9 +300,9 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	
-	myScene->shadow.light_position = myScene->pointLight->get_position();
-	myScene->shadow.light_dir = myScene->light->get_direction();
+	vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->light->get_direction();  /// ???
+	myScene->shadow.light_position = myScene->spot->get_position();
+	myScene->shadow.light_dir = myScene->spot->get_direction();
 
 	// Press s to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
@@ -300,13 +358,13 @@ bool update(float delta_time)
 
 
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
-			freeCam->move(vec3(0.0f, 0.0f, 1.0f));
+			freeCam->move(vec3(0.0f, 0.0f, 1.0f)*delta_time*200.0f);
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
-			freeCam->move(vec3(-1.0f, 0.0f, 0.0f));
+			freeCam->move(vec3(-1.0f, 0.0f, 0.0f)*delta_time*200.0f);
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
-			freeCam->move(vec3(1.0f, 0.0f, 0.0f));
+			freeCam->move(vec3(1.0f, 0.0f, 0.0f)*delta_time*200.0f);
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
-			freeCam->move(vec3(0.0f, 0.0f, -1.0f));
+			freeCam->move(vec3(0.0f, 0.0f, -1.0f)*delta_time*200.0f);
 
 
 		glfwGetCursorPos(window, &myScene->current_x, &myScene->current_y);  // update cursor pos

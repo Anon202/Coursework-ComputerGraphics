@@ -13,7 +13,7 @@ class GenerateBack;
 class Obj;				// forward declaration of object
 
 
-enum objType { sky, terrn, waterObj, object, pointLightObj }; //  enum
+enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty }; //  enum
 class SceneManager
 {
 	
