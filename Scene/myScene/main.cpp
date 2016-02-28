@@ -53,8 +53,7 @@ bool initialise()
 bool load_content()
 {
 	
-	directional_light* light = myScene->light;  // create local pointer to the scenes light
-	point_light* pointLight = myScene->pointLight;
+	
 
 	// CREATE TERRAIN
 	geometry terrGeom; // geom to load into
@@ -188,7 +187,6 @@ bool load_content()
 	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 	myScene->root->addChild(box, "box");
-
 	myScene->root->addChild(pillar, "pillar");
 	pillar->addChild(pillar2, "pillar2");
 
@@ -231,11 +229,28 @@ bool load_content()
 	skybx2->addChild(myScene->root, "root");  // not workign
 	myScene->list.push_back(myScene->skybx);
 
+	// create a new shadow effect
+	effect *shadow_effect = new effect;
+	shadow_effect->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
+	shadow_effect->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+	shadow_effect->build();
+	myScene->shadow_eff = shadow_effect;
+	myScene->effectList.push_back(shadow_effect);
+
     return true;
 }
 
 bool update(float delta_time)
 {
+	
+	myScene->shadow.light_position = myScene->pointLight->get_position();
+	myScene->shadow.light_dir = myScene->light->get_direction();
+
+	// Press s to save
+	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
+	{
+		myScene->shadow.buffer->save("test.png");
+	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -307,6 +322,56 @@ bool update(float delta_time)
 
 bool render()
 {
+	// render shadow map.
+	renderer::set_render_target(myScene->shadow);
+
+	// **********************
+	// Clear depth buffer bit
+	// **********************
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// ****************************
+	// Set render mode to cull face
+	// ****************************
+	glCullFace(GL_FRONT);
+
+	// Bind shader
+	renderer::bind(*myScene->shadow_eff);
+
+	// Render meshes
+	for (auto &e : myScene->meshes)
+	{
+		auto m = e.second;
+		// Create MVP matrix
+		auto M = m.get_transform().get_transform_matrix();
+		// *********************************
+		// View matrix taken from shadow map
+		// *********************************
+		auto V = myScene->shadow.get_view();
+
+		auto P = myScene->cam->get_projection();
+		auto MVP = P * V * M;
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(
+			myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
+			1, // Number of values - 1 mat4
+			GL_FALSE, // Transpose the matrix?
+			value_ptr(MVP)); // Pointer to matrix data
+		// Render mesh
+		renderer::render(m);
+	}
+
+	// ************************************
+	// Set render target back to the screen
+	// ************************************
+	renderer::set_render_target();
+
+	// *********************
+	// Set cull face to back
+	// *********************
+	glCullFace(GL_BACK);
+
+
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

@@ -143,6 +143,7 @@ void Obj::render()
 
 	renderer::bind(*myScene->light, "light");
 	renderer::bind(*myScene->pointLight, "point");
+	renderer::bind(*myScene->spot, "spot");
 
 
 	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list

@@ -18,6 +18,9 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 	firstMouse = false;
 
+	// initialise shadow map with screen size
+	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
+
 }
 
 void SceneManager::Create()
@@ -41,7 +44,12 @@ void SceneManager::Create()
 	pointLight->set_linear_attenuation(0.2f);
 	pointLight->set_quadratic_attenuation(0.01f);
 
-
+	spot = new spot_light;
+	spot->set_position(vec3(31.5, 35.75, 63.0));
+	spot->set_direction(normalize(vec3(-1, -1, 0)));
+	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
+	spot->set_range(50);
+	spot->set_power(10);
 }
 
 SceneManager::~SceneManager()

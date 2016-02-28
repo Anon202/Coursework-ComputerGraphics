@@ -27,6 +27,7 @@ public:
 	
 	directional_light* light;
 	point_light* pointLight;
+	spot_light* spot;
 
 	camera* cam;
 
@@ -37,10 +38,13 @@ public:
 
 	vector<Obj*> list;
 
+	effect* shadow_eff;
 
 	map<string, mesh> meshes;
 	map<string, material> materials;
 	map<string, cubemap> cubemaps;
+
+	shadow_map shadow;
 	
 	double initialX;	// vars for mouse positions initial
 	double initialY;
