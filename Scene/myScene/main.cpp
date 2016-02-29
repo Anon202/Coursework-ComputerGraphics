@@ -220,12 +220,12 @@ bool load_content()
 	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 
-	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadeff, forShade);
+	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
 	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
 
 	Obj *platWall = new Obj(vec3(-160.0, 90.0, 100.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
-	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, forShade);
-	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, forShade);
+	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	
 	
 	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);// point_eff, pointLight, pointLightObj);
@@ -437,6 +437,62 @@ bool render()
 	//myScene->root->render(myScene->root);
 
     return true;
+}
+
+void calculateFrustrum()
+{
+	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
+
+	//near plane
+	float fov = (0.25f * (float)AI_MATH_PI);
+	float near = 0.1f;
+	float far = 1000.f;
+	float aspect = (renderer::get_screen_width() / renderer::get_screen_height());
+	
+	float hNear = 2 * tan(fov / 2) * near;		// height of near
+	float wNear = hNear * aspect;				// width of near
+	float hFar = 2 * tan(fov / 2) * near;		// height of far
+	float wFar = hFar * aspect;					// width of far
+
+	vec3 currentCamPos = myScene->cam->get_position();
+	
+	vec3 up = myScene->cam->get_up();
+	vec3 lookAt = myScene->cam->get_target();
+	vec3 right = cross(up, lookAt);					// up cross lookat
+	right = normalize(right); 
+
+
+	vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
+	vec3 nearCent = currentCamPos + (lookAt * near);
+
+	vec3 ftl = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
+	vec3 ftr = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
+	vec3 fbl = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
+	vec3 fbr = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
+	
+
+	vec3 ntl = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
+	vec3 ntr = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
+	vec3 nbr = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
+	vec3 nbr = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
+	
+	
+}
+
+bool intersection(float radius)
+{
+	for (int i = 0; i < 6; ++i) // for each plane check if intersection occurs
+	{
+		float d;
+
+		if (d <= -radius)
+		{
+			return false;
+		}
+
+	}
+
+	return true;
 }
 
 void main()

@@ -68,13 +68,15 @@ void Obj::update(Obj* parent, float delta_time)
 		}
 	}
 
+	calculateSphere(); // calculate bounding sphere
+
 	for (auto &e : children)
 	{
 		Obj* child = e.second;
 		child->update(this, delta_time);
 	}
 
-	calculateSphere();
+	
 }
 
 void Obj::calculateSphere()
@@ -103,9 +105,13 @@ void Obj::calculateSphere()
 		}
 
 	}
-	else (maxPoints.y >= maxPoints.z)
+	else if (maxPoints.y >= maxPoints.z)
 	{
 		radius = maxPoints.y;
+	}
+	else
+	{
+		radius = maxPoints.z;
 	}
 
 }
