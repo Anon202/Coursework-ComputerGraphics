@@ -198,8 +198,8 @@ bool load_content()
 	vector<string> frag_shaders
 	{
 		"shadowShader.frag",
-		"..\\resources\\shaders\\parts\\spot.frag",
-		"..\\resources\\shaders\\parts\\shadow.frag"
+		"..\\resources\\shaders\\parts\\spotPart.frag",
+		"..\\resources\\shaders\\parts\\shadowPart.frag"
 	};
 	shadeff->add_shader(frag_shaders, GL_FRAGMENT_SHADER);
 	shadeff->build();

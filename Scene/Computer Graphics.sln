@@ -8,103 +8,25 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{96425147-A5FD-4D64-8E08-00A3BF701D94}"
 	ProjectSection(SolutionItems) = preProject
 		resources\textures\heightmaps\myHeightMap.png = resources\textures\heightmaps\myHeightMap.png
-		resources\shaders\water.frag = resources\shaders\water.frag
-		resources\shaders\water.vert = resources\shaders\water.vert
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B}"
-	ProjectSection(SolutionItems) = preProject
-		resources\models\bunny.obj = resources\models\bunny.obj
-		resources\models\bunny_optimized.obj = resources\models\bunny_optimized.obj
-		resources\models\ButterflyBody.3ds = resources\models\ButterflyBody.3ds
-		resources\models\ButterflyWings.3ds = resources\models\ButterflyWings.3ds
-		resources\models\Car.3ds = resources\models\Car.3ds
-		resources\models\CrackedQuad.3ds = resources\models\CrackedQuad.3ds
-		resources\models\Cube.3ds = resources\models\Cube.3ds
-		resources\models\Cube.x = resources\models\Cube.x
-		resources\models\Dino.3ds = resources\models\Dino.3ds
-		resources\models\Disc.3ds = resources\models\Disc.3ds
-		resources\models\Disc2.3ds = resources\models\Disc2.3ds
-		resources\models\ElephantBody.3ds = resources\models\ElephantBody.3ds
-		resources\models\ElephantTusks.3ds = resources\models\ElephantTusks.3ds
-		resources\models\Hair.obj = resources\models\Hair.obj
-		resources\models\HairPatch.3ds = resources\models\HairPatch.3ds
-		resources\models\Hebe.3ds = resources\models\Hebe.3ds
-		resources\models\Light.3ds = resources\models\Light.3ds
-		resources\models\ninjaHead.obj = resources\models\ninjaHead.obj
-		resources\models\OceanSurface.3ds = resources\models\OceanSurface.3ds
-		resources\models\QuadArray.3ds = resources\models\QuadArray.3ds
-		resources\models\Radeon.3ds = resources\models\Radeon.3ds
-		resources\models\ScreenAlignedQuad-Ocean.3ds = resources\models\ScreenAlignedQuad-Ocean.3ds
-		resources\models\ScreenAlignedQuad.3ds = resources\models\ScreenAlignedQuad.3ds
-		resources\models\Skull.3ds = resources\models\Skull.3ds
-		resources\models\SkyDome.3ds = resources\models\SkyDome.3ds
-		resources\models\Sphere.3ds = resources\models\Sphere.3ds
-		resources\models\Sphere.x = resources\models\Sphere.x
-		resources\models\Sphere_EdgeQuad.x = resources\models\Sphere_EdgeQuad.x
-		resources\models\Teapot.3ds = resources\models\Teapot.3ds
-		resources\models\teapot.obj = resources\models\teapot.obj
-		resources\models\Terrain.3ds = resources\models\Terrain.3ds
-		resources\models\terrain.obj = resources\models\terrain.obj
-		resources\models\Terrain2.3ds = resources\models\Terrain2.3ds
-		resources\models\TesselatedCube.3ds = resources\models\TesselatedCube.3ds
-		resources\models\TesselatedPlane.obj = resources\models\TesselatedPlane.obj
-		resources\models\TexturedCube.3ds = resources\models\TexturedCube.3ds
-		resources\models\Torus.3ds = resources\models\Torus.3ds
-		resources\models\Torus2.obj = resources\models\Torus2.obj
-		resources\models\Torus2_FurFin.x = resources\models\Torus2_FurFin.x
-		resources\models\Vase.3ds = resources\models\Vase.3ds
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194805E-ABC9-4D12-A0CD-98C0073AEC73}"
 	ProjectSection(SolutionItems) = preProject
-		resources\shaders\basic.frag = resources\shaders\basic.frag
-		resources\shaders\basic.vert = resources\shaders\basic.vert
-		resources\shaders\billboard.geom = resources\shaders\billboard.geom
-		resources\shaders\blend.frag = resources\shaders\blend.frag
-		resources\shaders\blend.vert = resources\shaders\blend.vert
-		resources\shaders\blur.frag = resources\shaders\blur.frag
-		resources\shaders\colour.frag = resources\shaders\colour.frag
-		resources\shaders\colour.vert = resources\shaders\colour.vert
-		resources\shaders\combined_lighting.frag = resources\shaders\combined_lighting.frag
-		resources\shaders\combined_lighting.vert = resources\shaders\combined_lighting.vert
-		resources\shaders\depth_of_field.frag = resources\shaders\depth_of_field.frag
-		resources\shaders\dissolve.frag = resources\shaders\dissolve.frag
-		resources\shaders\dissolve.vert = resources\shaders\dissolve.vert
-		resources\shaders\env_map.frag = resources\shaders\env_map.frag
-		resources\shaders\env_map.vert = resources\shaders\env_map.vert
 		resources\shaders\explode.geom = resources\shaders\explode.geom
 		resources\shaders\gouraud.frag = resources\shaders\gouraud.frag
 		resources\shaders\gouraud.vert = resources\shaders\gouraud.vert
-		resources\shaders\greyscale.frag = resources\shaders\greyscale.frag
-		resources\shaders\mask.frag = resources\shaders\mask.frag
-		resources\shaders\motion_blur.frag = resources\shaders\motion_blur.frag
-		resources\shaders\multi-light.frag = resources\shaders\multi-light.frag
-		resources\shaders\multi-light.vert = resources\shaders\multi-light.vert
 		resources\shaders\normals.geom = resources\shaders\normals.geom
 		resources\shaders\phong.frag = resources\shaders\phong.frag
 		resources\shaders\phong.vert = resources\shaders\phong.vert
 		resources\shaders\point.frag = resources\shaders\point.frag
 		resources\shaders\point.vert = resources\shaders\point.vert
 		resources\shaders\shadow.vert = resources\shaders\shadow.vert
-		resources\shaders\simple_ambient.frag = resources\shaders\simple_ambient.frag
-		resources\shaders\simple_ambient.vert = resources\shaders\simple_ambient.vert
-		resources\shaders\simple_cell.frag = resources\shaders\simple_cell.frag
-		resources\shaders\simple_cell.vert = resources\shaders\simple_cell.vert
-		resources\shaders\simple_diffuse.frag = resources\shaders\simple_diffuse.frag
-		resources\shaders\simple_diffuse.vert = resources\shaders\simple_diffuse.vert
-		resources\shaders\simple_specular.frag = resources\shaders\simple_specular.frag
-		resources\shaders\simple_specular.vert = resources\shaders\simple_specular.vert
-		resources\shaders\simple_texture.frag = resources\shaders\simple_texture.frag
-		resources\shaders\simple_texture.vert = resources\shaders\simple_texture.vert
 		resources\shaders\skybox.frag = resources\shaders\skybox.frag
 		resources\shaders\skybox.vert = resources\shaders\skybox.vert
 		resources\shaders\spot.frag = resources\shaders\spot.frag
 		resources\shaders\spot.vert = resources\shaders\spot.vert
-		resources\shaders\tarnish.frag = resources\shaders\tarnish.frag
-		resources\shaders\tarnish.vert = resources\shaders\tarnish.vert
-		resources\shaders\working_diffuse.frag = resources\shaders\working_diffuse.frag
-		resources\shaders\working_diffuse.vert = resources\shaders\working_diffuse.vert
+		resources\shaders\water.frag = resources\shaders\water.frag
+		resources\shaders\water.vert = resources\shaders\water.vert
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "textures", "textures", "{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}"
@@ -191,8 +113,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parts", "parts", "{1EF9CE7D
 		resources\shaders\parts\fog.frag = resources\shaders\parts\fog.frag
 		resources\shaders\parts\normal_map.frag = resources\shaders\parts\normal_map.frag
 		resources\shaders\parts\point.frag = resources\shaders\parts\point.frag
-		resources\shaders\parts\shadow.frag = resources\shaders\parts\shadow.frag
-		resources\shaders\parts\spot.frag = resources\shaders\parts\spot.frag
+		resources\shaders\parts\shadowPart.frag = resources\shaders\parts\shadowPart.frag
+		resources\shaders\parts\spotPart.frag = resources\shaders\parts\spotPart.frag
 		resources\shaders\parts\weighted_texture.frag = resources\shaders\parts\weighted_texture.frag
 	EndProjectSection
 EndProject
@@ -215,6 +137,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "heightmaps", "heightmaps", 
 		resources\textures\heightmaps\terrain.png = resources\textures\heightmaps\terrain.png
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A01A805-D302-49A1-81AE-08A6D7F771C8}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -234,7 +161,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2A7C624E-4CC2-4A47-BBEF-5441FA222F5B} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{2194805E-ABC9-4D12-A0CD-98C0073AEC73} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}

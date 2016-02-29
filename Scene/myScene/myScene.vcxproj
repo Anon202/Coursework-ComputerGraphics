@@ -95,8 +95,6 @@
   <ItemGroup>
     <None Include="normShader.frag" />
     <None Include="normShader.vert" />
-    <None Include="gour.frag" />
-    <None Include="gour.vert" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
   </ItemGroup>

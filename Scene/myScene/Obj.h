@@ -16,7 +16,7 @@ class Obj
 	Obj*				parent;
 
 	vec3				cent;    // to create bounding spheres
-	float r;
+	float				radius;
 	//texture*			tex;
 
 	float theta;
