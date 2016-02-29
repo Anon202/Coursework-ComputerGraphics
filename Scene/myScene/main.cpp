@@ -2,6 +2,88 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
+void intersection(const vector<vec3> planeNormals, vector<Obj*> myList)
+{
+	for (auto e : myScene->list)
+	{
+
+		for (int i = 0; i < 6; ++i) // for each plane check if intersection occurs
+		{
+			float d;
+			d = dot(planeNormals[i], e->cent);
+
+			if (d <= -e->radius)
+			{
+				e->visible = false;
+				break;
+			}
+
+		}
+
+	}
+
+}
+
+vector<vec3> calculateFrustrum()
+{
+	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
+
+	//near plane
+	float fov = (0.25f * (float)AI_MATH_PI);
+	float near = 0.1f;
+	float far = 1000.f;
+	float aspect = (renderer::get_screen_width() / renderer::get_screen_height());
+
+	float hNear = 2 * tan(fov / 2) * near;		// height of near
+	float wNear = hNear * aspect;				// width of near
+	float hFar = 2 * tan(fov / 2) * near;		// height of far
+	float wFar = hFar * aspect;					// width of far
+
+	vec3 currentCamPos = myScene->cam->get_position();
+
+	vec3 up = vec3(0.0, 1.0, 0.0);
+	vec3 lookAt = vec3(0.f, 0.f, 1.f);
+	vec3 right = cross(up, lookAt);					// up cross lookat
+	right = normalize(right);
+
+
+	vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
+	vec3 nearCent = currentCamPos + (lookAt * near);
+
+	vec3 ftl = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
+	vec3 ftr = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
+	vec3 fbl = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
+	vec3 fbr = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
+
+
+	vec3 ntl = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
+	vec3 ntr = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
+	vec3 nbl = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
+	vec3 nbr = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
+
+	// calculate normals
+	vector<vec3> planeNormals
+	{
+		cross(nbl - ntl, ftl - ntl),
+		cross(fbr - ftr, ntr - ftr),
+		cross(ntl - ftl, ftr - ftl),
+		cross(fbr - fbl, nbl - fbl),
+		lookAt,
+		-lookAt
+	};
+
+	/*
+	vec3 leftN = cross(nbl - ntl, ftl - ntl);
+	vec3 rightN = cross(fbr - ftr, ntr - ftr);
+	vec3 topN = cross(ntl - ftl, ftr - ftl);
+	vec3 bottN = cross(fbr - fbl, nbl - fbl);
+	vec3 nearN = lookAt;
+	vec3 farN = -lookAt;*/
+
+
+	return planeNormals;
+}
+
 bool initialise()
 {
 	double xpos = 0; // create initial vars for mouse position
@@ -47,8 +129,12 @@ bool initialise()
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
 	myScene->Create();  // run create method for scene man
+
+	
 	return true;
 }
+
+
 
 bool load_content()
 {
@@ -351,10 +437,10 @@ bool update(float delta_time)
 		double delta_x = new_x - myScene->current_x;		 // Calculate delta of cursor positions from last frame
 		double delta_y = new_y - myScene->current_y;
 
-		delta_x *= ratio_width;					 // Multiply deltas by ratios - gets actual change in orientation
+		delta_x *= ratio_width;								 // Multiply deltas by ratios - gets actual change in orientation
 		delta_y *= -ratio_height;
 
-		freeCam->rotate((float)delta_x, (float)delta_y);  // Rotate cameras by delta :: delta_y - x-axis rotation :: delta_x - y-axis rotation
+		freeCam->rotate((float)delta_x, (float)delta_y);     // Rotate cameras by delta :: delta_y - x-axis rotation :: delta_x - y-axis rotation
 
 
 
@@ -374,6 +460,11 @@ bool update(float delta_time)
 	myScene->cam->update(delta_time);  // update the camera
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
+	
+
+	vector<vec3> planeN = calculateFrustrum();
+	intersection(planeN, myScene->list);
+
 	
 	//myScene->root->update(NULL);
     return true;
@@ -437,62 +528,6 @@ bool render()
 	//myScene->root->render(myScene->root);
 
     return true;
-}
-
-void calculateFrustrum()
-{
-	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
-
-	//near plane
-	float fov = (0.25f * (float)AI_MATH_PI);
-	float near = 0.1f;
-	float far = 1000.f;
-	float aspect = (renderer::get_screen_width() / renderer::get_screen_height());
-	
-	float hNear = 2 * tan(fov / 2) * near;		// height of near
-	float wNear = hNear * aspect;				// width of near
-	float hFar = 2 * tan(fov / 2) * near;		// height of far
-	float wFar = hFar * aspect;					// width of far
-
-	vec3 currentCamPos = myScene->cam->get_position();
-	
-	vec3 up = myScene->cam->get_up();
-	vec3 lookAt = myScene->cam->get_target();
-	vec3 right = cross(up, lookAt);					// up cross lookat
-	right = normalize(right); 
-
-
-	vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
-	vec3 nearCent = currentCamPos + (lookAt * near);
-
-	vec3 ftl = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
-	vec3 ftr = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
-	vec3 fbl = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
-	vec3 fbr = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
-	
-
-	vec3 ntl = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
-	vec3 ntr = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
-	vec3 nbr = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
-	vec3 nbr = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
-	
-	
-}
-
-bool intersection(float radius)
-{
-	for (int i = 0; i < 6; ++i) // for each plane check if intersection occurs
-	{
-		float d;
-
-		if (d <= -radius)
-		{
-			return false;
-		}
-
-	}
-
-	return true;
 }
 
 void main()

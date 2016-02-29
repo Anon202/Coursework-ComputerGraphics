@@ -15,21 +15,21 @@ class Obj
 
 	Obj*				parent;
 
-	vec3				cent;    // to create bounding spheres
-	float				radius;
 	//texture*			tex;
 
 	float theta;
 
 	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
-
-	bool visible;
 	
 	vec3 rotV;
 	float myType;
 
 public:
+	vec3				cent;    // to create bounding spheres
+	float				radius;
+	bool				visible;
+
 	Obj	();
 	Obj(vec3 pos,
 		vec3 rot, float theta,

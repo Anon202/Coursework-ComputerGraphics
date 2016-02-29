@@ -33,6 +33,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->theta = theta;
 	this->rotV = rot;
 
+	visible = true;
 	// trying mat
 	
 }
@@ -127,115 +128,118 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	extern SceneManager* myScene;
+//	if (visible){
+		extern SceneManager* myScene;
 
-    camera* cam = myScene->cam;			 // camera pointer 
+		camera* cam = myScene->cam;			 // camera pointer 
 
-	// get matrices + eye postion from the camera
-	mat4 P = cam->get_projection();
-	mat4 V = cam->get_view();
-	vec3 eyeP = cam->get_position();
-
-	
-	// get normal matrix from mesh
-	mat3 N = m->get_transform().get_normal_matrix();
-
-	// calculate MVP from world
-	auto MVP = P * V * mworld;
-
-	if (myType == sky)
-	{
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(GL_FALSE);
-	}
-
-	// Bind the effect
-	renderer::bind(*eff);
-
-	// Set MVP matrix uniform
-	glUniformMatrix4fv(
-		eff->get_uniform_location("MVP"), // Location of uniform
-		1,									    // Number of values - 1 mat4
-		GL_FALSE,							    // Transpose the matrix?
-		value_ptr(MVP));						// Pointer to matrix data
+		// get matrices + eye postion from the camera
+		mat4 P = cam->get_projection();
+		mat4 V = cam->get_view();
+		vec3 eyeP = cam->get_position();
 
 
-	// Set M matrix Uniform
-	glUniformMatrix4fv(
-		eff->get_uniform_location("M"),
-		1,
-		GL_FALSE,
-		value_ptr(mworld));
+		// get normal matrix from mesh
+		mat3 N = m->get_transform().get_normal_matrix();
 
-	// Set 3x3 normal matrix from mesh
-	glUniformMatrix3fv(
-		eff->get_uniform_location("N"),
-		1,
-		GL_FALSE,
-		value_ptr(N));
+		// calculate MVP from world
+		auto MVP = P * V * mworld;
 
+		if (myType == sky)
+		{
+			glDisable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
+		}
 
-	auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
-	auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
-	auto matrix = T * R;
-	auto lV = myScene->shadow.get_view();
+		// Bind the effect
+		renderer::bind(*eff);
 
-	auto lMVP = P * lV * matrix;
-
-	if (myType == forShade)
-	{
+		// Set MVP matrix uniform
 		glUniformMatrix4fv(
-			eff->get_uniform_location("lightMVP"),
+			eff->get_uniform_location("MVP"), // Location of uniform
+			1,									    // Number of values - 1 mat4
+			GL_FALSE,							    // Transpose the matrix?
+			value_ptr(MVP));						// Pointer to matrix data
+
+
+		// Set M matrix Uniform
+		glUniformMatrix4fv(
+			eff->get_uniform_location("M"),
 			1,
 			GL_FALSE,
-			value_ptr(lMVP));
-	}
+			value_ptr(mworld));
 
-	if (waterObj)  // water flag to assign uniform moving water!
-	{
-		static float dd = 0.0f;
-		dd += 0.002f;
-		glUniform1f(eff->get_uniform_location("myTime"), dd );
-	}
-
-	// Bind Materials/lights/texture
-	renderer::bind(*mat, "mat");
-
-	renderer::bind(*myScene->light, "light");
-	renderer::bind(*myScene->pointLight, "point");
-	renderer::bind(*myScene->spot, "spot");
-	renderer::bind(myScene->shadow.buffer->get_depth(), 1);
+		// Set 3x3 normal matrix from mesh
+		glUniformMatrix3fv(
+			eff->get_uniform_location("N"),
+			1,
+			GL_FALSE,
+			value_ptr(N));
 
 
-	for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
-	{
-		renderer::bind(*tex[i], i);
-		stringstream stream;
-		stream << "tex[" << i << "]";
+		auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
+		auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
+		auto matrix = T * R;
+		auto lV = myScene->shadow.get_view();
 
-		glUniform1i(eff->get_uniform_location(stream.str()), i);
-	}
+		auto lMVP = P * lV * matrix;
 
-	// set eye position (from active camera)
-	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+		if (myType == forShade)
+		{
+			glUniformMatrix4fv(
+				eff->get_uniform_location("lightMVP"),
+				1,
+				GL_FALSE,
+				value_ptr(lMVP));
+		}
+
+		if (waterObj)  // water flag to assign uniform moving water!
+		{
+			static float dd = 0.0f;
+			dd += 0.002f;
+			glUniform1f(eff->get_uniform_location("myTime"), dd);
+		}
+
+		// Bind Materials/lights/texture
+		renderer::bind(*mat, "mat");
+
+		renderer::bind(*myScene->light, "light");
+		renderer::bind(*myScene->pointLight, "point");
+		renderer::bind(*myScene->spot, "spot");
+		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
+
+
+		for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+		{
+			renderer::bind(*tex[i], i);
+			stringstream stream;
+			stream << "tex[" << i << "]";
+
+			glUniform1i(eff->get_uniform_location(stream.str()), i);
+		}
+
+		// set eye position (from active camera)
+		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
 
 
 
-	// render mesh
-	renderer::render(*m);
+		// render mesh
+		renderer::render(*m);
 
-	if (myType == sky)
-	{
-		glEnable(GL_DEPTH_TEST);
-		glDepthMask(GL_TRUE);
-	}
+		if (myType == sky)
+		{
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+		}
 
-	// recurse for children
-	for (auto &e : children)
-	{
-		Obj* child = e.second;
-		child->render();
-	}
+		// recurse for children
+		for (auto &e : children)
+		{
+			Obj* child = e.second;
+			child->render();
+		}
+//	}
+
 
 }
