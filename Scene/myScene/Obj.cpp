@@ -128,7 +128,7 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-//	if (visible){
+	if (visible || myType == sky || myType == terrn){
 		extern SceneManager* myScene;
 
 		camera* cam = myScene->cam;			 // camera pointer 
@@ -239,7 +239,7 @@ void Obj::render()
 			Obj* child = e.second;
 			child->render();
 		}
-//	}
+	}
 
 
 }

@@ -41,8 +41,8 @@ vector<vec3> calculateFrustrum()
 
 	vec3 currentCamPos = myScene->cam->get_position();
 
-	vec3 up = vec3(0.0, 1.0, 0.0);
-	vec3 lookAt = vec3(0.f, 0.f, 1.f);
+	vec3 up = normalize(myScene->cam->get_up());
+	vec3 lookAt = normalize( myScene->cam->get_target() - currentCamPos);
 	vec3 right = cross(up, lookAt);					// up cross lookat
 	right = normalize(right);
 
@@ -80,7 +80,7 @@ vector<vec3> calculateFrustrum()
 	vec3 nearN = lookAt;
 	vec3 farN = -lookAt;*/
 
-
+	
 	return planeNormals;
 }
 
@@ -112,7 +112,7 @@ bool initialise()
 	myScene->cameraList.push_back(myScene->cam);  // add to list so as to not loose the pointer to the camera
 
 	// create target camera
-	myScene->cam->set_position(vec3(50.0f, 10.0f, 50.0f));
+	myScene->cam->set_position(vec3(50.0f, 100.0f, 50.0f));
 	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
@@ -381,6 +381,9 @@ bool load_content()
 	shadow_effect->build();
 	myScene->shadow_eff = shadow_effect;
 	myScene->effectList.push_back(shadow_effect);
+
+	vector<vec3> planeN = calculateFrustrum();
+	//intersection(planeN, myScene->list);
 
     return true;
 }
