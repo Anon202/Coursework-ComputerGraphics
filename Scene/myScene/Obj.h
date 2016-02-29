@@ -40,7 +40,7 @@ public:
 		effect* eff,
 		float myType);
 
-
+	void calculateSphere();
 
 	void update(Obj* parent, float time);
 

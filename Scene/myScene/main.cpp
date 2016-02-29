@@ -106,6 +106,7 @@ bool load_content()
 
 	// create platform
 	myScene->meshes["platform"] = mesh(geometry_builder::create_box(vec3(8, 0.5, 8)));
+	myScene->meshes["platform"].get_geometry().get_maximal_point();
 	myScene->materials["platform"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
 
 	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(1.0, 0.5,2.0)));

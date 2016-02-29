@@ -73,6 +73,41 @@ void Obj::update(Obj* parent, float delta_time)
 		Obj* child = e.second;
 		child->update(this, delta_time);
 	}
+
+	calculateSphere();
+}
+
+void Obj::calculateSphere()
+{
+	// need to calculate bounding sphere for the object.
+	
+	// radius - find biggest length then half
+	// center is the center of the object, position times transform.
+
+	cent = vec3(mworld * vec4(m->get_transform().position, 1.0));
+	//vec3 max = myScene->meshes["platform"].get_geometry().get_maximal_point();
+	
+	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
+	
+	vec3 maxPoints = scale * m->get_geometry().get_maximal_point();
+	
+	if (maxPoints.x >= maxPoints.y) // x bigger y, x bigger than z x biggest
+	{
+		if (maxPoints.x >= maxPoints.z)
+		{
+			radius = maxPoints.x;
+		}
+		else
+		{
+			radius = maxPoints.z;
+		}
+
+	}
+	else (maxPoints.y >= maxPoints.z)
+	{
+		radius = maxPoints.y;
+	}
+
 }
 
 void Obj::addChild(Obj* child, string name)
