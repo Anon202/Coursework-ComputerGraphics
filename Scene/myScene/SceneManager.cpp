@@ -95,12 +95,12 @@ void SceneManager::calculateFrustrum()
 
 
 	// calculate normals
-	planeNormals[0] = cross(nbl - ntl, ftl - ntl);
-	planeNormals[1] = cross(fbr - ftr, ntr - ftr);
-	planeNormals[2] = cross(ntl - ftl, ftr - ftl);
-	planeNormals[3] = cross(fbr - fbl, nbl - fbl);
-	planeNormals[4] = lookAt;
-	planeNormals[5] = -lookAt;
+	planeNormals[leftN] = cross(nbl - ntl, ftl - ntl);
+	planeNormals[rightN] = cross(fbr - ftr, ntr - ftr);
+	planeNormals[topN] = cross(ntl - ftl, ftr - ftl);
+	planeNormals[bottN] = cross(fbr - fbl, nbl - fbl);
+	planeNormals[nearN] = lookAt;
+	planeNormals[farN] = -lookAt;
 	
 	// normalise normals
 	for (int i = 0; i < 6; ++i)
@@ -108,7 +108,8 @@ void SceneManager::calculateFrustrum()
 		planeNormals[i] = normalize(planeNormals[i]);
 	}
 
-
+	pointOnBottom = nbr;
+	pointOnTop = ftl;
 
 }
 

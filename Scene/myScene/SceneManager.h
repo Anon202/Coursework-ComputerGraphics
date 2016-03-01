@@ -14,6 +14,7 @@ class Obj;				// forward declaration of object
 
 
 enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty }; //  enum
+enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
 class SceneManager
 {
 	
@@ -47,6 +48,8 @@ public:
 	shadow_map shadow;
 
 	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
+	vec3 pointOnTop;
+	vec3 pointOnBottom;
 
 	bool debug;
 	

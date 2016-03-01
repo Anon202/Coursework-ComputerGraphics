@@ -89,10 +89,17 @@ void Obj::intersection()
 
 	for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
 	{
+		vec3 pointOnPlane;
+
+		if (i < 3)
+			pointOnPlane = myScene->pointOnTop;
+		else
+			pointOnPlane = myScene->pointOnBottom;
+
 		float d;
-		d = dot(myScene->planeNormals[i], cent);
+		d = dot(myScene->planeNormals[i], pointOnPlane -cent);
 		
-		if (d < -radius)
+		if (d <= -radius)
 		{
 			visible = false;
 			break;
@@ -116,30 +123,15 @@ void Obj::calculateSphere()
 	
 	// cent is definitely right! :D
 	vec3 maxPoints = scale * m->get_geometry().get_maximal_point(); //maximal point not right.. 
-	//m->get_geometry().
-	
-	//if (maxPoints.x >= maxPoints.y) // x bigger y, x bigger than z x biggest
-	//{
-	//	if (maxPoints.x >= maxPoints.z)
-	//	{
-	//		radius = maxPoints.x;
-	//	}
-	//	else
-	//	{
-	//		radius = maxPoints.z;
-	//	}
 
-	//}
-	//else if (maxPoints.y >= maxPoints.z)
-	//{
-	//	radius = maxPoints.y;
-	//}
-	//else
-	//{
-	//	radius = maxPoints.z;
-	//}
+	/* geometry g = geometry_builder::create_box();
+	vec3 data[24];
+	glBindBuffer(GL_ARRAY_BUFFER, g.get_buffer(BUFFER_INDEXES::NORMAL_BUFFER));
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* 24, data); */
 
-	radius = length(maxPoints - cent);
+
+
+	radius = 0;
 
 }
 

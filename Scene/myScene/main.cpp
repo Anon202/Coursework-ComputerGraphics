@@ -253,6 +253,28 @@ bool load_content()
 
 	box->addChild(ball, "ball");
 
+
+
+	int nBufferSize = 0;
+	glBindBuffer(GL_ARRAY_BUFFER, myScene->meshes["box"].get_geometry().get_buffer(BUFFER_INDEXES::POSITION_BUFFER));
+	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &nBufferSize);
+
+	int originalVertexArraySize = (nBufferSize / sizeof(vec3));
+
+	vector<vec3> data;
+
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, nBufferSize, &data);
+	vec3 cent(0.0, 0.0, 0.0);
+	int largest = 0;
+	for (auto d : data)
+	{
+		float currentLen = length(d - cent);
+		if (currentLen > largest)
+			largest = currentLen;
+
+	}
+
+
 	myScene->list.push_back(water);
 	myScene->list.push_back(myScene->root);
 	myScene->list.push_back(box);
