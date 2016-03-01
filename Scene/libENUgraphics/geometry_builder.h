@@ -12,7 +12,7 @@ namespace graphics_framework
 	{
 	public:
 		// Creates box geometry
-		static geometry create_box(const glm::vec3 &dims = glm::vec3(1.0f, 1.0f, 1.0f));
+		static geometry create_box(std::vector<glm::vec3> &pos, const glm::vec3 &dims = glm::vec3(1.0f, 1.0f, 1.0f));
 		// Creates tetrahedron geometry
 		static geometry create_tetrahedron(const glm::vec3 &dims = glm::vec3(1.0f, 1.0f, 1.0f));
 		// Creates pyramid geometry

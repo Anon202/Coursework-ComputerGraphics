@@ -13,7 +13,8 @@ Obj::Obj()
 
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
-	effect* eff, float myType)
+	effect* eff, float myType,
+	vector<vec3> vertPos)
 {
 	mat4 T = translate(mat4(1.0f), pos);
 	if (myType == spotty)
@@ -33,7 +34,10 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->theta = theta;
 	this->rotV = rot;
 
+	this->vertPos = vertPos;
+
 	visible = true;
+	
 	// trying mat
 	
 }
@@ -91,13 +95,13 @@ void Obj::intersection()
 	{
 		vec3 pointOnPlane;
 
-		if (i < 3)
+		/*if (i < 3)
 			pointOnPlane = myScene->pointOnTop;
 		else
-			pointOnPlane = myScene->pointOnBottom;
+			pointOnPlane = myScene->pointOnBottom;*/
 
 		float d;
-		d = dot(myScene->planeNormals[i], pointOnPlane -cent);
+		d = dot(myScene->planeNormals[i], cent);
 		
 		if (d <= -radius)
 		{
@@ -129,9 +133,15 @@ void Obj::calculateSphere()
 	glBindBuffer(GL_ARRAY_BUFFER, g.get_buffer(BUFFER_INDEXES::NORMAL_BUFFER));
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* 24, data); */
 
+	int largest = 0;
+	for (auto p : vertPos)
+	{
+		float curLen = length(p - cent);
+		if (curLen > largest)
+			largest = curLen;
+	}
 
-
-	radius = 0;
+	radius = largest;
 
 }
 

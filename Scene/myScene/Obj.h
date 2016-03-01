@@ -21,6 +21,8 @@ class Obj
 
 	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
+
+	vector<vec3>		vertPos;
 	
 	vec3 rotV;
 	float myType;
@@ -29,6 +31,7 @@ public:
 	vec3				cent;    // to create bounding spheres
 	float				radius;
 	bool				visible;
+	
 
 	Obj	();
 	Obj(vec3 pos,
@@ -38,7 +41,8 @@ public:
 		material* mate,
 		vector<texture*> texture,
 		effect* eff,
-		float myType);
+		float myType,
+		vector<vec3> vertPos);
 
 	void calculateSphere();
 	void intersection();
