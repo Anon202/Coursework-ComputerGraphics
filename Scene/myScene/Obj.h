@@ -46,6 +46,7 @@ public:
 	void update(Obj* parent, float time);
 
 	void render();
+	void renderSpheres();
 
 	void addChild(Obj* child, string name);
 

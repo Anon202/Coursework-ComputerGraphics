@@ -85,6 +85,8 @@ void Obj::intersection()
 {
 	extern SceneManager* myScene;
 
+	visible = true;
+
 	for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
 	{
 		float d;
@@ -95,6 +97,7 @@ void Obj::intersection()
 			visible = false;
 			break;
 		}
+
 	}
 
 }
@@ -134,6 +137,8 @@ void Obj::calculateSphere()
 		radius = maxPoints.z;
 	}
 
+	
+
 }
 
 void Obj::addChild(Obj* child, string name)
@@ -142,12 +147,87 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
+void Obj::renderSpheres()
+{
+	if (myType == object)
+	{
+
+		extern SceneManager* myScene;
+
+		mesh sphere = mesh(geometry_builder::create_sphere());
+		sphere.get_transform().position = cent;
+
+
+		camera* cam = myScene->cam;
+
+		mat4 P = cam->get_projection();
+		mat4 V = cam->get_view();
+		vec3 eyeP = cam->get_position();
+
+		mat3 N = sphere.get_transform().get_normal_matrix();
+
+		auto MVP = P * V * mworld;
+		renderer::bind(*eff);
+
+		// Set MVP matrix uniform
+		glUniformMatrix4fv(
+			eff->get_uniform_location("MVP"), // Location of uniform
+			1,									    // Number of values - 1 mat4
+			GL_FALSE,							    // Transpose the matrix?
+			value_ptr(MVP));						// Pointer to matrix data
+
+
+		// Set M matrix Uniform
+		glUniformMatrix4fv(
+			eff->get_uniform_location("M"),
+			1,
+			GL_FALSE,
+			value_ptr(mworld));
+
+		// Set 3x3 normal matrix from mesh
+		glUniformMatrix3fv(
+			eff->get_uniform_location("N"),
+			1,
+			GL_FALSE,
+			value_ptr(N));
+
+		// Bind Materials/lights/texture
+		renderer::bind(*mat, "mat");
+
+		renderer::bind(*myScene->light, "light");
+		renderer::bind(*myScene->pointLight, "point");
+		renderer::bind(*myScene->spot, "spot");
+		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
+
+
+		for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+		{
+			renderer::bind(*tex[i], i);
+			stringstream stream;
+			stream << "tex[" << i << "]";
+
+			glUniform1i(eff->get_uniform_location(stream.str()), i);
+		}
+
+		// set eye position (from active camera)
+		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+
+
+
+
+		// render mesh
+		renderer::render(sphere);
+
+	}
+}
+
 void Obj::render()
 {
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	if (visible || myType == sky || myType == terrn){
+	//if (visible || myType == sky || myType == terrn)
+	//{
 		extern SceneManager* myScene;
 
 		camera* cam = myScene->cam;			 // camera pointer 
@@ -246,6 +326,8 @@ void Obj::render()
 		// render mesh
 		renderer::render(*m);
 
+		renderSpheres();
+
 		if (myType == sky)
 		{
 			glEnable(GL_DEPTH_TEST);
@@ -258,7 +340,7 @@ void Obj::render()
 			Obj* child = e.second;
 			child->render();
 		}
-	}
+	//}
 
 
 }

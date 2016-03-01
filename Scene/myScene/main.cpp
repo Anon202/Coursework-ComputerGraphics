@@ -30,8 +30,8 @@ bool initialise()
 	myScene->cameraList.push_back(myScene->cam);  // add to list so as to not loose the pointer to the camera
 
 	// create target camera
-	myScene->cam->set_position(vec3(50.0f, 100.0f, 50.0f));
-	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	myScene->cam->set_position(vec3(150.0f, 200.0f, -90.0f));
+	myScene->cam->set_target(vec3(-1.0f, -1.0f, -1.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
@@ -42,8 +42,8 @@ bool initialise()
 
 
 	// Set camera properties for free camera (default)
-	myScene->cam->set_position(vec3(50.0f, 10.0f, 50.0f));
-	myScene->cam->set_target(vec3(0.0f, 0.0f, 0.0f));
+	myScene->cam->set_position(vec3(-50.0f, 100.0f, 50.0f));
+	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
 	myScene->Create();  // run create method for scene man

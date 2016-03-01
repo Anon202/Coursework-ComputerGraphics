@@ -62,7 +62,7 @@ void SceneManager::calculateFrustrum()
 	float fov = (0.25f * (float)AI_MATH_PI);
 	float near = 0.1f;
 	float far = 1000.f;
-	float aspect = (renderer::get_screen_width() / renderer::get_screen_height());
+	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 
 	float hNear = 2 * tan(fov / 2) * near;		// height of near
 	float wNear = hNear * aspect;				// width of near
