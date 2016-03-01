@@ -126,7 +126,7 @@ void Obj::calculateSphere()
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 	
 	// cent is definitely right! :D
-	vec3 maxPoints = scale * m->get_geometry().get_maximal_point(); //maximal point not right.. 
+	//vec3 maxPoints = scale * m->get_geometry().get_maximal_point(); //maximal point not right.. 
 
 	/* geometry g = geometry_builder::create_box();
 	vec3 data[24];
@@ -134,14 +134,20 @@ void Obj::calculateSphere()
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* 24, data); */
 
 	int largest = 0;
+	vec3 chosenPoint;
 	for (auto p : vertPos)
 	{
 		float curLen = length(p - cent);
 		if (curLen > largest)
+		{
 			largest = curLen;
+			chosenPoint = p;
+		}
 	}
 
-	radius = largest;
+	vec3 maxPoint = scale * chosenPoint;
+
+	radius = length(maxPoint - cent);
 
 }
 
@@ -149,65 +155,6 @@ void Obj::addChild(Obj* child, string name)
 {
 	child->parent = this;
 	this->children[name] = child;
-}
-
-void Obj::renderSpheres()
-{
-	extern SceneManager* myScene;
-
-	if (myType != sky && myType != terrn && myScene->debug)
-	{	
-		mesh sphere = mesh(geometry_builder::create_sphere());
-		sphere.get_transform().position = cent;
-		sphere.get_transform().scale = 2.0f*vec3(mworld[0].x, mworld[1].y, mworld[2].z);
-
-
-		camera* cam = myScene->cam;
-
-		mat4 P = cam->get_projection();
-		mat4 V = cam->get_view();
-		vec3 eyeP = cam->get_position();
-
-		mat3 N = sphere.get_transform().get_normal_matrix();
-
-		auto MVP = P * V * mworld;
-		renderer::bind(*eff);
-
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(
-			eff->get_uniform_location("MVP"), // Location of uniform
-			1,									    // Number of values - 1 mat4
-			GL_FALSE,							    // Transpose the matrix?
-			value_ptr(MVP));						// Pointer to matrix data
-
-
-		// Set M matrix Uniform
-		glUniformMatrix4fv(
-			eff->get_uniform_location("M"),
-			1,
-			GL_FALSE,
-			value_ptr(mworld));
-
-		// Set 3x3 normal matrix from mesh
-		glUniformMatrix3fv(
-			eff->get_uniform_location("N"),
-			1,
-			GL_FALSE,
-			value_ptr(N));
-
-		// Bind Materials/lights/texture
-		renderer::bind(*mat, "mat");
-
-		// set eye position (from active camera)
-		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
-
-
-
-
-		// render mesh
-		renderer::render(sphere);
-
-	}
 }
 
 void Obj::render()
@@ -330,6 +277,6 @@ void Obj::render()
 			child->render();
 		}
 	}
-	renderSpheres();
+
 
 }
