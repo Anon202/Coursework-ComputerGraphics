@@ -288,8 +288,8 @@ bool load_content()
 	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff,  sky);
 
 	myScene->list.push_back(skybx2);
-	myScene->skybx->addChild(skybx2, "rodddot");
-	skybx2->addChild(myScene->root, "root");  // not workign
+	myScene->skybx->addChild(skybx2, "sky2");
+	skybx2->addChild(myScene->root, "terrain");  
 	myScene->list.push_back(myScene->skybx);
 
 	// create a new shadow effect
@@ -327,9 +327,13 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		myScene->debug = false;
 	}
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_9))
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		myScene->debug = true;
+	}
 		
 
 	if (freeCam)
@@ -388,54 +392,54 @@ bool update(float delta_time)
 
 bool render()
 {
-	// render shadow map.
-	renderer::set_render_target(myScene->shadow);
+	//// render shadow map.
+	//renderer::set_render_target(myScene->shadow);
 
-	// **********************
-	// Clear depth buffer bit
-	// **********************
-	glClear(GL_DEPTH_BUFFER_BIT);
+	//// **********************
+	//// Clear depth buffer bit
+	//// **********************
+	//glClear(GL_DEPTH_BUFFER_BIT);
 
-	// ****************************
-	// Set render mode to cull face
-	// ****************************
-	glCullFace(GL_FRONT);
+	//// ****************************
+	//// Set render mode to cull face
+	//// ****************************
+	//glCullFace(GL_FRONT);
 
-	// Bind shader
-	renderer::bind(*myScene->shadow_eff);
+	//// Bind shader
+	//renderer::bind(*myScene->shadow_eff);
 
-	// Render meshes
-	for (auto &e : myScene->meshes)
-	{
-		auto m = e.second;
-		// Create MVP matrix
-		auto M = m.get_transform().get_transform_matrix();
-		// *********************************
-		// View matrix taken from shadow map
-		// *********************************
-		auto V = myScene->shadow.get_view();
+	//// Render meshes
+	//for (auto &e : myScene->meshes)
+	//{
+	//	auto m = e.second;
+	//	// Create MVP matrix
+	//	auto M = m.get_transform().get_transform_matrix();
+	//	// *********************************
+	//	// View matrix taken from shadow map
+	//	// *********************************
+	//	auto V = myScene->shadow.get_view();
 
-		auto P = myScene->cam->get_projection();
-		auto MVP = P * V * M;
-		// Set MVP matrix uniform
-		glUniformMatrix4fv(
-			myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
-			1, // Number of values - 1 mat4
-			GL_FALSE, // Transpose the matrix?
-			value_ptr(MVP)); // Pointer to matrix data
-		// Render mesh
-		renderer::render(m);
-	}
+	//	auto P = myScene->cam->get_projection();
+	//	auto MVP = P * V * M;
+	//	// Set MVP matrix uniform
+	//	glUniformMatrix4fv(
+	//		myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
+	//		1, // Number of values - 1 mat4
+	//		GL_FALSE, // Transpose the matrix?
+	//		value_ptr(MVP)); // Pointer to matrix data
+	//	// Render mesh
+	//	renderer::render(m);
+	//}
 
-	// ************************************
-	// Set render target back to the screen
-	// ************************************
-	renderer::set_render_target();
+	//// ************************************
+	//// Set render target back to the screen
+	//// ************************************
+	//renderer::set_render_target();
 
-	// *********************
-	// Set cull face to back
-	// *********************
-	glCullFace(GL_BACK);
+	//// *********************
+	//// Set cull face to back
+	//// *********************
+	//glCullFace(GL_BACK);
 
 
 

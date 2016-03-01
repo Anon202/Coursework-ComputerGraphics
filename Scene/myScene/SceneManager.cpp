@@ -21,6 +21,8 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	// initialise shadow map with screen size
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 
+	debug = false;
+
 }
 
 void SceneManager::Create()
@@ -99,6 +101,12 @@ void SceneManager::calculateFrustrum()
 	planeNormals[3] = cross(fbr - fbl, nbl - fbl);
 	planeNormals[4] = lookAt;
 	planeNormals[5] = -lookAt;
+	
+	// normalise normals
+	for (int i = 0; i < 6; ++i)
+	{
+		planeNormals[i] = normalize(planeNormals[i]);
+	}
 
 
 

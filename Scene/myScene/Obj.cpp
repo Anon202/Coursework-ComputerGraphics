@@ -92,7 +92,7 @@ void Obj::intersection()
 		float d;
 		d = dot(myScene->planeNormals[i], cent);
 		
-		if (d <= -radius)
+		if (d < -radius)
 		{
 			visible = false;
 			break;
@@ -114,30 +114,32 @@ void Obj::calculateSphere()
 	
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 	
-	vec3 maxPoints = scale * m->get_geometry().get_maximal_point();
+	// cent is definitely right! :D
+	vec3 maxPoints = scale * m->get_geometry().get_maximal_point(); //maximal point not right.. 
+	//m->get_geometry().
 	
-	if (maxPoints.x >= maxPoints.y) // x bigger y, x bigger than z x biggest
-	{
-		if (maxPoints.x >= maxPoints.z)
-		{
-			radius = maxPoints.x;
-		}
-		else
-		{
-			radius = maxPoints.z;
-		}
+	//if (maxPoints.x >= maxPoints.y) // x bigger y, x bigger than z x biggest
+	//{
+	//	if (maxPoints.x >= maxPoints.z)
+	//	{
+	//		radius = maxPoints.x;
+	//	}
+	//	else
+	//	{
+	//		radius = maxPoints.z;
+	//	}
 
-	}
-	else if (maxPoints.y >= maxPoints.z)
-	{
-		radius = maxPoints.y;
-	}
-	else
-	{
-		radius = maxPoints.z;
-	}
+	//}
+	//else if (maxPoints.y >= maxPoints.z)
+	//{
+	//	radius = maxPoints.y;
+	//}
+	//else
+	//{
+	//	radius = maxPoints.z;
+	//}
 
-	
+	radius = length(maxPoints - cent);
 
 }
 
@@ -149,13 +151,13 @@ void Obj::addChild(Obj* child, string name)
 
 void Obj::renderSpheres()
 {
-	if (myType == object)
-	{
+	extern SceneManager* myScene;
 
-		extern SceneManager* myScene;
-
+	if (myType != sky && myType != terrn && myScene->debug)
+	{	
 		mesh sphere = mesh(geometry_builder::create_sphere());
 		sphere.get_transform().position = cent;
+		sphere.get_transform().scale = 2.0f*vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 
 
 		camera* cam = myScene->cam;
@@ -194,21 +196,6 @@ void Obj::renderSpheres()
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 
-		renderer::bind(*myScene->light, "light");
-		renderer::bind(*myScene->pointLight, "point");
-		renderer::bind(*myScene->spot, "spot");
-		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
-
-
-		for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
-		{
-			renderer::bind(*tex[i], i);
-			stringstream stream;
-			stream << "tex[" << i << "]";
-
-			glUniform1i(eff->get_uniform_location(stream.str()), i);
-		}
-
 		// set eye position (from active camera)
 		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
@@ -226,8 +213,8 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	//if (visible || myType == sky || myType == terrn)
-	//{
+	if (visible || myType == sky || myType == terrn)
+	{
 		extern SceneManager* myScene;
 
 		camera* cam = myScene->cam;			 // camera pointer 
@@ -326,7 +313,7 @@ void Obj::render()
 		// render mesh
 		renderer::render(*m);
 
-		renderSpheres();
+		
 
 		if (myType == sky)
 		{
@@ -340,7 +327,7 @@ void Obj::render()
 			Obj* child = e.second;
 			child->render();
 		}
-	//}
-
+	}
+	renderSpheres();
 
 }

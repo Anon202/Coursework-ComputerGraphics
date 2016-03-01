@@ -47,6 +47,8 @@ public:
 	shadow_map shadow;
 
 	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
+
+	bool debug;
 	
 	double initialX;				// vars for mouse positions initial
 	double initialY;	
