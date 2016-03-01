@@ -41,6 +41,7 @@ public:
 		float myType);
 
 	void calculateSphere();
+	void intersection();
 
 	void update(Obj* parent, float time);
 

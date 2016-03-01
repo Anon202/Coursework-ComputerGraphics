@@ -70,6 +70,7 @@ void Obj::update(Obj* parent, float delta_time)
 	}
 
 	calculateSphere(); // calculate bounding sphere
+	intersection();
 
 	for (auto &e : children)
 	{
@@ -78,6 +79,24 @@ void Obj::update(Obj* parent, float delta_time)
 	}
 
 	
+}
+
+void Obj::intersection()
+{
+	extern SceneManager* myScene;
+
+	for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
+	{
+		float d;
+		d = dot(myScene->planeNormals[i], cent);
+		
+		if (d <= -radius)
+		{
+			visible = false;
+			break;
+		}
+	}
+
 }
 
 void Obj::calculateSphere()

@@ -45,10 +45,12 @@ public:
 	map<string, cubemap> cubemaps;
 
 	shadow_map shadow;
+
+	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
 	
-	double initialX;	// vars for mouse positions initial
-	double initialY;
-	double current_x;   // var for current mouse pos
+	double initialX;				// vars for mouse positions initial
+	double initialY;	
+	double current_x;			    // var for current mouse pos
 	double current_y;
 
 	bool firstMouse;
@@ -56,5 +58,7 @@ public:
 	SceneManager(double initialMouseX, double initialMouseY);
 	~SceneManager();
 	void Create();
+	void calculateFrustrum();
+//	void intersection();
 };
 
