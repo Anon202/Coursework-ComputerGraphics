@@ -82,7 +82,15 @@ namespace graphics_framework
 		GLuint get_vertex_count() const { return _vertices; }
 		// Gets the number of indices in the index buffer
 		GLuint get_index_count() const { return _indices; }
+		
+
+		// add float buffer 
+		bool add_buffer(const std::vector<float> &buffer, GLuint index, GLenum buffer_type = GL_STATIC_DRAW);
+		
 		// Adds a buffer of vec2 data to the geometry object
+
+
+
 		bool add_buffer(const std::vector<glm::vec2>  &buffer, GLuint index, GLenum buffer_type = GL_STATIC_DRAW);
 		// Adds a buffer of vec3 data to the geometry object
 		bool add_buffer(const std::vector<glm::vec3> &buffer, GLuint index, GLenum buffer_type = GL_STATIC_DRAW);

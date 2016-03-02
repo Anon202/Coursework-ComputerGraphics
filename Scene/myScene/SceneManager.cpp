@@ -23,6 +23,8 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 	debug = false;
 
+	radiusGeom.set_type(GL_POINTS);
+
 }
 
 void SceneManager::Create()
@@ -58,9 +60,9 @@ void SceneManager::Create()
 
 void SceneManager::calculateFrustrum()
 {
-	if (cam == cameraList[0])
+	//if (cam == cameraList[0])
 	{
-
+		//cout << "updatign" << endl;
 		// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
 
 		//near plane
@@ -85,23 +87,23 @@ void SceneManager::calculateFrustrum()
 		vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
 		vec3 nearCent = currentCamPos + (lookAt * near);
 
-		vec3 ftl = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
-		vec3 ftr = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
-		vec3 fbl = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
-		vec3 fbr = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
+		planePoints[ftl] = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
+		planePoints[ftr] = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
+		planePoints[fbl] = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
+		planePoints[fbr] = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
 
 
-		vec3 ntl = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
-		vec3 ntr = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
-		vec3 nbl = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
-		vec3 nbr = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
+		planePoints[ntl] = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
+		planePoints[ntr] = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
+		planePoints[nbl] = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
+		planePoints[nbr] = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
 
 
 		// calculate normals
-		planeNormals[leftN] = cross(nbl - ntl, ftl - ntl);
-		planeNormals[rightN] = cross(fbr - ftr, ntr - ftr);
-		planeNormals[topN] = cross(ntl - ftl, ftr - ftl);
-		planeNormals[bottN] = cross(fbr - fbl, nbl - fbl);
+		planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
+		planeNormals[rightN] = cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
+		planeNormals[topN] = cross(planePoints[ntl] - planePoints[ftl], planePoints[ftr] - planePoints[ftl]);
+		planeNormals[bottN] = cross(planePoints[fbr] - planePoints[fbl], planePoints[nbl] - planePoints[fbl]);
 		planeNormals[nearN] = lookAt;
 		planeNormals[farN] = -lookAt;
 
@@ -111,8 +113,6 @@ void SceneManager::calculateFrustrum()
 			planeNormals[i] = normalize(planeNormals[i]);
 		}
 
-		pointOnBottom = nbr;
-		pointOnTop = ftl;
 	}
 }
 

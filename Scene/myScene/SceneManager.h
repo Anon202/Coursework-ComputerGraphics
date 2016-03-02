@@ -15,6 +15,7 @@ class Obj;				// forward declaration of object
 
 enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty }; //  enum
 enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
+enum planePoints {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
 class SceneManager
 {
 	
@@ -40,6 +41,7 @@ public:
 	vector<Obj*> list;
 
 	effect* shadow_eff;
+	effect* rad_eff;
 
 	map<string, mesh> meshes;
 	map<string, material> materials;
@@ -48,8 +50,8 @@ public:
 	shadow_map shadow;
 
 	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
-	vec3 pointOnTop;
-	vec3 pointOnBottom;
+	vec3 planePoints[8];
+
 
 	bool debug;
 	
@@ -59,6 +61,9 @@ public:
 	double current_y;
 
 	bool firstMouse;
+
+
+	geometry radiusGeom;
 
 	SceneManager(double initialMouseX, double initialMouseY);
 	~SceneManager();

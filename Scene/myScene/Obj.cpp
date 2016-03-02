@@ -38,8 +38,25 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	visible = true;
 	
-	// trying mat
+	calculateSphere(); // calculate bounding sphere
 	
+}
+
+vec3 Obj::getWorldPos()
+{
+	vec3 pos = vec3(mworld * vec4(m->get_transform().position, 1.0));
+
+	return pos;
+
+}
+
+float Obj::getRadius()
+{
+	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
+
+	radius = abs(length(scale*furthestPoint));
+
+	return radius;
 }
 
 void Obj::update(Obj* parent, float delta_time)
@@ -73,7 +90,7 @@ void Obj::update(Obj* parent, float delta_time)
 		}
 	}
 
-	calculateSphere(); // calculate bounding sphere
+	
 	intersection();
 
 	for (auto &e : children)
@@ -95,16 +112,17 @@ void Obj::intersection()
 	{
 		vec3 pointOnPlane;
 
-		/*if (i < 3)
-			pointOnPlane = myScene->pointOnTop;
-		else
-			pointOnPlane = myScene->pointOnBottom;*/
+		//if (i < 3)
+		//	pointOnPlane = myScene->pointOnTop;
+		//else
+		//	pointOnPlane = myScene->pointOnBottom;
 
 		float d;
-		d = dot(myScene->planeNormals[i], cent);
+		d = dot(myScene->planeNormals[i], cent - pointOnPlane);
 		
 		if (d <= -radius)
 		{
+			//cout << "CULLING! " << this << endl;
 			visible = false;
 			break;
 		}
@@ -116,38 +134,33 @@ void Obj::intersection()
 void Obj::calculateSphere()
 {
 	// need to calculate bounding sphere for the object.
-	
-	// radius - find biggest length then half
-	// center is the center of the object, position times transform.
 
-	cent = vec3(mworld * vec4(m->get_transform().position, 1.0));
-	//vec3 max = myScene->meshes["platform"].get_geometry().get_maximal_point();
-	
-	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
-	
-	// cent is definitely right! :D
-	//vec3 maxPoints = scale * m->get_geometry().get_maximal_point(); //maximal point not right.. 
+	//vec3 maxPoints = vec3(mworld * vec4(m->get_geometry().get_maximal_point(), 1.0f));  
+	//vec3 minPoints = vec3(mworld * vec4(m->get_geometry().get_minimal_point(), 1.0f));
 
-	/* geometry g = geometry_builder::create_box();
-	vec3 data[24];
-	glBindBuffer(GL_ARRAY_BUFFER, g.get_buffer(BUFFER_INDEXES::NORMAL_BUFFER));
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* 24, data); */
+	//radius = std::max(abs(length(maxPoints)), abs(length(minPoints)));  // see which is bigger
+
+	
+	
+	vector<vec3> data;
+	int count = m->get_geometry().get_vertex_count();
+	data.resize(count);
+	glBindBuffer(GL_ARRAY_BUFFER, m->get_geometry().get_buffer(BUFFER_INDEXES::POSITION_BUFFER));
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* count, &data[0]);
 
 	int largest = 0;
-	vec3 chosenPoint;
-	for (auto p : vertPos)
+	for (auto p : data)
 	{
-		float curLen = length(p - cent);
+		float curLen = length(p);
 		if (curLen > largest)
 		{
 			largest = curLen;
-			chosenPoint = p;
+			furthestPoint = p;
 		}
 	}
 
-	vec3 maxPoint = scale * chosenPoint;
+	radius = largest;
 
-	radius = length(maxPoint - cent);
 
 }
 

@@ -57,8 +57,6 @@ bool initialise()
 bool load_content()
 {
 	
-	
-
 	// CREATE TERRAIN
 	geometry terrGeom; // geom to load into
 	
@@ -240,7 +238,7 @@ bool load_content()
 	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object, boxVertPos);
 	
 	
-	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty, platVertPos);// point_eff, pointLight, pointLightObj);
+	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object, platVertPos);// point_eff, pointLight, pointLightObj);
 	myScene->spot->set_position(myScene->meshes["spoot"].get_transform().position);
 
 	myScene->root->addChild(box, "box");
@@ -329,6 +327,18 @@ bool load_content()
 	shadow_effect->build();
 	myScene->shadow_eff = shadow_effect;
 	myScene->effectList.push_back(shadow_effect);
+
+
+	///
+	//myScene->radiusGeom;
+
+	effect *rad_eff = new effect;
+	rad_eff->add_shader("..\\resources\\shaders\\radiusVert.vert", GL_VERTEX_SHADER);
+	rad_eff->add_shader("..\\resources\\shaders\\radiusGeom.geom", GL_GEOMETRY_SHADER);
+	rad_eff->add_shader("..\\resources\\shaders\\radiusFrag.frag", GL_FRAGMENT_SHADER);
+	rad_eff->build();
+	myScene->rad_eff = rad_eff;
+	myScene->effectList.push_back(rad_eff);
 
 
     return true;
@@ -420,6 +430,11 @@ bool update(float delta_time)
     return true;
 }
 
+void generateFrustrumPlanes()
+{
+	//for (int i = 0; i < )
+}
+
 bool render()
 {
 	//// render shadow map.
@@ -471,7 +486,38 @@ bool render()
 	//// *********************
 	//glCullFace(GL_BACK);
 
+	if (myScene->debug)
+	{
+		// if debug mode draw frustrum?
+		vector<float> radii;
+		vector<vec3> positions;
+		for (auto c : myScene->list)
+		{
+			radii.push_back(c->getRadius());
+			positions.push_back(c->getWorldPos());  // get centre positions
+		}
 
+		myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
+		myScene->radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);
+
+
+		renderer::bind(*myScene->rad_eff);
+
+		auto V = myScene->cam->get_view();
+		auto P = myScene->cam->get_projection();
+		auto VP = P * V;
+
+		glUniformMatrix4fv(
+			myScene->rad_eff->get_uniform_location("VP"),
+			1,
+			GL_FALSE,
+			value_ptr(VP));
+
+		renderer::render(myScene->radiusGeom);
+
+
+
+	}
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

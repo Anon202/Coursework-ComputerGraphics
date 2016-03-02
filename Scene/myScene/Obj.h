@@ -15,6 +15,8 @@ class Obj
 
 	Obj*				parent;
 
+	float				radius;
+	vec3				furthestPoint;
 	//texture*			tex;
 
 	float theta;
@@ -29,7 +31,7 @@ class Obj
 
 public:
 	vec3				cent;    // to create bounding spheres
-	float				radius;
+
 	bool				visible;
 	
 
@@ -52,6 +54,9 @@ public:
 	void render();
 
 	void addChild(Obj* child, string name);
+
+	vec3  getWorldPos();
+	float getRadius();
 
 	~Obj() { }
 
