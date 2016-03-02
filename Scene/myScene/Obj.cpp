@@ -1,11 +1,13 @@
-#include <graphics_framework.h>
-#include <glm\glm.hpp>
+//#include <graphics_framework.h>
+//#include <glm\glm.hpp>
+//#include "Obj.h"
+//
+//
+//using namespace std;
+//using namespace graphics_framework;
+//using namespace glm;
+
 #include "Obj.h"
-
-
-using namespace std;
-using namespace graphics_framework;
-using namespace glm;
 
 Obj::Obj()
 {
@@ -13,8 +15,7 @@ Obj::Obj()
 
 Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
-	effect* eff, float myType,
-	vector<vec3> vertPos)
+	effect* eff, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
 	if (myType == spotty)
@@ -34,12 +35,15 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->theta = theta;
 	this->rotV = rot;
 
-	this->vertPos = vertPos;
-
 	visible = true;
 	
 	calculateSphere(); // calculate bounding sphere
 	
+}
+
+void Obj::setName(string name)
+{
+	myName = name;
 }
 
 vec3 Obj::getWorldPos()
@@ -112,17 +116,17 @@ void Obj::intersection()
 	{
 		vec3 pointOnPlane;
 
-		//if (i < 3)
-		//	pointOnPlane = myScene->pointOnTop;
-		//else
-		//	pointOnPlane = myScene->pointOnBottom;
+		if (i < 3)
+			pointOnPlane = myScene->planePoints[ftl];
+		else
+			pointOnPlane = myScene->planePoints[nbr];
 
 		float d;
 		d = dot(myScene->planeNormals[i], cent - pointOnPlane);
 		
 		if (d <= -radius)
 		{
-			//cout << "CULLING! " << this << endl;
+			cout << "CULLING! " << this->myName << endl;
 			visible = false;
 			break;
 		}
@@ -167,6 +171,7 @@ void Obj::calculateSphere()
 void Obj::addChild(Obj* child, string name)
 {
 	child->parent = this;
+	child->myName = name;
 	this->children[name] = child;
 }
 

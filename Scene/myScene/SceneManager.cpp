@@ -3,10 +3,10 @@
 
 SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
-	cam = NULL;
-	skybx = NULL;
-	root = NULL;
-	terr = NULL;
+	cam = nullptr;
+	skybx = nullptr;
+	root = nullptr;
+	terr = nullptr;
 
 	
 	// copy vars
@@ -54,6 +54,7 @@ void SceneManager::Create()
 	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
 	spot->set_range(200);
 	spot->set_power(50);
+
 }
 
 
@@ -82,6 +83,8 @@ void SceneManager::calculateFrustrum()
 		vec3 lookAt = normalize(cam->get_target() - currentCamPos);
 		vec3 right = cross(up, lookAt);					// up cross lookat
 		right = normalize(right);
+
+		
 
 
 		vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
@@ -126,13 +129,13 @@ SceneManager::~SceneManager()
 	//list.clear();
 
 	delete light;
-	light = NULL;
+	light = nullptr;
 
 	delete pointLight;
-	pointLight = NULL;
+	pointLight = nullptr;
 	
 	delete spot;
-	spot = NULL;
+	spot = nullptr;
 
 	for (int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];

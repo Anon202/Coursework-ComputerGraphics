@@ -24,8 +24,7 @@ class Obj
 	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
 
-	vector<vec3>		vertPos;
-	
+	string				myName;
 	vec3 rotV;
 	float myType;
 
@@ -43,8 +42,7 @@ public:
 		material* mate,
 		vector<texture*> texture,
 		effect* eff,
-		float myType,
-		vector<vec3> vertPos);
+		float myType);
 
 	void calculateSphere();
 	void intersection();
@@ -57,6 +55,7 @@ public:
 
 	vec3  getWorldPos();
 	float getRadius();
+	void  setName(string name);
 
 	~Obj() { }
 

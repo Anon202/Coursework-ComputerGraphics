@@ -94,7 +94,7 @@ namespace graphics_framework
 	};
 
 	// Creates box geometry
-	geometry geometry_builder::create_box(std::vector<glm::vec3> &pos, const glm::vec3 &dims) // my shoddy code
+	geometry geometry_builder::create_box(const glm::vec3 &dims)
 	{
 		// Standard minimal and maximal
 		glm::vec3 minimal(0.0f, 0.0f, 0.0f);
@@ -155,8 +155,6 @@ namespace graphics_framework
 
 		// Generate tangents and binormals
 		generate_tb(geom, normals);
-
-		pos = positions; // return positon buffer
 
 		// Return geometry
 		return std::move(geom);

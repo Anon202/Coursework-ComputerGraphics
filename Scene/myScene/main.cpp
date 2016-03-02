@@ -84,9 +84,7 @@ bool load_content()
 	myScene->meshes["water"] = mesh(geometry_builder::create_plane(200, 200));
 
 	// Create scene
-	Obj *box = NULL;
-	vector<vec3> boxVertPos;
-	myScene->meshes["box"] = mesh(geometry_builder::create_box(boxVertPos));				// house shape
+	myScene->meshes["box"] = mesh(geometry_builder::create_box());				// house shape
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
 
 	
@@ -109,20 +107,14 @@ bool load_content()
 
 
 	// create platform
-	Obj *plat = NULL;
-	vector<vec3> platVertPos;
-	myScene->meshes["platform"] = mesh(geometry_builder::create_box(platVertPos, vec3(8, 0.5, 8)));
+	myScene->meshes["platform"] = mesh(geometry_builder::create_box(vec3(8, 0.5, 8)));
 	myScene->meshes["platform"].get_geometry().get_maximal_point();
 	myScene->materials["platform"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
 
-	Obj *platBox = NULL;
-	vector<vec3> platBoxVertPos;
-	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(platBoxVertPos, vec3(1.0, 0.5, 2.0)));
+	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(1.0, 0.5, 2.0)));
 	myScene->materials["platBox"].set_diffuse(vec4(0.83, 0.91, 0.68, 1.0));
 
-	Obj *platWall = NULL;
-	vector<vec3> platWallVertPos;
-	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(platWallVertPos, vec3(1.5, 3.0, 5.0)));
+	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(1.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
 
@@ -150,7 +142,8 @@ bool load_content()
 	myScene->effectList.push_back(terr_eff);
 
 
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn, platVertPos);
+	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	myScene->root->setName("terrain");
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -218,27 +211,27 @@ bool load_content()
 
 	
 
-	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object, boxVertPos);
-	Obj *pillar2 = new Obj(vec3(-30.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object, boxVertPos);
+	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar2 = new Obj(vec3(-30.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
-	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj, boxVertPos);
+	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
-	box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object, boxVertPos);
+	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object, boxVertPos);
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj, boxVertPos);// point_eff, pointLight, pointLightObj);
+	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	
 
-	plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object, platVertPos);
-	platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object, platBoxVertPos);
+	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
+	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
 
-	platWall = new Obj(vec3(-160.0, 90.0, 100.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object, platWallVertPos);
-	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object, boxVertPos);
-	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object, boxVertPos);
+	Obj *platWall = new Obj(vec3(-160.0, 90.0, 100.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
+	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	
 	
-	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object, platVertPos);// point_eff, pointLight, pointLightObj);
+	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object);// point_eff, pointLight, pointLightObj);
 	myScene->spot->set_position(myScene->meshes["spoot"].get_transform().position);
 
 	myScene->root->addChild(box, "box");
@@ -312,8 +305,10 @@ bool load_content()
     sky_eff->build();
 	myScene->effectList.push_back(sky_eff);
 
-	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky, platVertPos);
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky, platVertPos);
+	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky);
+	myScene->skybx->setName("sky1");
+	
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky);
 
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "sky2");
@@ -432,7 +427,11 @@ bool update(float delta_time)
 
 void generateFrustrumPlanes()
 {
-	//for (int i = 0; i < )
+	for (int i = 0; i < 6; ++i) 
+	{
+
+
+	}
 }
 
 bool render()
