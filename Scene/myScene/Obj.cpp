@@ -121,6 +121,8 @@ void Obj::intersection()
 		else
 			pointOnPlane = myScene->planePoints[nbr];
 
+		
+
 		float d;
 		d = dot(myScene->planeNormals[i], cent - pointOnPlane);
 		

@@ -2,6 +2,8 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
+effect myMadEffect;
+
 bool initialise()
 {
 	double xpos = 0; // create initial vars for mouse position
@@ -336,6 +338,11 @@ bool load_content()
 	myScene->effectList.push_back(rad_eff);
 
 
+	myMadEffect.add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
+	myMadEffect.add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
+	// Build effect
+	myMadEffect.build();
+
     return true;
 }
 
@@ -418,6 +425,7 @@ bool update(float delta_time)
 	myScene->cam->update(delta_time);  // update the camera
 	myScene->calculateFrustrum();	   // calc frustrum
 	
+	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
 	
@@ -427,11 +435,45 @@ bool update(float delta_time)
 
 void generateFrustrumPlanes()
 {
-	for (int i = 0; i < 6; ++i) 
+	vector<vec3> positions;
+
+	for (int i = 0; i < 8; ++i)
 	{
-
-
+		positions.push_back(myScene->planePoints[i]);  // add all points to vertex buffer  //{ftl 0, ftr 1, fbl 2, fbr 3, ntl 4, ntr 5, nbl 6, nbr 7 };
 	}
+
+	vector<GLuint> indices
+	{
+		// near
+		ntl, nbl, nbr,
+		nbr, ntr, ntl,
+
+		// far
+		ftr, fbr, fbl,
+		fbl, ftl, ftr,
+
+		// Right
+		ntr, nbr, fbr,
+		5, ftr, ntr,
+
+		// Left
+		ftl, fbl, nbl,
+		nbl, ntl, ftl,
+
+		// Top
+		nbl, fbl, fbr,
+		fbr, nbr, nbl,
+
+		// Bottom
+		ftl, ntl, ntr,
+		ntr, ftr, ftl
+
+
+	};
+
+	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
+	myScene->frustrumGeom.add_index_buffer(indices);
+
 }
 
 bool render()
@@ -514,8 +556,23 @@ bool render()
 
 		renderer::render(myScene->radiusGeom);
 
+		generateFrustrumPlanes();
 
+		renderer::bind(myMadEffect);
+		auto M = mat4(1.0f);					// think this is wrong
+		auto lV = myScene->cameraList[0]->get_view();
+		auto lP = myScene->cameraList[0]->get_projection();
+		
+		auto MVP = lP * lV * M;
+		glUniformMatrix4fv(
+			myMadEffect.get_uniform_location("MVP"),
+			1,
+			GL_FALSE,
+			value_ptr(MVP));
 
+		renderer::render(myScene->radiusGeom);
+
+		
 	}
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)

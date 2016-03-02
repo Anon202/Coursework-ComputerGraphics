@@ -1,32 +1,13 @@
 #version 440
 
-// Texture to sample from
-uniform sampler2D tex;
+// Incoming vertex colour
+layout (location = 0) in vec4 in_colour;
 
-// Incoming primary colour
-layout (location = 0) in vec4 primary;
-// Incoming secondary colour
-layout (location = 1) in vec4 secondary;
-// Incoming texture coordinate
-layout (location = 2) in vec2 tex_coord;
-
-// Outgoing colour
-layout (location = 0) out vec4 colour;
+// Outgoing pixel colour
+layout (location = 0) out vec4 out_colour;
 
 void main()
 {
-	// **************
-	// Sample texture
-	// **************
-
-	vec4 tex_colour = texture2D(tex, tex_coord);
-
-
-	
-
-	// ****************
-	// Calculate colour
-	// ****************
-	colour = primary*tex_colour + secondary;
-
+	// Simply set outgoing colour
+	out_colour = in_colour;
 }

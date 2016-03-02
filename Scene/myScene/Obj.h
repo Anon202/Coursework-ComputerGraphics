@@ -17,7 +17,6 @@ class Obj
 
 	float				radius;
 	vec3				furthestPoint;
-	//texture*			tex;
 
 	float theta;
 

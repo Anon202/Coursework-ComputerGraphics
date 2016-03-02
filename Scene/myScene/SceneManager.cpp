@@ -61,7 +61,7 @@ void SceneManager::Create()
 
 void SceneManager::calculateFrustrum()
 {
-	//if (cam == cameraList[0])
+	if (cam == cameraList[0])
 	{
 		//cout << "updatign" << endl;
 		// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
@@ -81,7 +81,7 @@ void SceneManager::calculateFrustrum()
 
 		vec3 up = normalize(cam->get_up());
 		vec3 lookAt = normalize(cam->get_target() - currentCamPos);
-		vec3 right = cross(up, lookAt);					// up cross lookat
+		vec3 right = cross(lookAt, up);					// up cross lookat
 		right = normalize(right);
 
 		
@@ -106,7 +106,7 @@ void SceneManager::calculateFrustrum()
 		planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
 		planeNormals[rightN] = cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
 		planeNormals[topN] = cross(planePoints[ntl] - planePoints[ftl], planePoints[ftr] - planePoints[ftl]);
-		planeNormals[bottN] = cross(planePoints[fbr] - planePoints[fbl], planePoints[nbl] - planePoints[fbl]);
+		planeNormals[bottN] = cross(planePoints[fbr] - planePoints[nbr], planePoints[nbl] - planePoints[nbr]);
 		planeNormals[nearN] = lookAt;
 		planeNormals[farN] = -lookAt;
 
@@ -117,6 +117,7 @@ void SceneManager::calculateFrustrum()
 		}
 
 	}
+	
 }
 
 

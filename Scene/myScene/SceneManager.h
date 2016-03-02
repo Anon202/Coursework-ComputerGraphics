@@ -52,6 +52,8 @@ public:
 	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
 	vec3 planePoints[8];
 
+	geometry frustrumGeom;
+
 
 	bool debug;
 	
