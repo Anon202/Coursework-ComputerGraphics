@@ -56,22 +56,26 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	// Load the cubemap
 	// - create array of six filenames +x, -x, +y, -y, +z, -z
 	// ******************************************************
-	string folderName;
+	string folderName, ext;
 	if (skyNum == 1)
 	{
 		folderName = "alien";
+		ext = "png";
 	}
 	else
-		folderName = "new";
+	{
+		folderName = "mp_jasper";
+		ext = "tga";
+	}
 
 	array<string, 6> filenames =
 	{
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posx.png",
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negx.png",
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posy.png",
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negy.png",
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posz.png",
-		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negz.png"
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posx." + ext,
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negx." + ext,
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posy." + ext,
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negy." + ext,
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posz." + ext,
+		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negz." + ext
 	};
 
 	// ***************

@@ -41,6 +41,35 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	
 }
 
+
+Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
+	mesh* me, cubemap skybox,
+	effect* eff)
+{
+	mat4 T = translate(mat4(1.0f), pos);
+	if (myType == spotty)
+		T = translate(mat4(1.0f), me->get_transform().position);
+	mat4 R = rotate(mat4(1.0f), theta, rot);
+	mat4 S = scale(mat4(1.0f), scal);
+
+
+	mat4 trans = T * (R* S);
+
+	this->mlocal = trans;		// copy vars
+	this->m = me;
+	this->eff = eff;
+	this->myType = sky;
+	this->myCubemap = skybox;
+	this->theta = theta;
+	this->rotV = rot;
+
+	visible = true;
+
+	calculateSphere(); // calculate bounding sphere
+
+}
+
+
 void Obj::setName(string name)
 {
 	myName = name;
@@ -264,13 +293,22 @@ void Obj::render()
 		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
 
 
-		for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+		if (myType == sky)
 		{
-			renderer::bind(*tex[i], i);
-			stringstream stream;
-			stream << "tex[" << i << "]";
+			renderer::bind(myCubemap, 0);
+			glUniform1i(eff->get_uniform_location("cubemap"), 0);
+		}
+		else
+		{
 
-			glUniform1i(eff->get_uniform_location(stream.str()), i);
+			for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+			{
+				renderer::bind(*tex[i], i);
+				stringstream stream;
+				stream << "tex[" << i << "]";
+
+				glUniform1i(eff->get_uniform_location(stream.str()), i);
+			}
 		}
 
 		// set eye position (from active camera)

@@ -294,7 +294,7 @@ bool load_content()
     // Create box geometry for skybox
     // ******************************
 	myScene->terr->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
-	myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 1);
+	myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 2);
 	
     // *********************
     // Load in skybox effect
@@ -307,10 +307,10 @@ bool load_content()
     sky_eff->build();
 	myScene->effectList.push_back(sky_eff);
 
-	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky);
+	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], myScene->cubemaps["outer"], sky_eff);
 	myScene->skybx->setName("sky1");
 	
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], &myScene->materials["skybox"], objTextList, sky_eff, sky);
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], sky_eff);
 
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "sky2");

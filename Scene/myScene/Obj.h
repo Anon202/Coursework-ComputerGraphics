@@ -20,6 +20,7 @@ class Obj
 
 	float theta;
 
+	cubemap				myCubemap;
 	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
 
@@ -42,6 +43,13 @@ public:
 		vector<texture*> texture,
 		effect* eff,
 		float myType);
+
+	Obj(vec3 pos,					// skybox object constructor
+		vec3 rot, float theta,
+		vec3 scale,
+		mesh* me,
+		cubemap skybox,
+		effect* eff);
 
 	void calculateSphere();
 	void intersection();
