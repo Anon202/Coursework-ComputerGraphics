@@ -2,7 +2,11 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
-effect myMadEffect;
+effect frustrumEff;
+mesh m;
+
+effect normEffect;
+geometry normalGeom;
 
 bool initialise()
 {
@@ -338,11 +342,16 @@ bool load_content()
 	myScene->effectList.push_back(rad_eff);
 
 
-	myMadEffect.add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
-	myMadEffect.add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
+	frustrumEff.add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
+	frustrumEff.add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
 	// Build effect
-	myMadEffect.build();
+	frustrumEff.build();
 
+
+	normEffect.add_shader("..\\resources\\shaders\\normalVert.vert", GL_VERTEX_SHADER);
+	normEffect.add_shader("..\\resources\\shaders\\normalGeom.geom", GL_GEOMETRY_SHADER);
+	normEffect.add_shader("..\\resources\\shaders\\normalFrag.frag", GL_FRAGMENT_SHADER);
+	normEffect.build();
     return true;
 }
 
@@ -454,7 +463,7 @@ void generateFrustrumPlanes()
 
 		// Right
 		ntr, nbr, fbr,
-		5, ftr, ntr,
+		fbr, ftr, ntr,
 
 		// Left
 		ftl, fbl, nbl,
@@ -473,6 +482,8 @@ void generateFrustrumPlanes()
 
 	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
 	myScene->frustrumGeom.add_index_buffer(indices);
+
+	m = mesh(myScene->frustrumGeom);
 
 }
 
@@ -554,26 +565,86 @@ bool render()
 			GL_FALSE,
 			value_ptr(VP));
 
+
 		renderer::render(myScene->radiusGeom);
 
 		generateFrustrumPlanes();
 
-		renderer::bind(myMadEffect);
-		auto M = mat4(1.0f);					// think this is wrong
+		renderer::bind(frustrumEff);
+
+		auto M = m.get_transform().get_transform_matrix();					// think this is wrong
 		auto lV = myScene->cameraList[0]->get_view();
 		auto lP = myScene->cameraList[0]->get_projection();
-		
-		auto MVP = lP * lV * M;
+
+		auto MVP = VP;// lP * lV * M;
 		glUniformMatrix4fv(
-			myMadEffect.get_uniform_location("MVP"),
+			frustrumEff.get_uniform_location("MVP"),
 			1,
 			GL_FALSE,
 			value_ptr(MVP));
 
-		renderer::render(myScene->radiusGeom);
+		renderer::render(m);
 
+
+
+		float fov = (0.25f * (float)AI_MATH_PI);
+		float far = 1000.f;
+		auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+
+		vec3 up = normalize(myScene->cameraList[0]->get_up());
+		vec3 lookAt;
+		float hFar = 2 * tan(fov / 2) * far;		// height of far
+		float wFar = hFar * aspect;					// width of far
+		lookAt = myScene->cameraList[0]->get_target() - myScene->cameraList[0]->get_position();
+		lookAt = normalize(lookAt);
+		vec3 right = cross(lookAt, up);					// up cross lookat
+		right = normalize(right);
+		vec3 farCent = myScene->cameraList[0]->get_position() + (lookAt * far);
+		vec3 leftMid = farCent - (right * wFar * 0.5f);
+
+		glBegin(GL_LINES);
+		glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
+		glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[bottN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[bottN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[bottN].z*30.0f);
+		glEnd();
+
+		/*
+		// if debug mode draw frustrum
+		vector<vec3> normals;
+		vector<vec3> normPoints;
+
+		normPoints.push_back(myScene->planePoints[ftl]);
+		normPoints.push_back(myScene->planePoints[ntl]);
+		normPoints.push_back(myScene->planePoints[nbl]);
+		normPoints.push_back(myScene->planePoints[nbr]);
+		normPoints.push_back(myScene->planePoints[fbr]);
+		normPoints.push_back(myScene->planePoints[ntr]);
+
+		for (auto e : myScene->planeNormals)
+		{
+			normals.push_back(e);
+		}
+		normalGeom.add_buffer(normPoints, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
+		normalGeom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER, GL_DYNAMIC_DRAW);
 		
+
+
+		renderer::bind(normEffect);
+
+
+		glUniformMatrix4fv(
+			normEffect.get_uniform_location("VP"),
+			1,
+			GL_FALSE,
+			value_ptr(VP));
+
+
+		renderer::render(normalGeom);
+		*/
+	
 	}
+
+
+
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

@@ -1,12 +1,3 @@
-//#include <graphics_framework.h>
-//#include <glm\glm.hpp>
-//#include "Obj.h"
-//
-//
-//using namespace std;
-//using namespace graphics_framework;
-//using namespace glm;
-
 #include "Obj.h"
 
 Obj::Obj()
@@ -139,29 +130,40 @@ void Obj::intersection()
 {
 	extern SceneManager* myScene;
 
-	visible = true;
-
-	for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
+	if (myType == sky || myType == terrn)  // always render terrain and sky
 	{
-		vec3 pointOnPlane;
+		visible = true;
+	}
+	else if (parent->visible)  // check if parent is visible if not don't bother and set child as false
+	{
+		visible = true;
 
-		if (i < 3)
-			pointOnPlane = myScene->planePoints[ftl];
-		else
-			pointOnPlane = myScene->planePoints[nbr];
-
-		
-
-		float d;
-		d = dot(myScene->planeNormals[i], cent - pointOnPlane);
-		
-		if (d <= -radius)
+		for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
 		{
-			cout << "CULLING! " << this->myName << endl;
-			visible = false;
-			break;
-		}
+			vec3 pointOnPlane;
 
+			if (i < 3)
+				pointOnPlane = myScene->planePoints[ftl];
+			else
+				pointOnPlane = myScene->planePoints[nbr];
+
+
+
+			float d;
+			d = dot(myScene->planeNormals[i], cent - pointOnPlane);
+
+			if (d <= -radius)
+			{
+				cout << "CULLING! " << this->myName << endl;
+				visible = false;
+				break;
+			}
+
+		}
+	}
+	else // if parent is not visible child should not be visible
+	{
+		visible = false;
 	}
 
 }
@@ -211,7 +213,7 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	if (visible || myType == sky || myType == terrn)
+	if (visible)
 	{
 		extern SceneManager* myScene;
 

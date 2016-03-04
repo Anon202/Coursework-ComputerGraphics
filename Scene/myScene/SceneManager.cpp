@@ -61,62 +61,68 @@ void SceneManager::Create()
 
 void SceneManager::calculateFrustrum()
 {
-	if (cam == cameraList[0])
+	//if (cam != cameraList[0])
+	//	return;
+
+	//cout << "updatign" << endl;
+	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
+
+	//near plane
+	float fov = (0.25f * (float)AI_MATH_PI);
+	float near = 0.1f;
+	float far = 1000.f;
+	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
+
+	float hNear = 2 * tan(fov / 2) * near;		// height of near
+	float wNear = hNear * aspect;				// width of near
+	float hFar = 2 * tan(fov / 2) * far;		// height of far
+	float wFar = hFar * aspect;					// width of far
+
+	vec3 currentCamPos = cam->get_position();
+	
+	vec3 lookAt;
+	lookAt = normalize(cam->get_target()-cam->get_position());
+	lookAt = normalize(lookAt);
+	vec3 right = cross(vec3(0.0f,1.0f,0.0f), lookAt);					// up cross lookat
+	right = normalize(right);
+	
+	vec3 up = normalize(cross(lookAt, right));  //"real up"
+
+
+
+
+	vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
+	vec3 nearCent = currentCamPos + (lookAt * near);
+
+	planePoints[ftl] = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
+	planePoints[ftr] = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
+	planePoints[fbl] = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
+	planePoints[fbr] = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
+
+
+	planePoints[ntl] = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
+	planePoints[ntr] = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
+	planePoints[nbl] = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
+	planePoints[nbr] = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
+
+
+	// calculate normals
+	planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
+	planeNormals[rightN] = -planeNormals[leftN];//cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
+	
+	planeNormals[bottN] = cross(planePoints[nbl] - planePoints[nbr], planePoints[fbl] - planePoints[nbr]);
+
+	planeNormals[topN] = -cross(planePoints[ntl] - planePoints[ntr], planePoints[ftl] - planePoints[ntr]);
+
+	planeNormals[nearN] = lookAt;
+	planeNormals[farN] = -lookAt;
+	
+	// normalise normals
+	for (int i = 0; i < 6; ++i)
 	{
-		//cout << "updatign" << endl;
-		// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
-
-		//near plane
-		float fov = (0.25f * (float)AI_MATH_PI);
-		float near = 0.1f;
-		float far = 1000.f;
-		auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-
-		float hNear = 2 * tan(fov / 2) * near;		// height of near
-		float wNear = hNear * aspect;				// width of near
-		float hFar = 2 * tan(fov / 2) * near;		// height of far
-		float wFar = hFar * aspect;					// width of far
-
-		vec3 currentCamPos = cam->get_position();
-
-		vec3 up = normalize(cam->get_up());
-		vec3 lookAt = normalize(cam->get_target() - currentCamPos);
-		vec3 right = cross(lookAt, up);					// up cross lookat
-		right = normalize(right);
-
-		
-
-
-		vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
-		vec3 nearCent = currentCamPos + (lookAt * near);
-
-		planePoints[ftl] = farCent + (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far top left - far center + up*half height - right*half width (minus because left)
-		planePoints[ftr] = farCent + (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far top right
-		planePoints[fbl] = farCent - (up * hFar * 0.5f) - (right * wFar * 0.5f);  // far bottom left
-		planePoints[fbr] = farCent - (up * hFar * 0.5f) + (right * wFar * 0.5f);  // far bottom right
-
-
-		planePoints[ntl] = nearCent + (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near top left
-		planePoints[ntr] = nearCent + (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near top right
-		planePoints[nbl] = nearCent - (up * hNear * 0.5f) - (right * wNear * 0.5f);  // near bottom left
-		planePoints[nbr] = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
-
-
-		// calculate normals
-		planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
-		planeNormals[rightN] = cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
-		planeNormals[topN] = cross(planePoints[ntl] - planePoints[ftl], planePoints[ftr] - planePoints[ftl]);
-		planeNormals[bottN] = cross(planePoints[fbr] - planePoints[nbr], planePoints[nbl] - planePoints[nbr]);
-		planeNormals[nearN] = lookAt;
-		planeNormals[farN] = -lookAt;
-
-		// normalise normals
-		for (int i = 0; i < 6; ++i)
-		{
-			planeNormals[i] = normalize(planeNormals[i]);
-		}
-
+		planeNormals[i] = normalize(planeNormals[i]);
 	}
+
 	
 }
 
