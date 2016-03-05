@@ -42,13 +42,14 @@ void SceneManager::Create()
 	lightList.push_back(lightPtr);
 	
 	pointLight = new point_light;
-	pointLight->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pointLight->set_range(200);
-	pointLight->set_position(vec3(31.5, 35.75, 63.0));
+	pointLight->set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	pointLight->set_range(20);
+	//pointLight->set_position(vec3(31.5, 35.75, 63.0));
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
 	pointLight->set_quadratic_attenuation(0.01f);
 	Light* pointPtr = pointLight;
+	lightList.push_back(pointPtr);
 
 	spot = new spot_light;
 	spot->set_position(vec3(-30.5, 200.0, 150.0));
@@ -57,6 +58,8 @@ void SceneManager::Create()
 	spot->set_range(200);
 	spot->set_power(50);
 	Light* spotPtr = spot;
+	lightList.push_back(spotPtr);
+
 
 }
 

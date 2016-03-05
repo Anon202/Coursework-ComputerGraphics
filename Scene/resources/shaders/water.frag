@@ -109,12 +109,13 @@ void main()
 	// - remember alpha 1.0
 	// **********************
 
-	//colour = primary*tex_colour + specular;
+	colour = primary*tex_colour + specular;
 	colour += calculate_point(point, mat, position, normal, view_dir, tex_colour);
 	
 	// check 
 	//colour = primary*tex_colour;
 	
+	//colour = vec4(1.0, 0.0, 0.0, 1.0);
 	colour.a = .75f;
 	
 

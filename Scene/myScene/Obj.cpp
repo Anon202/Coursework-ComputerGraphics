@@ -114,12 +114,6 @@ void Obj::update(Obj* parent, float delta_time)
 		}
 	}
 
-	if (myType == pointLightObj)
-	{
-		myScene->pointLight->set_position(vec3(mworld* vec4(myScene->pointLight->get_position(), 1.0)));
-	}
-
-
 	intersection();
 
 	for (auto &e : children)
@@ -189,14 +183,7 @@ void Obj::intersection()
 
 void Obj::calculateSphere()
 {
-	// need to calculate bounding sphere for the object.
-
-	//vec3 maxPoints = vec3(mworld * vec4(m->get_geometry().get_maximal_point(), 1.0f));  
-	//vec3 minPoints = vec3(mworld * vec4(m->get_geometry().get_minimal_point(), 1.0f));
-
-	//radius = std::max(abs(length(maxPoints)), abs(length(minPoints)));  // see which is bigger
-
-	
+	// need to calculate bounding sphere for the object
 	
 	vector<vec3> data;
 	int count = m->get_geometry().get_vertex_count();
@@ -308,13 +295,40 @@ void Obj::render()
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 
-		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		if (myLight != NULL);
+
+		// cast light to correct type to call render bind
+		for (auto &e : myScene->lightList)
 		{
-			renderer::bind(*myLight, "light");
+			directional_light *myLight = dynamic_cast<directional_light*>(e);
+			if (myLight != NULL)
+			{
+				renderer::bind(*myLight, "light");
+			}
+			else 
+			{
+				point_light *pointLight = dynamic_cast<point_light*>(e);
+				if (pointLight != NULL)
+				{
+					renderer::bind(*pointLight, "point");
+				}
+				else
+				{
+
+					spot_light *spotLight = dynamic_cast<spot_light*>(e);
+					if (spotLight != NULL)
+					{
+						renderer::bind(*spotLight, "spot");
+					}
+				}
+			}
 		}
-		renderer::bind(*myScene->pointLight, "point");
-		renderer::bind(*myScene->spot, "spot");
+
+	
+
+
+		//renderer::bind(*myScene->light, "light");
+		//renderer::bind(*myScene->pointLight, "point");
+		//renderer::bind(*myScene->spot, "spot");
 		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
 
 
