@@ -12,6 +12,18 @@ struct directional_light
 	vec3 light_dir;
 };
 
+#ifndef POINT_LIGHT
+#define POINT_LIGHT
+struct point_light
+{
+	vec4 light_colour;
+	vec3 position;
+	float constant;
+	float linear;
+	float quadratic;
+};
+#endif
+
 
 // A material structure
 
@@ -26,7 +38,9 @@ struct material
 
 // Forward declaration
 vec4 weighted_texture(in sampler2D tex[4], in vec2 tex_coord, in vec4 weights);
+vec4 calculate_point(in point_light point, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir, in vec4 tex_colour);
 
+uniform point_light point;
 // Directional light for the scene
 uniform directional_light light;
 // Material of the object
@@ -47,6 +61,8 @@ layout(location = 3) in vec4 tex_weight;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
+
+
 
 void main()
 {
@@ -71,5 +87,6 @@ void main()
 	vec4 primary = mat.emissive + ambient + diffuse;
 	// Calculate final colour
 	colour = primary * tex_colour;// +specular;
+	colour += calculate_point(point, mat, position, normal, view_dir, tex_colour);
 	colour.a = 1.0f;
 }

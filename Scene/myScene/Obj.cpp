@@ -9,7 +9,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	effect* eff, float myType)
 {
 	mat4 T = translate(mat4(1.0f), pos);
-	if (myType == spotty)
+	if (myType == spotty || myType == pointLightObj)
 		T = translate(mat4(1.0f), me->get_transform().position);
 	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
@@ -91,20 +91,29 @@ void Obj::update(Obj* parent, float delta_time)
 
 	extern SceneManager* myScene;
 
-	camera* cam = myScene->cam;			 // camera pointer 
 
 	mworld = mlocal;
 
 	if (myType == sky)
 	{
 		//vec3 difference = cam->get_position();// -m->get_transform().position;  // get difference in position
-		mat4 trans = translate(mat4(1.0f), cam->get_position());
+		mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
 
 		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
 		theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
 
 		mworld = trans * rotation * mworld;
 	}
+
+	//if (myName == "")
+	//{
+	//	mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
+
+	//	mat4 rotation = rotate(mat4(1.0f), theta, rotV);
+	//	theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
+
+	//	mworld = trans * rotation * mworld;
+	//}
 
 
 	if (parent){
@@ -269,21 +278,21 @@ void Obj::render()
 			value_ptr(N));
 
 
-		auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
-		auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
-		auto matrix = T * R;
-		auto lV = myScene->shadow.get_view();
+		//auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
+		//auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
+		//auto matrix = T * R;
+		//auto lV = myScene->shadow.get_view();
 
-		auto lMVP = P * lV * matrix;
+		//auto lMVP = P * lV * matrix;
 
-		if (myType == forShade)
-		{
-			glUniformMatrix4fv(
-				eff->get_uniform_location("lightMVP"),
-				1,
-				GL_FALSE,
-				value_ptr(lMVP));
-		}
+		//if (myType == forShade)
+		//{
+		//	glUniformMatrix4fv(
+		//		eff->get_uniform_location("lightMVP"),
+		//		1,
+		//		GL_FALSE,
+		//		value_ptr(lMVP));
+		//}
 
 		if (waterObj)  // water flag to assign uniform moving water!
 		{

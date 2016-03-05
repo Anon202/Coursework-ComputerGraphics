@@ -97,6 +97,7 @@ bool load_content()
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
 	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
+	myScene->meshes["ball"].get_transform().position = (vec3(250, 35, -400));
 	myScene->materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(5.0f, 5.0f, 5.0f)));
@@ -133,15 +134,16 @@ bool load_content()
 
 
 	// set emissive for point
-	myScene->materials["ball"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	// water needs high spec
-	myScene->materials["water"].set_shininess(5.0f);
+	myScene->materials["water"].set_shininess(10.0f);
 	myScene->materials["cylinder"].set_shininess(25.0f);
 
 	effect *terr_eff = new effect;
 	terr_eff->add_shader("shader.vert", GL_VERTEX_SHADER);
 	terr_eff->add_shader("shader.frag", GL_FRAGMENT_SHADER);
+	terr_eff->add_shader("..\\resources\\shaders\\parts\\point.frag", GL_FRAGMENT_SHADER);
 	terr_eff->add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	terr_eff->build();
@@ -227,7 +229,9 @@ bool load_content()
 
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(400.0f, 35.0f, -400.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *ball = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	myScene->lightList[1]->set_position(myScene->meshes["ball"].get_transform().position);
+
 
 	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
 	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
@@ -238,7 +242,7 @@ bool load_content()
 	
 	
 	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object);// point_eff, pointLight, pointLightObj);
-	myScene->spot->set_position(myScene->meshes["spoot"].get_transform().position);
+	myScene->lightList[2]->set_position(myScene->meshes["spoot"].get_transform().position);
 
 	myScene->root->addChild(box, "box");
 	myScene->root->addChild(pillar, "pillar");
@@ -337,10 +341,13 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->light->get_direction();  /// ???
+	/*vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
+	
+	
+	->get_direction();  /// ???
 	myScene->shadow.light_position = myScene->spot->get_position();
 	myScene->shadow.light_dir = myScene->spot->get_direction();
-
+*/
 	// Press s to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
 	{

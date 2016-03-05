@@ -29,21 +29,20 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 void SceneManager::Create()
 {
-	
-	light = new directional_light; 
-	light->set_ambient_intensity(vec4(0.3f, 0.3f, 0.3f, 1.0f));
+	directional_light *light = new directional_light;
+	light->set_ambient_intensity(vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	// Light colour white
-	light->set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	light->set_light_colour(vec4(0.60f, 0.60f, 0.60f, 1.0f));
 
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
 	Light *lightPtr = light;
 	lightList.push_back(lightPtr);
 	
-	pointLight = new point_light;
-	pointLight->set_light_colour(vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	pointLight->set_range(20);
+	point_light *pointLight = new point_light;
+	pointLight->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pointLight->set_range(200);
 	//pointLight->set_position(vec3(31.5, 35.75, 63.0));
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
@@ -51,7 +50,7 @@ void SceneManager::Create()
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
 
-	spot = new spot_light;
+	spot_light *spot = new spot_light;
 	spot->set_position(vec3(-30.5, 200.0, 150.0));
 	spot->set_direction(normalize(vec3(-1, -1, 0)));
 	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
@@ -183,14 +182,19 @@ SceneManager::~SceneManager()
 
 	//list.clear();
 
-	delete light;
-	light = nullptr;
+	//delete light;
+	//light = nullptr;
 
-	delete pointLight;
-	pointLight = nullptr;
-	
-	delete spot;
-	spot = nullptr;
+	//delete pointLight;
+	//pointLight = nullptr;
+	//
+	//delete spot;
+	//spot = nullptr;
+
+	for (int i = 0; i < lightList.size(); ++i)
+		delete lightList[i];
+
+	lightList.clear();
 
 	for (int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];
