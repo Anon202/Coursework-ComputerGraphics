@@ -60,7 +60,7 @@ public:
 
 	void addChild(Obj* child, string name);
 
-	vec3  getWorldPos();
+	vec4  getWorldPos();
 	float getRadius();
 	void  setName(string name);
 

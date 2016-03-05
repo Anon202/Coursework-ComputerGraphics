@@ -66,9 +66,9 @@ void Obj::setName(string name)
 	myName = name;
 }
 
-vec3 Obj::getWorldPos()
+vec4 Obj::getWorldPos()
 {
-	vec3 pos = vec3(mworld * vec4(m->get_transform().position, 1.0));
+	vec4 pos = mworld * vec4(m->get_transform().position, 1.0);
 
 	return pos;
 
@@ -114,7 +114,12 @@ void Obj::update(Obj* parent, float delta_time)
 		}
 	}
 
-	
+	if (myType == pointLightObj)
+	{
+		myScene->pointLight->set_position(vec3(mworld* vec4(myScene->pointLight->get_position(), 1.0)));
+	}
+
+
 	intersection();
 
 	for (auto &e : children)
@@ -126,9 +131,22 @@ void Obj::update(Obj* parent, float delta_time)
 	
 }
 
+
+
 void Obj::intersection()
 {
 	extern SceneManager* myScene;
+	
+	
+	
+	// ** CLIP SPACE APPROACH  ** //
+	// Point in world position, (M * Position)
+	// point in clip space = P * V * worldPos(vector4 w =1)
+	// "normalised" w needs to be = 1 therefore... all components are divided by w.
+	// pointClipNormalised = point in clip space / w component
+	//vec4 pointClip = myScene->cam->get_projection() * myScene->cam->get_view() * getWorldPos();
+	//vec3 pointClipNormalised = vec3(pointClip.x / pointClip.w, pointClip.y / pointClip.w, pointClip.z / pointClip.w);
+
 
 	if (myType == sky || myType == terrn)  // always render terrain and sky
 	{
@@ -140,17 +158,18 @@ void Obj::intersection()
 
 		for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
 		{
-			vec3 pointOnPlane;
+		
+			/*vec3 pointOnPlane;
 
 			if (i < 3)
 				pointOnPlane = myScene->planePoints[ftl];
 			else
-				pointOnPlane = myScene->planePoints[nbr];
+				pointOnPlane = myScene->planePoints[nbr];*/
 
-
+			vec4 centre = getWorldPos();
 
 			float d;
-			d = dot(myScene->planeNormals[i], cent - pointOnPlane);
+			d = dot(myScene->planeNormals[i], centre);
 
 			if (d <= -radius)
 			{
@@ -185,7 +204,7 @@ void Obj::calculateSphere()
 	glBindBuffer(GL_ARRAY_BUFFER, m->get_geometry().get_buffer(BUFFER_INDEXES::POSITION_BUFFER));
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3)* count, &data[0]);
 
-	int largest = 0;
+	float largest = 0.0;
 	for (auto p : data)
 	{
 		float curLen = length(p);
@@ -213,7 +232,7 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	if (visible)
+	//if (visible)
 	{
 		extern SceneManager* myScene;
 
@@ -289,7 +308,11 @@ void Obj::render()
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 
-		renderer::bind(*myScene->light, "light");
+		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
+		if (myLight != NULL);
+		{
+			renderer::bind(*myLight, "light");
+		}
 		renderer::bind(*myScene->pointLight, "point");
 		renderer::bind(*myScene->spot, "spot");
 		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
@@ -303,7 +326,7 @@ void Obj::render()
 		else
 		{
 
-			for (int i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+			for (uint i = 0; i < tex.size(); ++i)  // bind every texture from object's list
 			{
 				renderer::bind(*tex[i], i);
 				stringstream stream;

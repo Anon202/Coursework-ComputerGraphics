@@ -1,14 +1,29 @@
 #version 440
 
-// A directional light structure
+#ifndef POINT_LIGHT
+#define POINT_LIGHT
+struct point_light
+{
+	vec4 light_colour;
+	vec3 position;
+	float constant;
+	float linear;
+	float quadratic;
+};
+#endif
+
+#ifndef DIRECTIONAL_LIGHT
+#define DIRECTIONAL_LIGHT
 struct directional_light
 {
 	vec4 ambient_intensity;
 	vec4 light_colour;
 	vec3 light_dir;
 };
+#endif
 
-// A material structure
+#ifndef MATERIAL
+#define MATERIAL
 struct material
 {
 	vec4 emissive;
@@ -16,9 +31,12 @@ struct material
 	vec4 specular_reflection;
 	float shininess;
 };
+#endif
 
 // Directional light for the scene
 uniform directional_light light;
+
+uniform point_light point;
 // Material of the object
 uniform material mat;
 // Position of the camera
@@ -35,6 +53,9 @@ layout (location = 2) in vec2 tex_coord;
 
 // Outgoing colour
 layout (location = 0) out vec4 colour;
+
+// forward declaration of spotPart
+vec4 calculate_point(in point_light point, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir, in vec4 tex_colour);
 
 void main()
 {
@@ -88,7 +109,8 @@ void main()
 	// - remember alpha 1.0
 	// **********************
 
-	colour = primary*tex_colour + specular;
+	//colour = primary*tex_colour + specular;
+	colour += calculate_point(point, mat, position, normal, view_dir, tex_colour);
 	
 	// check 
 	//colour = primary*tex_colour;

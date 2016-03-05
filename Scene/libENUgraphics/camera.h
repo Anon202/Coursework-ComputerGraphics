@@ -11,7 +11,7 @@ namespace graphics_framework
 	{
 	protected:
 		// The current position of the camera
-		glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 _position = glm::vec3(0.0f, 0.0f,0.0f);
 		// The current target the camera is looking at
 		glm::vec3 _target = glm::vec3(0.0f, 0.0f, -1.0f);
 		// The current orientation of the camera

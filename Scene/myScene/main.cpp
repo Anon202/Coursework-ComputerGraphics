@@ -175,6 +175,7 @@ bool load_content()
 
 	effect *water_eff = new effect;
 	water_eff->add_shader("..\\resources\\shaders\\water.vert", GL_VERTEX_SHADER);
+	water_eff->add_shader("..\\resources\\shaders\\parts\\point.frag", GL_FRAGMENT_SHADER);
 	water_eff->add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
 	water_eff->build();
 	myScene->effectList.push_back(water_eff);
@@ -226,8 +227,8 @@ bool load_content()
 
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(30.0f, 35.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	
+	Obj *ball = new Obj(vec3(400.0f, 35.0f, -400.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	myScene->pointLight->set_position(myScene->meshes["ball"].get_transform().position);
 
 	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
 	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
@@ -256,28 +257,8 @@ bool load_content()
 
 	box->addChild(pyra, "pyramid");
 
-	box->addChild(ball, "ball");
+	myScene->root->addChild(ball, "ball");
 
-
-
-	//int nBufferSize = 0;
-	//glBindBuffer(GL_ARRAY_BUFFER, myScene->meshes["box"].get_geometry().get_buffer(BUFFER_INDEXES::POSITION_BUFFER));
-	//glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &nBufferSize);
-
-	//int originalVertexArraySize = (nBufferSize / sizeof(vec3));
-
-	//vector<vec3> data;
-
-	//glGetBufferSubData(GL_ARRAY_BUFFER, 0, nBufferSize, &data);
-	//vec3 cent(0.0, 0.0, 0.0);
-	//int largest = 0;
-	//for (auto d : data)
-	//{
-	//	float currentLen = length(d - cent);
-	//	if (currentLen > largest)
-	//		largest = currentLen;
-
-	//}
 
 
 	myScene->list.push_back(water);
@@ -546,7 +527,8 @@ bool render()
 		for (auto c : myScene->list)
 		{
 			radii.push_back(c->getRadius());
-			positions.push_back(c->getWorldPos());  // get centre positions
+			vec3 centre = vec3(c->getWorldPos());
+			positions.push_back(centre);  // get centre positions
 		}
 
 		myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
@@ -586,25 +568,16 @@ bool render()
 		renderer::render(m);
 
 
-
-		float fov = (0.25f * (float)AI_MATH_PI);
-		float far = 1000.f;
-		auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
-
-		vec3 up = normalize(myScene->cameraList[0]->get_up());
-		vec3 lookAt;
-		float hFar = 2 * tan(fov / 2) * far;		// height of far
-		float wFar = hFar * aspect;					// width of far
-		lookAt = myScene->cameraList[0]->get_target() - myScene->cameraList[0]->get_position();
-		lookAt = normalize(lookAt);
-		vec3 right = cross(lookAt, up);					// up cross lookat
-		right = normalize(right);
-		vec3 farCent = myScene->cameraList[0]->get_position() + (lookAt * far);
-		vec3 leftMid = farCent - (right * wFar * 0.5f);
-
 		glBegin(GL_LINES);
 		glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
-		glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[bottN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[bottN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[bottN].z*30.0f);
+		glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*3.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*3.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*3.0f);
+		glEnd();
+
+		vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
+
+		glBegin(GL_LINES);
+		glVertex3f(start.x, start.y, start.z);
+		glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
 		glEnd();
 
 		/*

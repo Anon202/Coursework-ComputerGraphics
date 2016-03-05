@@ -38,15 +38,17 @@ void SceneManager::Create()
 
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
-
+	Light *lightPtr = light;
+	lightList.push_back(lightPtr);
 	
 	pointLight = new point_light;
-	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	pointLight->set_range(20);
+	pointLight->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pointLight->set_range(200);
 	pointLight->set_position(vec3(31.5, 35.75, 63.0));
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
 	pointLight->set_quadratic_attenuation(0.01f);
+	Light* pointPtr = pointLight;
 
 	spot = new spot_light;
 	spot->set_position(vec3(-30.5, 200.0, 150.0));
@@ -54,6 +56,7 @@ void SceneManager::Create()
 	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
 	spot->set_range(200);
 	spot->set_power(50);
+	Light* spotPtr = spot;
 
 }
 
@@ -61,8 +64,8 @@ void SceneManager::Create()
 
 void SceneManager::calculateFrustrum()
 {
-	//if (cam != cameraList[0])
-	//	return;
+	if (cam != cameraList[0])
+		return;
 
 	//cout << "updatign" << endl;
 	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
@@ -79,13 +82,12 @@ void SceneManager::calculateFrustrum()
 	float wFar = hFar * aspect;					// width of far
 
 	vec3 currentCamPos = cam->get_position();
-	
+
 	vec3 lookAt;
-	lookAt = normalize(cam->get_target()-cam->get_position());
-	lookAt = normalize(lookAt);
-	vec3 right = cross(vec3(0.0f,1.0f,0.0f), lookAt);					// up cross lookat
-	right = normalize(right);
-	
+	lookAt = normalize(cam->get_target() - cam->get_position());
+	vec3 right = cross(vec3(0.0f, 1.0f, 0.0f), lookAt);					// up cross lookat
+	right = -normalize(right);
+
 	vec3 up = normalize(cross(lookAt, right));  //"real up"
 
 
@@ -106,24 +108,67 @@ void SceneManager::calculateFrustrum()
 	planePoints[nbr] = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
 
 
-	// calculate normals
-	planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
-	planeNormals[rightN] = -planeNormals[leftN];//cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
-	
-	planeNormals[bottN] = cross(planePoints[nbl] - planePoints[nbr], planePoints[fbl] - planePoints[nbr]);
+	//// calculate normals
+	//planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
+	//planeNormals[rightN] = -planeNormals[leftN];//cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
+	//
+	//planeNormals[bottN] = cross(planePoints[nbl] - planePoints[nbr], planePoints[fbl] - planePoints[nbr]);
 
-	planeNormals[topN] = -cross(planePoints[ntl] - planePoints[ntr], planePoints[ftl] - planePoints[ntr]);
+	//planeNormals[topN] = -cross(planePoints[ntl] - planePoints[ntr], planePoints[ftl] - planePoints[ntr]);
 
-	planeNormals[nearN] = lookAt;
-	planeNormals[farN] = -lookAt;
+	//planeNormals[nearN] = lookAt;
+	//planeNormals[farN] = -lookAt;
+
+	float e = 1 / (tan(fov / 2));
+
+	planeNormals[leftN] = vec4((e / (sqrt(e*e + 1))),
+		0,
+		-(1 / (sqrt(e*e + 2))),
+		0);
+
+	planeNormals[rightN] = vec4(-(e / (sqrt(e*e + 1))),
+		0,
+		-(1 / (sqrt(e*e + 2))),
+		0);
+
+	planeNormals[bottN] = vec4(0,
+		(e / (sqrt(e*e + aspect*aspect))),
+		-(aspect / (sqrt(e*e + aspect*aspect))),
+		0);
+
+	planeNormals[topN] = vec4(0,
+		-(e / (sqrt(e*e + aspect*aspect))),
+		-(aspect / (sqrt(e*e + aspect*aspect))),
+		0);
+
+	planeNormals[nearN] = vec4(0, 0, -1, -near);
+	planeNormals[farN] = vec4(0, 0, 1, far);
 	
+	/*mat4 matrix = cam->get_projection() * cam->get_view();
+
+	vec4 rowX = matrix[0];
+	vec4 rowY = matrix[1];
+	vec4 rowZ = matrix[2];
+	vec4 rowW = matrix[3];
+
+	planeNormals[0] = normalize(rowW + rowX);
+	planeNormals[1] = normalize(rowW - rowX);
+	planeNormals[2] = normalize(rowW + rowY);
+	planeNormals[3] = normalize(rowW - rowY);
+	planeNormals[4] = normalize(rowW + rowZ);
+	planeNormals[5] = normalize(rowW - rowZ);*/
+
+
+
+
+
 	// normalise normals
 	for (int i = 0; i < 6; ++i)
 	{
 		planeNormals[i] = normalize(planeNormals[i]);
+		//planeNormals[i] = cam->get_view() * planeNormals[i];
 	}
 
-	
 }
 
 

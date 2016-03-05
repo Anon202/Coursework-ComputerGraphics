@@ -1,19 +1,15 @@
 #pragma once
 
-#include "stdafx.h"
+#include "..\\myScene\\Light.h"
 
 namespace graphics_framework
 {
 	/*
 	An object representing point light data
 	*/
-	class point_light
+	class point_light : public Light
 	{
 	private:
-		// The colour of the point light
-		glm::vec4 _colour;
-		// The position of the point light
-		glm::vec3 _position;
 		// The constant factor of the attenuation
 		float _constant;
 		// The linear factor of the attenuation
@@ -22,34 +18,25 @@ namespace graphics_framework
 		float _quadratic;
 	public:
 		// Creates a point light with a default colour
-		point_light() :
-			_colour(glm::vec4(0.9f, 0.9f, 0.9f, 1.0f)),
-			_position(glm::vec3(0.0f, 0.0f, 0.0f)),
-			_constant(0.5f),
-			_linear(0.2f),
-			_quadratic(0.01f)
+		point_light() : Light()
 		{
+			_constant = 0.5f;
+			_linear = 0.2f;
+			_quadratic = 0.01f;
 		}
 		// Creates a point light with provided properties
 		point_light(const glm::vec4 &colour, const glm::vec3 &pos, float constant, float linear, float quadratic) :
-			_colour(colour),
-			_position(pos),
 			_constant(constant),
 			_linear(linear),
 			_quadratic(quadratic)
 		{
+			set_light_colour(colour);
+			set_position(pos);
 		}
 		// Default copy constructor and assignment operator
 		point_light(const point_light &other) = default;
 		point_light& operator=(const point_light &rhs) = default;
-		// Gets the light colour of the point light
-		glm::vec4 get_light_colour() const { return _colour; }
-		// Sets the light colour of the point light
-		void set_light_colour(const glm::vec4 &value) { _colour = value; }
-		// Gets the position of the point light
-		glm::vec3 get_position() const { return _position; }
-		// Sets the position of the point light
-		void set_position(const glm::vec3 &value) { _position = value; }
+		
 		// Gets the constant factor of the light attenuation
 		float get_constant_attenuation() const { return _constant; }
 		// Sets the constant factor of the light attenuation

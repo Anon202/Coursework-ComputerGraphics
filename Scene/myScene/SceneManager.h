@@ -3,7 +3,7 @@
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
 #include "GenerateBack.h"
-
+#include "Light.h"
 
 using namespace std;
 using namespace graphics_framework;
@@ -34,6 +34,7 @@ public:
 	camera* cam;
 
 	vector<camera*> cameraList;
+	vector<Light*> lightList;
 	vector<vector<texture*>> texList;
 	
 	vector<effect*> effectList;
@@ -49,7 +50,7 @@ public:
 
 	shadow_map shadow;
 
-	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
+	vec4 planeNormals[6]; // var for storing view frustrum plane normals.
 	vec3 planePoints[8];
 
 	geometry frustrumGeom;
