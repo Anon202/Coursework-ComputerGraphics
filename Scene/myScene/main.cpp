@@ -125,6 +125,10 @@ bool load_content()
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
 
+	// create torus geom for difference between gouraud and phong
+	myScene->meshes["torus"] = mesh(geometry_builder::create_torus());
+	myScene->materials["torus"].set_diffuse(vec4(0.0, 0.0, 1.0, 1.0));
+
 	for (auto &e : myScene->materials)
 	{
 		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -132,7 +136,8 @@ bool load_content()
 		e.second.set_shininess(10.0f);
 	}
 
-
+	myScene->materials["torus"].set_shininess(5.0f);
+	
 	// set emissive for point
 	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
@@ -140,18 +145,19 @@ bool load_content()
 	myScene->materials["water"].set_shininess(10.0f);
 	myScene->materials["cylinder"].set_shininess(25.0f);
 
-	effect *terr_eff = new effect;
-	terr_eff->add_shader("shader.vert", GL_VERTEX_SHADER);
-	terr_eff->add_shader("shader.frag", GL_FRAGMENT_SHADER);
-	terr_eff->add_shader("..\\resources\\shaders\\parts\\point.frag", GL_FRAGMENT_SHADER);
-	terr_eff->add_shader("..\\resources\\shaders\\parts\\weighted_texture.frag", GL_FRAGMENT_SHADER);
-	// Build effect
-	terr_eff->build();
-	myScene->effectList.push_back(terr_eff);
+	effect *terr_eff = myScene->createEffect(
+		"shader.vert",
+		"shader.frag",
+		"..\\resources\\shaders\\parts\\point.frag",
+		"..\\resources\\shaders\\parts\\weighted_texture.frag");
 
 
 	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	myScene->root->setName("terrain");
+
+	vector<texture*> torusText;
+	torusText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
+	myScene->texList.push_back(torusText);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -166,7 +172,7 @@ bool load_content()
 
 	vector<texture*> platText;
 	platText.push_back(new texture("..\\resources\\textures\\marble.jpg"));
-	//platText.push_back(new texture("..\\resources\\textures\\myNMap.png"));
+	platText.push_back(new texture("..\\resources\\textures\\myNMap.png"));
 	myScene->texList.push_back(platText);
 
 	vector<texture*> pillarText;
@@ -182,23 +188,16 @@ bool load_content()
 	water_eff->build();
 	myScene->effectList.push_back(water_eff);
 
-	effect *eff = new effect;
+	effect *eff = myScene->createEffect(
+		"..\\resources\\shaders\\phong.vert",
+		"..\\resources\\shaders\\phong.frag",
+		NULL, NULL);
 
-	// Load in shaders
-	eff->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
-	eff->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
-	// Build effect
-	eff->build();
-	myScene->effectList.push_back(eff);
-
-	effect *norm_eff = new effect;
-	norm_eff->add_shader("normShader.vert", GL_VERTEX_SHADER);
-	norm_eff->add_shader("normShader.frag", GL_FRAGMENT_SHADER);
-	norm_eff->add_shader("..\\resources\\shaders\\parts\\direction.frag", GL_FRAGMENT_SHADER);
-	norm_eff->add_shader("..\\resources\\shaders\\parts\\normal_map.frag", GL_FRAGMENT_SHADER);
-	norm_eff->build();
-	myScene->effectList.push_back(norm_eff);
-
+	effect *norm_eff = myScene->createEffect(
+		"normShader.vert",
+		"normShader.frag",
+		"..\\resources\\shaders\\parts\\direction.frag",
+		"..\\resources\\shaders\\parts\\normal_map.frag");
 	
 	effect *gouraud_eff = new effect;
 	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
@@ -218,7 +217,9 @@ bool load_content()
 	shadeff->build();
 	myScene->effectList.push_back(shadeff);
 
-	
+	Obj *torusG = new Obj(vec3(300.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1, 0.1, 0.1), &myScene->meshes["torus"], &myScene->materials["torus"], torusText, gouraud_eff, object);
+	Obj *torusP = new Obj(vec3(-50.0, 0.0f, -50.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["torus"], &myScene->materials["torus"], torusText, eff, object);
+
 
 	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar2 = new Obj(vec3(-30.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -248,6 +249,10 @@ bool load_content()
 	myScene->root->addChild(pillar, "pillar");
 
 	myScene->root->addChild(plat, "platform");
+
+	myScene->root->addChild(torusG, "gouraudTorus");
+	torusG->addChild(torusP, "phongTorus");
+
 	plat->addChild(platWall, "platWall");
 	plat->addChild(platBox, "platBox");
 	plat->addChild(pillarPlat, "pillarPlat");
@@ -277,6 +282,8 @@ bool load_content()
 	myScene->list.push_back(pillarPlat);
 	myScene->list.push_back(pillarPlat2);
 	myScene->list.push_back(spoot);
+	myScene->list.push_back(torusG);
+	myScene->list.push_back(torusP);
 
     // ******************************
     // Create box geometry for skybox
@@ -326,8 +333,8 @@ bool load_content()
 	myScene->effectList.push_back(rad_eff);
 
 
-	frustrumEff.add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
-	frustrumEff.add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
+	frustrumEff.add_shader("..\\resources\\shaders\\simple.vert", GL_VERTEX_SHADER);
+	frustrumEff.add_shader("..\\resources\\shaders\\simple.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	frustrumEff.build();
 

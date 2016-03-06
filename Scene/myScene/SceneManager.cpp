@@ -62,7 +62,24 @@ void SceneManager::Create()
 
 }
 
+effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[])
+{
+	effect* myEffect = new effect;
+	myEffect->add_shader(vertPath, GL_VERTEX_SHADER);
+	myEffect->add_shader(fragPath, GL_FRAGMENT_SHADER);
 
+	if (partPath1)
+		myEffect->add_shader(partPath1, GL_FRAGMENT_SHADER);
+
+	if (partPath2)
+		myEffect->add_shader(partPath2, GL_FRAGMENT_SHADER);
+	
+	
+	myEffect->build();
+	effectList.push_back(myEffect);
+	
+	return myEffect;
+}
 
 void SceneManager::calculateFrustrum()
 {
