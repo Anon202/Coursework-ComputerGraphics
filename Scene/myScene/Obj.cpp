@@ -100,7 +100,8 @@ void Obj::update(Obj* parent, float delta_time)
 		mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
 
 		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
-		theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
+		if (myName == "skyInner")
+			theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
 
 		mworld = trans * rotation * mworld;
 	}
@@ -162,17 +163,17 @@ void Obj::intersection()
 		for (int i = 0; i < myScene->planeNormals->length(); ++i) // for each plane check if intersection occurs
 		{
 		
-			/*vec3 pointOnPlane;
+			vec3 pointOnPlane;
 
 			if (i < 3)
 				pointOnPlane = myScene->planePoints[ftl];
 			else
-				pointOnPlane = myScene->planePoints[nbr];*/
+				pointOnPlane = myScene->planePoints[nbr];
 
-			vec4 centre = getWorldPos();
+			vec3 centre = vec3(getWorldPos());
 
 			float d;
-			d = dot(myScene->planeNormals[i], centre);
+			d = dot(myScene->planeNormals[i], centre - pointOnPlane);
 
 			if (d <= -radius)
 			{
@@ -228,7 +229,7 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	//if (visible)
+	if (visible)
 	{
 		extern SceneManager* myScene;
 
@@ -332,12 +333,6 @@ void Obj::render()
 			}
 		}
 
-	
-
-
-		//renderer::bind(*myScene->light, "light");
-		//renderer::bind(*myScene->pointLight, "point");
-		//renderer::bind(*myScene->spot, "spot");
 		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
 
 
@@ -345,6 +340,13 @@ void Obj::render()
 		{
 			renderer::bind(myCubemap, 0);
 			glUniform1i(eff->get_uniform_location("cubemap"), 0);
+			
+			bool trans = false;
+			if (myName == "skyInner")
+				trans = true;
+
+			
+			glUniform1f(eff->get_uniform_location("transparency"), trans);
 		}
 		else
 		{

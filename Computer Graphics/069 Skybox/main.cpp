@@ -113,12 +113,12 @@ bool load_content()
     // ******************************************************
 	array<string, 6> filenames =
 	{
-		"..\\resources\\textures\\cubemaps\\alien\\posx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negx.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negy.png",
-		"..\\resources\\textures\\cubemaps\\alien\\posz.png",
-		"..\\resources\\textures\\cubemaps\\alien\\negz.png"
+		"..\\resources\\textures\\cubemaps\\valley\\posx.tga",
+		"..\\resources\\textures\\cubemaps\\valley\\negx.tga",
+		"..\\resources\\textures\\cubemaps\\valley\\posy.tga",
+		"..\\resources\\textures\\cubemaps\\valley\\negy.tga",
+		"..\\resources\\textures\\cubemaps\\valley\\posz.tga",
+		"..\\resources\\textures\\cubemaps\\valley\\negz.tga"
 	};
 
     // ***************

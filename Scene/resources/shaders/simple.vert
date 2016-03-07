@@ -12,5 +12,5 @@ void main()
 	// Calculate screen position of vertex
 	gl_Position = MVP * vec4(position, 1.0);
 	// Output colour to the fragment shader
-	out_colour = vec4(1.0, 0.0, 0.0, 1.0);
+	out_colour = vec4(0.0, 0.0, 1.0, 1.0);
 }

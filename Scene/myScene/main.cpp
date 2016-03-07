@@ -250,8 +250,8 @@ bool load_content()
 
 	myScene->root->addChild(plat, "platform");
 
-	myScene->root->addChild(sphereG, "gouraudTorus");
-	sphereG->addChild(sphereP, "phongTorus");
+	myScene->root->addChild(sphereG, "gouraudSphere");
+	sphereG->addChild(sphereP, "phongSphere");
 
 	plat->addChild(platWall, "platWall");
 	plat->addChild(platBox, "platBox");
@@ -305,10 +305,10 @@ bool load_content()
 	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], myScene->cubemaps["outer"], sky_eff);
 	myScene->skybx->setName("sky1");
 	
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], sky_eff);
+	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(90.0, 90.0, 90.0), &myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], sky_eff);
 
 	myScene->list.push_back(skybx2);
-	myScene->skybx->addChild(skybx2, "sky2");
+	myScene->skybx->addChild(skybx2, "skyInner");
 	skybx2->addChild(myScene->root, "terrain");  
 	myScene->list.push_back(myScene->skybx);
 
@@ -379,6 +379,19 @@ bool update(float delta_time)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		myScene->debug = true;
 	}
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_ADD))
+	{
+		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
+		myLight->rotate(vec3(1.0, 0.0, 0.0) * delta_time);
+	}
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_SUBTRACT))
+	{
+		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
+		myLight->rotate(vec3(1.0, 0.0, 0.0) * delta_time);
+	}
+		
 		
 
 	if (freeCam)
@@ -563,7 +576,11 @@ bool render()
 
 		renderer::render(myScene->radiusGeom);
 
+
+		// show view frustrum
 		generateFrustrumPlanes();
+
+		glLineWidth(5.0f);
 
 		renderer::bind(frustrumEff);
 
@@ -593,6 +610,8 @@ bool render()
 		glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
 		glEnd();
 
+
+		glLineWidth(1.0f);
 		/*
 		// if debug mode draw frustrum
 		vector<vec3> normals;

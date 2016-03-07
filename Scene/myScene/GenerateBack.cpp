@@ -59,13 +59,13 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	string folderName, ext;
 	if (skyNum == 1)
 	{
-		folderName = "alien";
-		ext = "png";
+		folderName = "valley";
+		ext = "tga";
 	}
 	else
 	{
-		folderName = "mp_jasper";
-		ext = "tga";
+		folderName = "new";
+		ext = "png";
 	}
 
 	array<string, 6> filenames =

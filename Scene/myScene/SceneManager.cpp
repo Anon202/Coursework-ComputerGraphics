@@ -105,12 +105,9 @@ void SceneManager::calculateFrustrum()
 	vec3 lookAt;
 	lookAt = normalize(cam->get_target() - cam->get_position());
 	vec3 right = cross(vec3(0.0f, 1.0f, 0.0f), lookAt);					// up cross lookat
-	right = -normalize(right);
+	right = normalize(right);
 
 	vec3 up = normalize(cross(lookAt, right));  //"real up"
-
-
-
 
 	vec3 farCent = currentCamPos + (lookAt * far);		// center point of far plane look at* distance add camera pos
 	vec3 nearCent = currentCamPos + (lookAt * near);
@@ -127,65 +124,22 @@ void SceneManager::calculateFrustrum()
 	planePoints[nbr] = nearCent - (up * hNear * 0.5f) + (right * wNear * 0.5f);  // near bottom right
 
 
-	//// calculate normals
-	//planeNormals[leftN] = cross(planePoints[nbl] - planePoints[ntl], planePoints[ftl] - planePoints[ntl]);
-	//planeNormals[rightN] = -planeNormals[leftN];//cross(planePoints[fbr] - planePoints[ftr], planePoints[ntr] - planePoints[ftr]);
-	//
-	//planeNormals[bottN] = cross(planePoints[nbl] - planePoints[nbr], planePoints[fbl] - planePoints[nbr]);
+	// Calculate the near and far planes (using camDir and the previously calculated centres)
+	planeNormals[nearN] = lookAt;
+	planeNormals[farN] = -lookAt;
 
-	//planeNormals[topN] = -cross(planePoints[ntl] - planePoints[ntr], planePoints[ftl] - planePoints[ntr]);
+	// Calculate the left and right planes (cross product to get the normals of the triangles and a point on the planes)
+	planeNormals[leftN] = cross(up, normalize(planePoints[fbl] - planePoints[nbl])); 
+	planeNormals[rightN] = -cross(up, normalize(planePoints[fbl] - planePoints[nbl]));
 
-	//planeNormals[nearN] = lookAt;
-	//planeNormals[farN] = -lookAt;
-
-	float e = 1 / (tan(fov / 2));
-
-	planeNormals[leftN] = vec4((e / (sqrt(e*e + 1))),
-		0,
-		-(1 / (sqrt(e*e + 2))),
-		0);
-
-	planeNormals[rightN] = vec4(-(e / (sqrt(e*e + 1))),
-		0,
-		-(1 / (sqrt(e*e + 2))),
-		0);
-
-	planeNormals[bottN] = vec4(0,
-		(e / (sqrt(e*e + aspect*aspect))),
-		-(aspect / (sqrt(e*e + aspect*aspect))),
-		0);
-
-	planeNormals[topN] = vec4(0,
-		-(e / (sqrt(e*e + aspect*aspect))),
-		-(aspect / (sqrt(e*e + aspect*aspect))),
-		0);
-
-	planeNormals[nearN] = vec4(0, 0, -1, -near);
-	planeNormals[farN] = vec4(0, 0, 1, far);
-	
-	/*mat4 matrix = cam->get_projection() * cam->get_view();
-
-	vec4 rowX = matrix[0];
-	vec4 rowY = matrix[1];
-	vec4 rowZ = matrix[2];
-	vec4 rowW = matrix[3];
-
-	planeNormals[0] = normalize(rowW + rowX);
-	planeNormals[1] = normalize(rowW - rowX);
-	planeNormals[2] = normalize(rowW + rowY);
-	planeNormals[3] = normalize(rowW - rowY);
-	planeNormals[4] = normalize(rowW + rowZ);
-	planeNormals[5] = normalize(rowW - rowZ);*/
-
-
-
-
+	// Calculate the top and bottom planes (similar to the left and right)
+	planeNormals[topN] = cross(-right, normalize(planePoints[ntr] - planePoints[ftr]));
+	planeNormals[bottN] = cross(-right, normalize(planePoints[fbr] - planePoints[nbr]));
 
 	// normalise normals
 	for (int i = 0; i < 6; ++i)
 	{
 		planeNormals[i] = normalize(planeNormals[i]);
-		//planeNormals[i] = cam->get_view() * planeNormals[i];
 	}
 
 }
@@ -193,20 +147,6 @@ void SceneManager::calculateFrustrum()
 
 SceneManager::~SceneManager()
 {
-
-	//for (uint i = 0; i < list.size(); ++i)
-	//	delete list[i];
-
-	//list.clear();
-
-	//delete light;
-	//light = nullptr;
-
-	//delete pointLight;
-	//pointLight = nullptr;
-	//
-	//delete spot;
-	//spot = nullptr;
 
 	for (int i = 0; i < lightList.size(); ++i)
 		delete lightList[i];
