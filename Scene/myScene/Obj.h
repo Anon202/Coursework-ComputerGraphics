@@ -18,7 +18,8 @@ class Obj
 	float				radius;
 	vec3				furthestPoint;
 
-	float theta;
+	float theta;		   // angle to update by every frame
+	float angleIncrement;  // used to store angle increment over time
 
 	cubemap				myCubemap;
 	vector<texture*>	tex;

@@ -38,8 +38,6 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	effect* eff)
 {
 	mat4 T = translate(mat4(1.0f), pos);
-	if (myType == spotty)
-		T = translate(mat4(1.0f), me->get_transform().position);
 	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
@@ -68,7 +66,13 @@ void Obj::setName(string name)
 
 vec4 Obj::getWorldPos()
 {
-	vec4 pos = mworld * vec4(m->get_transform().position, 1.0);
+	vec4 pos = vec4(m->get_transform().position, 1.0);
+
+
+	if (myType != terrn)
+	{
+		pos = mworld * pos;
+	}
 
 	return pos;
 
@@ -105,16 +109,13 @@ void Obj::update(Obj* parent, float delta_time)
 
 		mworld = trans * rotation * mworld;
 	}
+	else if (theta != 0.0)
+	{
+		mat4 rotation = rotate(mat4(1.0f), angleIncrement, rotV);
 
-	//if (myName == "")
-	//{
-	//	mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
-
-	//	mat4 rotation = rotate(mat4(1.0f), theta, rotV);
-	//	theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
-
-	//	mworld = trans * rotation * mworld;
-	//}
+		angleIncrement += theta * delta_time * 0.01f;
+		mworld = rotation * mworld;
+	}
 
 
 	if (parent){
@@ -140,19 +141,8 @@ void Obj::update(Obj* parent, float delta_time)
 void Obj::intersection()
 {
 	extern SceneManager* myScene;
-	
-	
-	
-	// ** CLIP SPACE APPROACH  ** //
-	// Point in world position, (M * Position)
-	// point in clip space = P * V * worldPos(vector4 w =1)
-	// "normalised" w needs to be = 1 therefore... all components are divided by w.
-	// pointClipNormalised = point in clip space / w component
-	//vec4 pointClip = myScene->cam->get_projection() * myScene->cam->get_view() * getWorldPos();
-	//vec3 pointClipNormalised = vec3(pointClip.x / pointClip.w, pointClip.y / pointClip.w, pointClip.z / pointClip.w);
 
-
-	if (myType == sky || myType == terrn)  // always render terrain and sky
+	if (myType == sky)  // always render sky
 	{
 		visible = true;
 	}
@@ -175,7 +165,7 @@ void Obj::intersection()
 			float d;
 			d = dot(myScene->planeNormals[i], centre - pointOnPlane);
 
-			if (d <= -radius)
+			if (d < -radius)
 			{
 				cout << "CULLING! " << this->myName << endl;
 				visible = false;
@@ -194,6 +184,12 @@ void Obj::intersection()
 void Obj::calculateSphere()
 {
 	// need to calculate bounding sphere for the object
+
+	if (myType == terrn)
+	{
+		radius = 256.0f;
+		return;
+	}
 	
 	vector<vec3> data;
 	int count = m->get_geometry().get_vertex_count();

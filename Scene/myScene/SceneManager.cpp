@@ -6,7 +6,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	cam = nullptr;
 	skybx = nullptr;
 	root = nullptr;
-	terr = nullptr;
+	generator = nullptr;
 
 	
 	// copy vars
@@ -83,14 +83,14 @@ effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPa
 
 void SceneManager::calculateFrustrum()
 {
-	if (cam != cameraList[0])
-		return;
+	//if (cam != cameraList[0])
+	//	return;
 
 	//cout << "updatign" << endl;
 	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
 
 	//near plane
-	float fov = (0.25f * (float)AI_MATH_PI);
+	float fov = 2.414f;
 	float near = 0.1f;
 	float far = 1000.f;
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());

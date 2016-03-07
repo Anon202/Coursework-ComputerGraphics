@@ -41,6 +41,16 @@ bool initialise()
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
+	// target camera 2
+	myScene->cam = new target_camera();
+	myScene->cameraList.push_back(myScene->cam); // add to list (so can be deleted at end)
+
+
+	// Set camera properties for free camera (default)
+	myScene->cam->set_position(vec3(-50.0f, 100.0f, 50.0f));
+	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
+	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+
 
 	// free_camera!
 	myScene->cam = new free_camera();
@@ -71,12 +81,10 @@ bool load_content()
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMapNEW.png");
 
 	// Generate terrain
-	myScene->terr->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f);
+	myScene->generator->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f);
 
 	// create terrain object
-
-
-	// Use geometry to create terrain mesh
+	// Use geometry to create terrain 
 	myScene->meshes["terr"] = mesh(terrainBlocks.at(0));
 	myScene->meshes["terr2"] = mesh(terrainBlocks.at(1));
 	myScene->meshes["terr3"] = mesh(terrainBlocks.at(2));
@@ -156,6 +164,9 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\point.frag",
 		"..\\resources\\shaders\\parts\\weighted_texture.frag");
 
+	// Terrain: 1 2
+	//			3 4
+	// looking at platform
 
 	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	myScene->root->setName("terrain1");
@@ -180,7 +191,7 @@ bool load_content()
 	myScene->texList.push_back(waterText);
 
 	vector<texture*> platText;
-	platText.push_back(new texture("..\\resources\\textures\\marble.jpg"));
+	platText.push_back(new texture("..\\resources\\textures\\Gray_swirl_marble_pxr128.tif"));
 	platText.push_back(new texture("..\\resources\\textures\\myNMap.png"));
 	myScene->texList.push_back(platText);
 
@@ -190,12 +201,11 @@ bool load_content()
 	myScene->texList.push_back(pillarText);
 
 
-	effect *water_eff = new effect;
-	water_eff->add_shader("..\\resources\\shaders\\water.vert", GL_VERTEX_SHADER);
-	water_eff->add_shader("..\\resources\\shaders\\parts\\point.frag", GL_FRAGMENT_SHADER);
-	water_eff->add_shader("..\\resources\\shaders\\water.frag", GL_FRAGMENT_SHADER);
-	water_eff->build();
-	myScene->effectList.push_back(water_eff);
+	effect *water_eff = myScene->createEffect(
+		"..\\resources\\shaders\\water.vert",
+		"..\\resources\\shaders\\water.frag",
+		"..\\resources\\shaders\\parts\\point.frag",
+		NULL);
 
 	effect *eff = myScene->createEffect(
 		"..\\resources\\shaders\\phong.vert",
@@ -208,30 +218,25 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\direction.frag",
 		"..\\resources\\shaders\\parts\\normal_map.frag");
 	
-	effect *gouraud_eff = new effect;
-	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.vert", GL_VERTEX_SHADER);
-	gouraud_eff->add_shader("..\\resources\\shaders\\gouraud.frag", GL_FRAGMENT_SHADER);
-	gouraud_eff->build();
-	myScene->effectList.push_back(gouraud_eff);
+	effect *gouraud_eff = myScene->createEffect(
+		"..\\resources\\shaders\\gouraud.vert",
+		"..\\resources\\shaders\\gouraud.frag",
+		NULL, NULL);
 
-	effect *shadeff = new effect;
-	shadeff->add_shader("..\\resources\\shaders\\shadow.vert", GL_VERTEX_SHADER);
-	vector<string> frag_shaders
-	{
+	effect *shadeff = myScene->createEffect(
+		"..\\resources\\shaders\\shadow.vert",
 		"shadowShader.frag",
 		"..\\resources\\shaders\\parts\\spotPart.frag",
-		"..\\resources\\shaders\\parts\\shadowPart.frag"
-	};
-	shadeff->add_shader(frag_shaders, GL_FRAGMENT_SHADER);
-	shadeff->build();
-	myScene->effectList.push_back(shadeff);
+		"..\\resources\\shaders\\parts\\shadowPart.frag");
+
 
 	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
 
-	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar2 = new Obj(vec3(-30.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar3 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
@@ -268,6 +273,7 @@ bool load_content()
 	plat->addChild(pillarPlat2, "pillarPlat2");
 
 	pillar->addChild(pillar2, "pillar2");
+	pillar2->addChild(pillar3, "pillar3");
 
 	myScene->root->addChild(water, "water");
 	myScene->root->addChild(spoot, "spoot");
@@ -284,6 +290,7 @@ bool load_content()
 	myScene->list.push_back(pyra);
 	myScene->list.push_back(pillar);
 	myScene->list.push_back(pillar2);
+	myScene->list.push_back(pillar3);
 	myScene->list.push_back(ball);
 	myScene->list.push_back(plat);
 	myScene->list.push_back(platBox);
@@ -297,8 +304,8 @@ bool load_content()
     // ******************************
     // Create box geometry for skybox
     // ******************************
-	myScene->terr->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
-	myScene->terr->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 2);
+	myScene->generator->generate_skybox(myScene->meshes["skybox"], myScene->cubemaps["outer"], 1);  // SKY NUMBER ONE
+	myScene->generator->generate_skybox(myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], 2);
 	
     // *********************
     // Load in skybox effect
@@ -377,10 +384,12 @@ bool update(float delta_time)
 		myScene->shadow.buffer->save("test.png");
 	}
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))    // need to get an enum for camera tyoe
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_F))
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_2))
 		myScene->cam = myScene->cameraList[1];
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_3))
+		myScene->cam = myScene->cameraList[2];
 
 	free_camera* freeCam = NULL;
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
@@ -460,8 +469,6 @@ bool update(float delta_time)
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
-	
-	//myScene->root->update(NULL);
     return true;
 }
 
@@ -563,7 +570,7 @@ bool render()
 
 	if (myScene->debug)
 	{
-		// if debug mode draw frustrum?
+		// if debug mode draw radii of bounding spheres
 		vector<float> radii;
 		vector<vec3> positions;
 		for (auto c : myScene->list)
@@ -600,11 +607,7 @@ bool render()
 
 		renderer::bind(frustrumEff);
 
-		auto M = m.get_transform().get_transform_matrix();					// think this is wrong
-		auto lV = myScene->cameraList[0]->get_view();
-		auto lP = myScene->cameraList[0]->get_projection();
-
-		auto MVP = VP;// lP * lV * M;
+		auto MVP = VP;  // already in world position
 		glUniformMatrix4fv(
 			frustrumEff.get_uniform_location("MVP"),
 			1,
@@ -614,53 +617,20 @@ bool render()
 		renderer::render(m);
 
 
-		glBegin(GL_LINES);
-		glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
-		glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*3.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*3.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*3.0f);
-		glEnd();
+		//glBegin(GL_LINES);
+		//glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
+		//glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*3.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*3.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*3.0f);
+		//glEnd();
 
-		vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
+		//vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
 
-		glBegin(GL_LINES);
-		glVertex3f(start.x, start.y, start.z);
-		glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
-		glEnd();
+		//glBegin(GL_LINES);
+		//glVertex3f(start.x, start.y, start.z);
+		//glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
+		//glEnd();
 
 
 		glLineWidth(1.0f);
-		/*
-		// if debug mode draw frustrum
-		vector<vec3> normals;
-		vector<vec3> normPoints;
-
-		normPoints.push_back(myScene->planePoints[ftl]);
-		normPoints.push_back(myScene->planePoints[ntl]);
-		normPoints.push_back(myScene->planePoints[nbl]);
-		normPoints.push_back(myScene->planePoints[nbr]);
-		normPoints.push_back(myScene->planePoints[fbr]);
-		normPoints.push_back(myScene->planePoints[ntr]);
-
-		for (auto e : myScene->planeNormals)
-		{
-			normals.push_back(e);
-		}
-		normalGeom.add_buffer(normPoints, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
-		normalGeom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER, GL_DYNAMIC_DRAW);
-		
-
-
-		renderer::bind(normEffect);
-
-
-		glUniformMatrix4fv(
-			normEffect.get_uniform_location("VP"),
-			1,
-			GL_FALSE,
-			value_ptr(VP));
-
-
-		renderer::render(normalGeom);
-		*/
 	
 	}
 
@@ -668,8 +638,6 @@ bool render()
 
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
-
-	//myScene->root->render(myScene->root);
 
     return true;
 }

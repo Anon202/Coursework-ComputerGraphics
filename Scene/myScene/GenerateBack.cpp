@@ -107,7 +107,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	// Contains our index data
 	vector<unsigned int> indices;
 
-	geometry geomTemp[4];
+	geometry geomTemp[4];  // temporary geometry values
 
 	// ***************************************
 	// Extract the texture data from the image
@@ -130,13 +130,10 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	int start[4] = { 0, halfWidth, 0, halfWidth };
 	int startHeight[4] = { 0, halfHeight, halfHeight, 0 };
 
-	//end = height_map.get_width();
-	//endHeight = height_map.get_height();
-
 	int end[4] = { halfWidth, halfWidth * 2, halfWidth, halfWidth *2 };
 	int endHeight[4] = { halfHeight, halfHeight * 2, halfHeight *2 , halfHeight };
 
-	for (int j = 0; j < 4; ++j)
+	for (int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
 	{
 
 		// ***********************************************************************
@@ -292,12 +289,10 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 				tex_weights.push_back(w);
 			}
 		}
-
-
-
 		
-		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);
+		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);  // add buffers to geometry
 		
+		// clear vectors for next pass
 		positions.clear();
 		normals.clear();
 		tex_coords.clear();
@@ -309,10 +304,10 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 
 
 	// add geometry to list.
-	geom.push_back(geomTemp[0]);
-	geom.push_back(geomTemp[1]);
-	geom.push_back(geomTemp[2]);
-	geom.push_back(geomTemp[3]);
+	for (int i = 0; i < 4; ++i)
+	{
+		geom.push_back(geomTemp[i]);
+	}
 
 	delete data;  // delete data
 }

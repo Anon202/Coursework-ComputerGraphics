@@ -24,7 +24,7 @@ public:
 	Obj* skybx;
 	Obj* root;
 
-	GenerateBack* terr;
+	GenerateBack* generator;
 
 	//directional_light* light;
 	//point_light* pointLight;
