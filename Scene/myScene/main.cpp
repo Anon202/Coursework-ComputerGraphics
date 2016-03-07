@@ -64,18 +64,23 @@ bool load_content()
 {
 	
 	// CREATE TERRAIN
-	geometry terrGeom; // geom to load into
+
+	vector<geometry> terrainBlocks;
 	
 	// Load height map
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMapNEW.png");
 
 	// Generate terrain
-	myScene->terr->generate_terrain(terrGeom, height_map, 20, 20, 10.0f);
+	myScene->terr->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f);
 
 	// create terrain object
 
+
 	// Use geometry to create terrain mesh
-	myScene->meshes["terr"] = mesh(terrGeom);
+	myScene->meshes["terr"] = mesh(terrainBlocks.at(0));
+	myScene->meshes["terr2"] = mesh(terrainBlocks.at(1));
+	myScene->meshes["terr3"] = mesh(terrainBlocks.at(2));
+	myScene->meshes["terr4"] = mesh(terrainBlocks.at(3));
 	
 	vector<texture*> terrTextList;				// local list of textures
 
@@ -153,7 +158,11 @@ bool load_content()
 
 
 	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
-	myScene->root->setName("terrain");
+	myScene->root->setName("terrain1");
+	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr3"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+
 
 	vector<texture*> sphereText;
 	sphereText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
@@ -310,7 +319,14 @@ bool load_content()
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "skyInner");
 	skybx2->addChild(myScene->root, "terrain");  
+	skybx2->addChild(terrain2, "terrain2");
+	skybx2->addChild(terrain3, "terrain3");
+	skybx2->addChild(terrain4, "terrain4");
 	myScene->list.push_back(myScene->skybx);
+
+	myScene->list.push_back(terrain2);
+	myScene->list.push_back(terrain3);
+	myScene->list.push_back(terrain4);
 
 	// create a new shadow effect
 	effect *shadow_effect = new effect;

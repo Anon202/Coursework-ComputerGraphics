@@ -85,7 +85,16 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 
 }
 
-void GenerateBack::generate_terrain(geometry &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
+void addToBuffers(geometry &currentGeom, vector<vec3> &positions, vector<unsigned int> &indices, vector<vec3> &normals, vector<vec2> &tex_coords, vector<vec4> &tex_weights)
+{
+	currentGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	currentGeom.add_index_buffer(indices);
+	currentGeom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
+	currentGeom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	currentGeom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
+}
+
+void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
 {
 	// Contains our position data
 	vector<vec3> positions;
@@ -97,6 +106,8 @@ void GenerateBack::generate_terrain(geometry &geom, const texture &height_map, u
 	vector<vec4> tex_weights;
 	// Contains our index data
 	vector<unsigned int> indices;
+
+	geometry geomTemp[4];
 
 	// ***************************************
 	// Extract the texture data from the image
@@ -113,174 +124,198 @@ void GenerateBack::generate_terrain(geometry &geom, const texture &height_map, u
 	// Point to work on
 	vec3 point;
 
-	// ***********************************************************************
-	// Part 1 - Iterate through each point, calculate vertex and add to vector
-	// ***********************************************************************
-	for (int x = 0; x < height_map.get_width(); ++x)
-	{
-		// *****************************
-		// Calculate x position of point
-		// *****************************
-		float w2 = width / 2;
-		point.x = -w2 + (width_point * x);
+	int halfWidth = height_map.get_width()/2;
+	int halfHeight = height_map.get_height()/2;
 
-		for (int z = 0; z < height_map.get_height(); ++z)
+	int start[4] = { 0, halfWidth, 0, halfWidth };
+	int startHeight[4] = { 0, halfHeight, halfHeight, 0 };
+
+	//end = height_map.get_width();
+	//endHeight = height_map.get_height();
+
+	int end[4] = { halfWidth, halfWidth * 2, halfWidth, halfWidth *2 };
+	int endHeight[4] = { halfHeight, halfHeight * 2, halfHeight *2 , halfHeight };
+
+	for (int j = 0; j < 4; ++j)
+	{
+
+		// ***********************************************************************
+		// Part 1 - Iterate through each point, calculate vertex and add to vector
+		// ***********************************************************************
+		for (int x = start[j]; x < end[j]; ++x)
 		{
 			// *****************************
-			// Calculate z position of point
+			// Calculate x position of point
 			// *****************************
-			float d2 = depth / 2;
-			point.z = -d2 + (depth_point*z);
+			float w2 = width / 2;
+			point.x = -w2 + (width_point * x);
 
-			// ****************************************************
-			// Y position based on red component of height map data
-			// ****************************************************
+			for (int z = startHeight[j]; z < endHeight[j]; ++z)
+			{
+				// *****************************
+				// Calculate z position of point
+				// *****************************
+				float d2 = depth / 2;
+				point.z = -d2 + (depth_point*z);
 
-			point.y = data[(z * height_map.get_width()) + x].y * height_scale;
-			// **************************
-			// Add point to position data
-			// **************************
-			positions.push_back(point);
+				// ****************************************************
+				// Y position based on red component of height map data
+				// ****************************************************
+
+				point.y = data[(z * height_map.get_height()) + x].y * height_scale;
+				// **************************
+				// Add point to position data
+				// **************************
+				positions.push_back(point);
+			}
 		}
-	}
 
-	// ***********************
-	// Part 1 - Add index data
-	// ***********************
-	for (unsigned int x = 0; x < height_map.get_width() - 1; ++x)
-	{
-		for (unsigned int y = 0; y < height_map.get_height() - 1; ++y)
+		// ***********************
+		// Part 1 - Add index data
+		// ***********************
+		for (unsigned int x = 0; x < halfWidth -1; ++x)
 		{
-			// *************************
-			// Get four corners of patch
-			// *************************
-			int top_left = (y * height_map.get_width()) + x;
-			int top_right = (y * height_map.get_width()) + x + 1;
-			int bottom_left = ((y + 1)*height_map.get_width()) + x;
-			int bottom_right = ((y + 1)*height_map.get_height()) + x + 1;
+			for (unsigned int y = 0; y < halfHeight - 1; ++y)
+			{
+				// *************************
+				// Get four corners of patch
+				// *************************
+				int top_left = (y * halfWidth) + x;
+				int top_right = (y * halfWidth) + x + 1;
+				int bottom_left = ((y + 1)*halfWidth) + x;
+				int bottom_right = ((y + 1)*halfHeight) + x + 1;
 
-			// ********************************
-			// Push back indices for triangle 1
-			// ********************************
-			indices.push_back(top_left);
-			indices.push_back(bottom_right);
-			indices.push_back(bottom_left);
+				// ********************************
+				// Push back indices for triangle 1
+				// ********************************
+				indices.push_back(top_left);
+				indices.push_back(bottom_right);
+				indices.push_back(bottom_left);
 
-			// ********************************
-			// Push back indices for triangle 2
-			// ********************************
-			indices.push_back(top_left);
-			indices.push_back(top_right);
-			indices.push_back(bottom_right);
+				// ********************************
+				// Push back indices for triangle 2
+				// ********************************
+				indices.push_back(top_left);
+				indices.push_back(top_right);
+				indices.push_back(bottom_right);
 
+			}
 		}
-	}
 
-	////// GL POLYGON MODE
-
-	// Resize the normals buffer
-	normals.resize(positions.size());
-
-	// *********************************************
-	// Part 2 - Calculate normals for the height map
-	// *********************************************
-	for (unsigned int i = 0; i < indices.size() / 3; ++i)
-	{
-		// ****************************
-		// Get indices for the triangle
-		// ****************************
-		int idx1 = indices[i * 3];
-		int idx2 = indices[i * 3 + 1];
-		int idx3 = indices[i * 3 + 2];
-
-		// ***********************************
-		// Calculate two sides of the triangle
-		// ***********************************
-		vec3 side1 = positions[idx1] - positions[idx3];
-		vec3 side2 = positions[idx1] - positions[idx2];
-
-
-		// ******************************************
-		// Normal is cross product of these two sides
-		// ******************************************
-		vec3 n = cross(side2, side1);
-
-		// **********************************************************************
-		// Add to normals in the normal buffer using the indices for the triangle
-		// **********************************************************************
-		normals[idx1] += n;
-		normals[idx2] += n;
-		normals[idx3] += n;
-
-	}
-
-	// *************************
-	// Part 2 - Normalize all the normals
-	// *************************
-	for (auto &n : normals)
-	{
-		n = normalize(n);
-	}
-
-	// *********************************************
-	// Part 3 - Add texture coordinates for geometry
-	// *********************************************
-	for (unsigned int x = 0; x < height_map.get_width(); ++x)
-	{
-		for (unsigned int z = 0; z < height_map.get_height(); ++z)
+		// Resize the normals buffer
+		normals.resize(positions.size());
+		
+		// *********************************************
+		// Part 2 - Calculate normals for the height map
+		// *********************************************
+		for (unsigned int i = 0; i < indices.size() / 3; ++i)
 		{
-			vec2 v;
-			v.x = width_point * x;
-			v.y = depth_point * z;
-			tex_coords.push_back(v);
-		}
-	}
+			// ****************************
+			// Get indices for the triangle
+			// ****************************
+			int idx1 = indices[i * 3];
+			int idx2 = indices[i * 3 + 1];
+			int idx3 = indices[i * 3 + 2];
 
-	// **************************************************
-	// Part 4 - Calculate texture weights for each vertex
-	// **************************************************
-	for (unsigned int x = 0; x < height_map.get_width(); ++x)
-	{
-		for (unsigned int z = 0; z < height_map.get_height(); ++z)
+			// ***********************************
+			// Calculate two sides of the triangle
+			// ***********************************
+			vec3 side1 = positions[idx1] - positions[idx3];
+			vec3 side2 = positions[idx1] - positions[idx2];
+
+
+			// ******************************************
+			// Normal is cross product of these two sides
+			// ******************************************
+			vec3 n = cross(side2, side1);
+
+			// **********************************************************************
+			// Add to normals in the normal buffer using the indices for the triangle
+			// **********************************************************************
+			normals[idx1] += n;
+			normals[idx2] += n;
+			normals[idx3] += n;
+
+		}
+
+		// *************************
+		// Part 2 - Normalize all the normals
+		// *************************
+		for (auto &n : normals)
 		{
-			// ********************
-			// Calculate tex weight
-			// ********************
-			vec4 w;
-			w.x = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.0) / 0.0625)), 0.0, 1.0);
-			w.y = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.05) / 0.125)), 0.0, 1.0);
-			w.z = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.08) / 0.5625)), 0.0, 1.0);
-			w.w = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.8) / 0.25)), 0.0, 1.0);
-
-			// ********************************
-			// Sum the components of the vector
-			// ********************************
-			float total = w.x + w.y + w.z + w.w;
-
-			// ********************
-			// Divide weight by sum
-			// ********************
-			w = w / total;
-
-			// *************************
-			// Add tex weight to weights
-			// *************************
-			tex_weights.push_back(w);
+			n = normalize(n);
 		}
+
+		// *********************************************
+		// Part 3 - Add texture coordinates for geometry
+		// *********************************************
+		for (unsigned int x = 0; x < halfWidth; ++x)
+		{
+			for (unsigned int z = 0; z < halfHeight; ++z)
+			{
+				vec2 v;
+				v.x = width_point * x;
+				v.y = depth_point * z;
+				tex_coords.push_back(v);
+			}
+		}
+
+		// **************************************************
+		// Part 4 - Calculate texture weights for each vertex
+		// **************************************************
+		for (unsigned int x = start[j]; x < end[j]; ++x)
+		{
+			for (unsigned int z = startHeight[j]; z < endHeight[j]; ++z)
+			{
+				// ********************
+				// Calculate tex weight
+				// ********************
+				vec4 w;
+				w.x = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.0) / 0.0625)), 0.0, 1.0);
+				w.y = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.05) / 0.125)), 0.0, 1.0);
+				w.z = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.08) / 0.5625)), 0.0, 1.0);
+				w.w = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.8) / 0.25)), 0.0, 1.0);
+
+				// ********************************
+				// Sum the components of the vector
+				// ********************************
+				float total = w.x + w.y + w.z + w.w;
+
+				// ********************
+				// Divide weight by sum
+				// ********************
+				w = w / total;
+
+				// *************************
+				// Add tex weight to weights
+				// *************************
+				tex_weights.push_back(w);
+			}
+		}
+
+
+
+		
+		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);
+		
+		positions.clear();
+		normals.clear();
+		tex_coords.clear();
+		tex_weights.clear();
+		indices.clear();
+
+
 	}
 
-	// *************************************
-	// Add necessary buffers to the geometry
-	// *************************************
-	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	geom.add_index_buffer(indices);
-	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
-	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
-	geom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
 
-	// ***********
-	// Delete data
-	// ***********
-	delete data;
+	// add geometry to list.
+	geom.push_back(geomTemp[0]);
+	geom.push_back(geomTemp[1]);
+	geom.push_back(geomTemp[2]);
+	geom.push_back(geomTemp[3]);
+
+	delete data;  // delete data
 }
+
+
 

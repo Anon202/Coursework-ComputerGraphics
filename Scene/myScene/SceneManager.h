@@ -72,6 +72,5 @@ public:
 	void Create();
 	void calculateFrustrum();
 	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
-//	void intersection();
 };
 

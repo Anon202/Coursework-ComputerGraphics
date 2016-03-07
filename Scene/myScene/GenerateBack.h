@@ -14,7 +14,7 @@ class GenerateBack
 public:
 	GenerateBack();
 	void generate_terrain(
-		geometry &geom,
+		vector<geometry> &geom,
 		const texture &height_map,
 		unsigned int width,
 		unsigned int depth,
