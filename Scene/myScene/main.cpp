@@ -79,10 +79,10 @@ bool load_content()
 	
 	vector<texture*> terrTextList;				// local list of textures
 
-	terrTextList.push_back( new texture("..\\resources\\textures\\sand.dds"));
-	terrTextList.push_back( new texture("..\\resources\\textures\\oranger.jpg"));
-	terrTextList.push_back( new texture("..\\resources\\textures\\rock.dds"));
-	terrTextList.push_back( new texture("..\\resources\\textures\\snow.dds"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\Big_pebbles_pxr128.tif"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\Peetmoss_pxr128.tif"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\Jute_cocomat_pxr128.tif"));
+	terrTextList.push_back( new texture("..\\resources\\textures\\Slag_stone_pxr128.tif"));
 
 	myScene->texList.push_back(terrTextList);
 
@@ -126,8 +126,8 @@ bool load_content()
 
 
 	// create torus geom for difference between gouraud and phong
-	myScene->meshes["torus"] = mesh(geometry_builder::create_torus());
-	myScene->materials["torus"].set_diffuse(vec4(0.0, 0.0, 1.0, 1.0));
+	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(100, 100));
+	myScene->materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
 
 	for (auto &e : myScene->materials)
 	{
@@ -136,7 +136,7 @@ bool load_content()
 		e.second.set_shininess(10.0f);
 	}
 
-	myScene->materials["torus"].set_shininess(5.0f);
+	myScene->materials["sphere"].set_shininess(50.0f);
 	
 	// set emissive for point
 	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -155,9 +155,9 @@ bool load_content()
 	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	myScene->root->setName("terrain");
 
-	vector<texture*> torusText;
-	torusText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
-	myScene->texList.push_back(torusText);
+	vector<texture*> sphereText;
+	sphereText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
+	myScene->texList.push_back(sphereText);
 
 	vector<texture*> objTextList;
 	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
@@ -217,8 +217,8 @@ bool load_content()
 	shadeff->build();
 	myScene->effectList.push_back(shadeff);
 
-	Obj *torusG = new Obj(vec3(300.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1, 0.1, 0.1), &myScene->meshes["torus"], &myScene->materials["torus"], torusText, gouraud_eff, object);
-	Obj *torusP = new Obj(vec3(-50.0, 0.0f, -50.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["torus"], &myScene->materials["torus"], torusText, eff, object);
+	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
 
 	Obj *pillar = new Obj(vec3(-5.0f, 25.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -250,8 +250,8 @@ bool load_content()
 
 	myScene->root->addChild(plat, "platform");
 
-	myScene->root->addChild(torusG, "gouraudTorus");
-	torusG->addChild(torusP, "phongTorus");
+	myScene->root->addChild(sphereG, "gouraudTorus");
+	sphereG->addChild(sphereP, "phongTorus");
 
 	plat->addChild(platWall, "platWall");
 	plat->addChild(platBox, "platBox");
@@ -282,8 +282,8 @@ bool load_content()
 	myScene->list.push_back(pillarPlat);
 	myScene->list.push_back(pillarPlat2);
 	myScene->list.push_back(spoot);
-	myScene->list.push_back(torusG);
-	myScene->list.push_back(torusP);
+	myScene->list.push_back(sphereG);
+	myScene->list.push_back(sphereP);
 
     // ******************************
     // Create box geometry for skybox

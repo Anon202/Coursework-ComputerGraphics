@@ -247,10 +247,10 @@ void GenerateBack::generate_terrain(geometry &geom, const texture &height_map, u
 			// Calculate tex weight
 			// ********************
 			vec4 w;
-			w.x = clamp((1.0 - (length(data[height_map.get_width() * z + x].y) / 0.25)), 0.0, 1.0);
-			w.y = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.15) / 0.25)), 0.0, 1.0);
-			w.z = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.5) / 0.25)), 0.0, 1.0);
-			w.w = clamp((1.0 - (length(data[height_map.get_width() * z + x].y - 0.9) / 0.25)), 0.0, 1.0);
+			w.x = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.0) / 0.0625)), 0.0, 1.0);
+			w.y = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.05) / 0.125)), 0.0, 1.0);
+			w.z = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.08) / 0.5625)), 0.0, 1.0);
+			w.w = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.8) / 0.25)), 0.0, 1.0);
 
 			// ********************************
 			// Sum the components of the vector

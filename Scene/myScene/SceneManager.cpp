@@ -33,7 +33,7 @@ void SceneManager::Create()
 	light->set_ambient_intensity(vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	// Light colour white
-	light->set_light_colour(vec4(0.60f, 0.60f, 0.60f, 1.0f));
+	light->set_light_colour(vec4(1.0f, 0.89f, 0.65f, 1.0f));
 
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
