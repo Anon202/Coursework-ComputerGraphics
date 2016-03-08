@@ -2,6 +2,17 @@
 
 // This shader requires spot.frag, shadow.frag
 
+
+#ifndef DIRECTIONAL_LIGHT
+#define DIRECTIONAL_LIGHT
+struct directional_light
+{
+	vec4 ambient_intensity;
+	vec4 light_colour;
+	vec3 light_dir;
+};
+#endif
+
 // Spot light data
 #ifndef SPOT_LIGHT
 #define SPOT_LIGHT
@@ -33,6 +44,7 @@ struct material
 vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in vec3 normal, in vec3 view_dir, in vec4 tex_colour);
 float calculate_shadow(in sampler2D shadow_map, in vec4 light_space_pos);
 
+uniform directional_light light;
 // Spot light being used in the scene
 uniform spot_light spot;
 // Material of the object being rendered
@@ -58,6 +70,51 @@ layout (location = 0) out vec4 colour;
 
 void main()
 {
+vec4 ambient = mat.diffuse_reflection * light.ambient_intensity;
+
+	// ***************************
+	// Calculate diffuse component
+	// ***************************
+	
+	float dotD = dot(normal, light.light_dir);
+	float k = max(dotD, 0);
+	vec4 diffuse = mat.diffuse_reflection * light.light_colour * k;
+
+	// ************************
+	// Calculate view direction
+	// ************************
+	vec3 view_dir = normalize(eye_pos - position);
+	
+
+	// *********************
+	// Calculate half vector
+	// *********************
+	vec3 halfV = normalize(view_dir + light.light_dir);
+
+
+	// ****************************
+	// Calculate specular component
+	// ****************************
+	float dotS = dot(halfV, normal);
+	float kSpec = max(dotS, 0);
+	
+	vec4 specular = mat.specular_reflection * light.light_colour * pow(kSpec, mat.shininess);
+
+	// **************
+	// Sample texture
+	// **************
+	
+
+	
+
+	// **********************************
+	// Calculate primary colour component
+	// **********************************
+
+	
+
+
+
     // **********************
     // Calculate shade factor
     // **********************
@@ -65,7 +122,7 @@ void main()
     // ************************
     // Calculate view direction
     // ************************
-    vec3 view_dir = normalize(eye_pos - position);
+    //vec3 view_dir = normalize(eye_pos - position);
     // **************
     // Sample texture
     // **************
@@ -73,7 +130,17 @@ void main()
     // ********************
     // Calculate spot light
     // ********************
-    colour = calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
+
+	vec4 primary = mat.emissive + ambient + diffuse;
+
+	// **********************
+	// Calculate final colour
+	// - remember alpha 1.0
+	// **********************
+
+	colour = primary*tex_colour + specular;
+	
+    colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 
 	//colour = vec4(1.0, 0.0, 0.0, 1.0);
 	// *********************

@@ -14,16 +14,13 @@ bool load_content()
 	// Create quad data - two triangles
 	// Positions
 
-	geom.set_type(GL_QUADS); // set type only need 4 corners for quad
+	geom.set_type(GL_TRIANGLES); // set type only need 4 corners for quad
 
 	vector<vec3> positions
 	{
-		vec3(-1.0f, 1.0f, 0.0f),
-		vec3(-1.0f, -1.0f, 0.0f),
-		vec3(1.0f, -1.0f, 0.0f),
-		//vec3(1.0f, -1.0f, 0.0f),
-		vec3(1.0f, 1.0f, 0.0f)
-		//vec3(-1.0f, 1.0f, 0.0f)
+		vec3(1.0, 1.0, 0.0),
+		vec3(0.0, 0.0, -1.0),
+		vec3(2.0, 0, -1.0),
 	};
 	// Colours
 	vector<vec4> colours
@@ -31,7 +28,7 @@ bool load_content()
 		vec4(1.0f, 0.0f, 0.0f, 1.0f),
 		vec4(1.0f, 0.0f, 0.0f, 1.0f),
 		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f)
+		//vec4(1.0f, 0.0f, 0.0f, 1.0f)
 		//vec4(1.0f, 1.0f, 0.0f, 1.0f),
 		//vec4(1.0f, 1.0f, 0.0f, 1.0f)
 	};
@@ -51,7 +48,7 @@ bool load_content()
 
 	// Set camera properties
 	cam.set_position(vec3(10.0f, 10.0f, 10.0f));
-	cam.set_target(vec3(0.0f, 0.0f, 0.0f));
+	cam.set_target(vec3(0.0f, 0.0f, 1.0f));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	cam.set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 	return true;

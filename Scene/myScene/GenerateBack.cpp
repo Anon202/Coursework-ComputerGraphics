@@ -333,4 +333,58 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 }
 
 
+void GenerateBack::generate_lip(geometry &geom)
+{
+	geom.set_type(GL_TRIANGLES);
+
+	vector<vec3> positions
+	{
+		vec3(0.0f, 0.0f, 1.0f),  // first side
+		vec3(5.0f, 0.0f, 1.0f),
+		vec3(1.0f, 1.0f, 0.0f),
+
+		vec3(1.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, 1.0f),
+		vec3(5.0f, 1.0f, 0.0f),
+
+		vec3(5.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, 1.0f),
+		vec3(6.0f, 0.0f, 1.0f),
+
+
+		vec3(5.0f, 1.0f, 0.0f),  // end on
+		vec3(6.0, 0.0f, 1.0f),
+		vec3(6.0f, 0.0f, -1.0f),
+
+
+		vec3(1.0f, 1.0f, 0.0f), // back side
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+
+		vec3(5.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(1.0f, 1.0f, 0.0f),
+
+		vec3(6.0f, 0.0f, -1.0f),
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(5.0f, 1.0f, 0.0f),
+
+
+		vec3(0.0f, 0.0f, -1.0f),  // end on
+		vec3(0.0, 0.0f, 1.0f),
+		vec3(1.0f, 1.0f, 0.0f),
+
+		vec3(6.0, 0.0, 1.0),  			// bottom
+		vec3(0.0, 0.0, 1.0),
+		vec3(0.0, 0.0, -1.0),
+		vec3(0.0, 0.0, -1.0),
+		vec3(6.0, 0.0, -1.0),
+		vec3(6.0, 0.0, 1.0),
+
+	};
+
+	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+
+}
+
 

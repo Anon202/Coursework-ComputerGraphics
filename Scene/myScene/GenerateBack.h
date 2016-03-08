@@ -25,6 +25,7 @@ public:
 		cubemap &cube_map,
 		float skyNum);
 
+	void generate_lip(geometry &geom);
 };
 
 
