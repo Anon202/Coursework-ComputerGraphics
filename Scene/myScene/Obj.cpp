@@ -11,20 +11,24 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mat4 T = translate(mat4(1.0f), pos);
 	if (myType == spotty || myType == pointLightObj)
 		T = translate(mat4(1.0f), me->get_transform().position);
+	
+	//quat rotQ(eulerAngleY(theta));
+	
 	mat4 R = rotate(mat4(1.0f), theta, rot);
+	//mat4 R = mat4_cast(rotQ);
 	mat4 S = scale(mat4(1.0f), scal);
-
 
 	mat4 trans = T * (R* S);
 
-	this->mlocal = trans;		// copy vars
+	this->mlocal = trans;		// initial local m
 	this->m = me;
 	this->mat = mate;
 	this->eff = eff;
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
-	this->rotV = rot;
+	this->rotV = rot;// *theta;
+	this->normalMatrix = mat3(R);
 
 	visible = true;
 	
@@ -111,12 +115,15 @@ void Obj::update(Obj* parent, float delta_time)
 	}
 	else if (theta != 0.0)
 	{
-		mat4 rotation = rotate(mat4(1.0f), angleIncrement, rotV);
+		//	m->get_transform().rotate(rotV * delta_time);
+		//  mlocal *= m->get_transform().get_transform_matrix();
+		normalMatrix = mat3(rotate(mat4(1.0f), angleIncrement, rotV));
+		mworld *= rotate(mat4(1.0f), angleIncrement, rotV); //quat(rotV * delta_time);
+		
+		angleIncrement += theta * delta_time;
 
-		angleIncrement += theta * delta_time * 0.01f;
-		mworld = rotation * mworld;
 	}
-
+	//mworld = mlocal;
 
 	if (parent){
 		if (parent->myType != sky && myType != sky)
@@ -130,6 +137,7 @@ void Obj::update(Obj* parent, float delta_time)
 	for (auto &e : children)
 	{
 		Obj* child = e.second;
+		child->normalMatrix = normalMatrix;
 		child->update(this, delta_time);
 	}
 
@@ -238,7 +246,8 @@ void Obj::render()
 
 
 		// get normal matrix from mesh
-		mat3 N = m->get_transform().get_normal_matrix();
+		
+		mat3 N = mat3(normalMatrix);// m->get_transform().get_normal_matrix();// inverse(transpose(mat3(V * mworld)));
 
 		// calculate MVP from world
 		auto MVP = P * V * mworld;

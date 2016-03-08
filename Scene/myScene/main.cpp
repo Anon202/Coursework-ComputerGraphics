@@ -141,6 +141,7 @@ bool load_content()
 	// create torus geom for difference between gouraud and phong
 	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(100, 100));
 	myScene->materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
+	myScene->materials["sphereCHILD"].set_diffuse(vec4(0.0, 1.0, 0.0, 1.0));
 
 	for (auto &e : myScene->materials)
 	{
@@ -150,6 +151,7 @@ bool load_content()
 	}
 
 	myScene->materials["sphere"].set_shininess(50.0f);
+	myScene->materials["sphereCHILD"].set_shininess(50.0f);
 	
 	// set emissive for point
 	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -230,11 +232,11 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\shadowPart.frag");
 
 
-	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
-	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
+	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), pi<float>(), vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphereCHILD"], sphereText, eff, object);
 
 
-	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 1.0f, 0.0f), 0.0, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar3 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 

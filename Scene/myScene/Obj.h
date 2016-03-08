@@ -7,6 +7,7 @@
 
 class Obj
 {
+	mat3				normalMatrix;
 	mat4				mlocal;
 	mat4				mworld;
 	mesh*				m;
