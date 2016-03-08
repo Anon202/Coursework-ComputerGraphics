@@ -22,7 +22,7 @@ class SceneManager
 public:
 	
 	Obj* skybx;
-	Obj* root;
+	//Obj* root;
 
 	GenerateBack* generator;
 

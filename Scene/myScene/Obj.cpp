@@ -11,11 +11,18 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mat4 T = translate(mat4(1.0f), pos);
 	if (myType == spotty || myType == pointLightObj)
 		T = translate(mat4(1.0f), me->get_transform().position);
+
+	mat4 R;
+
+	if (rot == vec3(0.0, 0.0, 0.0))  // if no rotation is given R is just identity matrix
+	{
+		R = mat4(1.0f);
+	}
+	else
+	{
+		R = rotate(mat4(1.0f), theta, rot);
+	}
 	
-	//quat rotQ(eulerAngleY(theta));
-	
-	mat4 R = rotate(mat4(1.0f), theta, rot);
-	//mat4 R = mat4_cast(rotQ);
 	mat4 S = scale(mat4(1.0f), scal);
 
 	mat4 trans = T * (R* S);
@@ -27,8 +34,8 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
-	this->rotV = rot;// *theta;
-	this->normalMatrix = mat3(R);
+	this->rotV = rot;
+	this->normalMatrix = mat3(R);  // normal matrix is top corner of model matrix (it's orentation)
 
 	visible = true;
 	
@@ -37,16 +44,14 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 }
 
 
-Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
+Obj::Obj(vec3 rot, float theta, vec3 scal,
 	mesh* me, cubemap skybox,
 	effect* eff)
 {
-	mat4 T = translate(mat4(1.0f), pos);
 	mat4 R = rotate(mat4(1.0f), theta, rot);
 	mat4 S = scale(mat4(1.0f), scal);
 
-
-	mat4 trans = T * (R* S);
+	mat4 trans = (R* S);
 
 	this->mlocal = trans;		// copy vars
 	this->m = me;
@@ -95,35 +100,28 @@ void Obj::update(Obj* parent, float delta_time)
 {
 	// used to recurse through children and concatenate transforms
 
-	//transform by camera positon
-
-	extern SceneManager* myScene;
-
+	extern SceneManager* myScene;  // used to get camera transform
 
 	mworld = mlocal;
 
 	if (myType == sky)
 	{
-		//vec3 difference = cam->get_position();// -m->get_transform().position;  // get difference in position
 		mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
 
-		mat4 rotation = rotate(mat4(1.0f), theta, rotV);
-		if (myName == "skyInner")
-			theta += pi<float>() * delta_time * 0.01f;   // increment theta over time
+		mat4 rotation = rotate(mat4(1.0f), angleIncrement, rotV);
+		angleIncrement += theta * delta_time * 0.01f;   // increment theta over time
 
 		mworld = trans * rotation * mworld;
 	}
-	else if (theta != 0.0)
+	else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
 	{
-		//	m->get_transform().rotate(rotV * delta_time);
-		//  mlocal *= m->get_transform().get_transform_matrix();
-		normalMatrix = mat3(rotate(mat4(1.0f), angleIncrement, rotV));
-		mworld *= rotate(mat4(1.0f), angleIncrement, rotV); //quat(rotV * delta_time);
+		mat4 rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
+		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+		mworld *= rotationMatrix;
 		
 		angleIncrement += theta * delta_time;
 
 	}
-	//mworld = mlocal;
 
 	if (parent){
 		if (parent->myType != sky && myType != sky)
@@ -137,7 +135,7 @@ void Obj::update(Obj* parent, float delta_time)
 	for (auto &e : children)
 	{
 		Obj* child = e.second;
-		child->normalMatrix = normalMatrix;
+		child->normalMatrix = normalMatrix;  // set normal matrix for child object (over written when method is recursed over if the child's rotation changes)
 		child->update(this, delta_time);
 	}
 
@@ -244,10 +242,7 @@ void Obj::render()
 		mat4 V = cam->get_view();
 		vec3 eyeP = cam->get_position();
 
-
-		// get normal matrix from mesh
-		
-		mat3 N = mat3(normalMatrix);// m->get_transform().get_normal_matrix();// inverse(transpose(mat3(V * mworld)));
+		mat3 N = normalMatrix;  // object has own normalMatrix taken from the rotation from its model matrix
 
 		// calculate MVP from world
 		auto MVP = P * V * mworld;

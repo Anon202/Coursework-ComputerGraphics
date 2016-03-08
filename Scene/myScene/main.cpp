@@ -5,9 +5,6 @@ SceneManager* myScene;  // pointer to a scene manager!
 effect frustrumEff;
 mesh m;
 
-effect normEffect;
-geometry normalGeom;
-
 bool initialise()
 {
 	double xpos = 0; // create initial vars for mouse position
@@ -91,12 +88,10 @@ bool load_content()
 	myScene->meshes["terr4"] = mesh(terrainBlocks.at(3));
 	
 	vector<texture*> terrTextList;				// local list of textures
-
 	terrTextList.push_back( new texture("..\\resources\\textures\\Big_pebbles_pxr128.tif"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\Peetmoss_pxr128.tif"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\Jute_cocomat_pxr128.tif"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\Slag_stone_pxr128.tif"));
-
 	myScene->texList.push_back(terrTextList);
 
 	// Create plane mesh
@@ -141,7 +136,6 @@ bool load_content()
 	// create torus geom for difference between gouraud and phong
 	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(100, 100));
 	myScene->materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
-	myScene->materials["sphereCHILD"].set_diffuse(vec4(0.0, 1.0, 0.0, 1.0));
 
 	for (auto &e : myScene->materials)
 	{
@@ -151,7 +145,6 @@ bool load_content()
 	}
 
 	myScene->materials["sphere"].set_shininess(50.0f);
-	myScene->materials["sphereCHILD"].set_shininess(50.0f);
 	
 	// set emissive for point
 	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
@@ -169,12 +162,10 @@ bool load_content()
 	// Terrain: 1 2
 	//			3 4
 	// looking at platform
-
-	myScene->root = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
-	myScene->root->setName("terrain1");
-	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
-	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr3"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
-	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	Obj *terrain1 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr3"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);	
+	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 
 
 	vector<texture*> sphereText;
@@ -233,18 +224,18 @@ bool load_content()
 
 
 	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), pi<float>(), vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
-	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphereCHILD"], sphereText, eff, object);
+	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
 
-	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 1.0f, 0.0f), 0.0, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar3 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar3 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
-	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
+	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
-	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
+	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
 	Obj *ball = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	myScene->lightList[1]->set_position(myScene->meshes["ball"].get_transform().position);
@@ -261,12 +252,11 @@ bool load_content()
 	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object);// point_eff, pointLight, pointLightObj);
 	myScene->lightList[2]->set_position(myScene->meshes["spoot"].get_transform().position);
 
-	myScene->root->addChild(box, "box");
-	myScene->root->addChild(pillar, "pillar");
+	terrain1->addChild(box, "box");
+	terrain1->addChild(pillar, "pillar");
+	terrain1->addChild(plat, "platform");
 
-	myScene->root->addChild(plat, "platform");
-
-	myScene->root->addChild(sphereG, "gouraudSphere");
+	terrain3->addChild(sphereG, "gouraudSphere");
 	sphereG->addChild(sphereP, "phongSphere");
 
 	plat->addChild(platWall, "platWall");
@@ -277,8 +267,8 @@ bool load_content()
 	pillar->addChild(pillar2, "pillar2");
 	pillar2->addChild(pillar3, "pillar3");
 
-	myScene->root->addChild(water, "water");
-	myScene->root->addChild(spoot, "spoot");
+	
+	terrain1->addChild(spoot, "spoot");
 
 	box->addChild(pyra, "pyramid");
 
@@ -287,7 +277,6 @@ bool load_content()
 
 
 	myScene->list.push_back(water);
-	myScene->list.push_back(myScene->root);
 	myScene->list.push_back(box);
 	myScene->list.push_back(pyra);
 	myScene->list.push_back(pillar);
@@ -320,19 +309,21 @@ bool load_content()
     sky_eff->build();
 	myScene->effectList.push_back(sky_eff);
 
-	myScene->skybx = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], myScene->cubemaps["outer"], sky_eff);
+	myScene->skybx = new Obj(vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(100.0f, 100.0f, 100.0f), &myScene->meshes["skybox"], myScene->cubemaps["outer"], sky_eff);
 	myScene->skybx->setName("sky1");
 	
-	Obj *skybx2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), 0.0f, vec3(90.0, 90.0, 90.0), &myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], sky_eff);
+	Obj *skybx2 = new Obj(vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(90.0, 90.0, 90.0), &myScene->meshes["skyboxInner"], myScene->cubemaps["inner"], sky_eff);
 
 	myScene->list.push_back(skybx2);
 	myScene->skybx->addChild(skybx2, "skyInner");
-	skybx2->addChild(myScene->root, "terrain");  
+	skybx2->addChild(water, "water");
+	skybx2->addChild(terrain1, "terrain1");  
 	skybx2->addChild(terrain2, "terrain2");
 	skybx2->addChild(terrain3, "terrain3");
 	skybx2->addChild(terrain4, "terrain4");
 	myScene->list.push_back(myScene->skybx);
 
+	myScene->list.push_back(terrain1);
 	myScene->list.push_back(terrain2);
 	myScene->list.push_back(terrain3);
 	myScene->list.push_back(terrain4);
@@ -364,10 +355,6 @@ bool load_content()
 	frustrumEff.build();
 
 
-	normEffect.add_shader("..\\resources\\shaders\\normalVert.vert", GL_VERTEX_SHADER);
-	normEffect.add_shader("..\\resources\\shaders\\normalGeom.geom", GL_GEOMETRY_SHADER);
-	normEffect.add_shader("..\\resources\\shaders\\normalFrag.frag", GL_FRAGMENT_SHADER);
-	normEffect.build();
     return true;
 }
 

@@ -5,7 +5,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
 	cam = nullptr;
 	skybx = nullptr;
-	root = nullptr;
+	//root = nullptr;
 	generator = nullptr;
 
 	

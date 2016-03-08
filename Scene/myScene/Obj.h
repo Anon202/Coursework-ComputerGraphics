@@ -46,8 +46,7 @@ public:
 		effect* eff,
 		float myType);
 
-	Obj(vec3 pos,					// skybox object constructor
-		vec3 rot, float theta,
+	Obj(vec3 rot, float theta, // skybox object constructor
 		vec3 scale,
 		mesh* me,
 		cubemap skybox,
