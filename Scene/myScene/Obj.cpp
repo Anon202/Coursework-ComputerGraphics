@@ -8,9 +8,10 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff, float myType)
 {
+	if (myType == pointLightObj)
+		pos = me->get_transform().position;
+
 	mat4 T = translate(mat4(1.0f), pos);
-	if (myType == spotty || myType == pointLightObj)
-		T = translate(mat4(1.0f), me->get_transform().position);
 
 	mat4 R;
 
@@ -78,7 +79,7 @@ vec4 Obj::getWorldPos()
 	vec4 pos = vec4(m->get_transform().position, 1.0);
 
 
-	if (myType != terrn)
+	if (myType == object || myType == spotty)
 	{
 		pos = mworld * pos;
 	}
@@ -279,21 +280,19 @@ void Obj::render()
 			value_ptr(N));
 
 
-		//auto T = glm::translate(mat4(1.0f), myScene->spot->get_position());
-		//auto R = glm::mat4_cast(glm::quat(myScene->spot->get_direction()));
-		//auto matrix = T * R;
-		//auto lV = myScene->shadow.get_view();
+		auto T = glm::translate(mat4(1.0f), myScene->lightList[2]->get_position());
+		auto R = glm::mat4_cast(glm::quat(myScene->lightList[2]->get_direction()));
+		auto matrix = T * R;
+		auto lV = myScene->shadow.get_view();
 
-		//auto lMVP = P * lV * matrix;
-
-		//if (myType == forShade)
-		//{
-		//	glUniformMatrix4fv(
-		//		eff->get_uniform_location("lightMVP"),
-		//		1,
-		//		GL_FALSE,
-		//		value_ptr(lMVP));
-		//}
+		auto lMVP = P * lV * matrix;
+			
+		glUniformMatrix4fv(
+			eff->get_uniform_location("lightMVP"),
+			1,
+			GL_FALSE,
+			value_ptr(lMVP));
+	
 
 		if (waterObj)  // water flag to assign uniform moving water!
 		{

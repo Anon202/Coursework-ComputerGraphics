@@ -9,8 +9,8 @@ class Obj
 {
 	mat3				normalMatrix;
 	mat4				mlocal;
-	mat4				mworld;
-	mesh*				m;
+
+
 	material*			mat;
 	effect*				eff;
 
@@ -28,13 +28,14 @@ class Obj
 
 	string				myName;
 	vec3 rotV;
-	float myType;
+	
 
 public:
 	vec3				cent;    // to create bounding spheres
-
+	mat4				mworld;
 	bool				visible;
-	
+	mesh*				m;
+	float			    myType;
 
 	Obj	();
 	Obj(vec3 pos,

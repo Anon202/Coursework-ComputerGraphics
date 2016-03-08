@@ -22,7 +22,6 @@ class SceneManager
 public:
 	
 	Obj* skybx;
-	//Obj* root;
 
 	GenerateBack* generator;
 
@@ -40,6 +39,8 @@ public:
 
 	vector<Obj*> list;
 
+	vector<Obj*> lightObjects;
+
 	effect* shadow_eff;
 	effect* rad_eff;
 
@@ -56,7 +57,8 @@ public:
 
 
 	bool debug;
-	
+	bool fixCull;
+
 	double initialX;				// vars for mouse positions initial
 	double initialY;	
 	double current_x;			    // var for current mouse pos
@@ -64,7 +66,8 @@ public:
 
 	bool firstMouse;
 
-
+	Obj* mySpot;
+	
 	geometry radiusGeom;
 
 	SceneManager(double initialMouseX, double initialMouseY);

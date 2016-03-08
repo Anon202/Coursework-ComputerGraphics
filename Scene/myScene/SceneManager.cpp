@@ -5,7 +5,6 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
 	cam = nullptr;
 	skybx = nullptr;
-	//root = nullptr;
 	generator = nullptr;
 
 	
@@ -24,6 +23,8 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	debug = false;
 
 	radiusGeom.set_type(GL_POINTS);
+
+	fixCull = false;
 
 }
 
@@ -51,9 +52,8 @@ void SceneManager::Create()
 	lightList.push_back(pointPtr);
 
 	spot_light *spot = new spot_light;
-	spot->set_position(vec3(-30.5, 200.0, 150.0));
-	spot->set_direction(normalize(vec3(-1, -1, 0)));
-	spot->set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
+	spot->set_direction(normalize(vec3(-1, 0, 0)));
+	spot->set_light_colour(vec4(1.0, 1.0, 0.0, 1.0));
 	spot->set_range(200);
 	spot->set_power(50);
 	Light* spotPtr = spot;
@@ -83,8 +83,11 @@ effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPa
 
 void SceneManager::calculateFrustrum()
 {
-	//if (cam != cameraList[0])
-	//	return;
+	//if (fixCull)
+	//{
+	//	if (cam != cameraList[0])
+	//		return;
+	//}
 
 	//cout << "updatign" << endl;
 	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.

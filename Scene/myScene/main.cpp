@@ -108,8 +108,7 @@ bool load_content()
 	myScene->meshes["ball"].get_transform().position = (vec3(250, 35, -400));
 	myScene->materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
-	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(5.0f, 5.0f, 5.0f)));
-	myScene->meshes["spoot"].get_transform().position = (vec3(-30.5, 200.0, 150.0));
+	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
 	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
 	// Red box
@@ -126,7 +125,7 @@ bool load_content()
 	myScene->meshes["platform"].get_geometry().get_maximal_point();
 	myScene->materials["platform"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
 
-	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(1.0, 0.5, 2.0)));
+	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(1.0, 3.0, 3.0)));
 	myScene->materials["platBox"].set_diffuse(vec4(0.83, 0.91, 0.68, 1.0));
 
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(1.5, 3.0, 5.0)));
@@ -148,6 +147,9 @@ bool load_content()
 	
 	// set emissive for point
 	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	// set emissive for spot
+	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 
 	// water needs high spec
 	myScene->materials["water"].set_shininess(10.0f);
@@ -241,16 +243,17 @@ bool load_content()
 	myScene->lightList[1]->set_position(myScene->meshes["ball"].get_transform().position);
 
 
-	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
-	Obj *platBox = new Obj(vec3(160.0, 25.0, 150.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
+	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadeff, object);
+	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, shadeff, object);
 
-	Obj *platWall = new Obj(vec3(-160.0, 90.0, 100.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
-	Obj *pillarPlat = new Obj(vec3(-5.0f, 100.0f, 30.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
-	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.5f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadeff, object);
+	
+
+	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 250.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
 	
 	
-	Obj *spoot = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.05f, 0.05f, 0.05f), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, object);// point_eff, pointLight, pointLightObj);
-	myScene->lightList[2]->set_position(myScene->meshes["spoot"].get_transform().position);
+	Obj *spoot = new Obj(vec3(-35.0, 50.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, shadeff, spotty);
 
 	terrain1->addChild(box, "box");
 	terrain1->addChild(pillar, "pillar");
@@ -263,12 +266,10 @@ bool load_content()
 	plat->addChild(platBox, "platBox");
 	plat->addChild(pillarPlat, "pillarPlat");
 	plat->addChild(pillarPlat2, "pillarPlat2");
-
-	pillar->addChild(pillar2, "pillar2");
-	pillar2->addChild(pillar3, "pillar3");
-
 	
-	terrain1->addChild(spoot, "spoot");
+	platBox->addChild(spoot, "spoot");
+	//platBox->addChild(pillarPlat, "pillarPlat1");
+	//pillarPlat->addChild(pillarPlat2, "pillarPlat2");
 
 	box->addChild(pyra, "pyramid");
 
@@ -291,6 +292,8 @@ bool load_content()
 	myScene->list.push_back(spoot);
 	myScene->list.push_back(sphereG);
 	myScene->list.push_back(sphereP);
+
+	myScene->lightObjects.push_back(spoot);
 
     // ******************************
     // Create box geometry for skybox
@@ -360,13 +363,13 @@ bool load_content()
 
 bool update(float delta_time)
 {
-	/*vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
+	//vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
 	
 	
-	->get_direction();  /// ???
-	myScene->shadow.light_position = myScene->spot->get_position();
-	myScene->shadow.light_dir = myScene->spot->get_direction();
-*/
+	//->get_direction();  /// ???
+	myScene->shadow.light_position = myScene->lightList[2]->get_position();
+	myScene->shadow.light_dir = myScene->lightList[2]->get_direction();
+
 	// Press s to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
 	{
@@ -405,7 +408,6 @@ bool update(float delta_time)
 		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
 		myLight->rotate(vec3(1.0, 0.0, 0.0) * delta_time);
 	}
-		
 		
 
 	if (freeCam)
@@ -453,10 +455,24 @@ bool update(float delta_time)
 	}
 
 	myScene->cam->update(delta_time);  // update the camera
-	myScene->calculateFrustrum();	   // calc frustrum
 	
+	// FRUSTRUM UPDATE
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
+		myScene->fixCull = false;
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_X))
+		myScene->fixCull = true;
+
+
+	if (!myScene->fixCull)
+	{
+		myScene->calculateFrustrum();	   // update frustrum
+	}
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
+
+	myScene->lightList[2]->set_position(vec3(myScene->lightObjects.at(0)->getWorldPos()));
+
 
     return true;
 }
@@ -508,54 +524,58 @@ void generateFrustrumPlanes()
 
 bool render()
 {
-	//// render shadow map.
-	//renderer::set_render_target(myScene->shadow);
+	// render shadow map.
+	renderer::set_render_target(myScene->shadow);
 
-	//// **********************
-	//// Clear depth buffer bit
-	//// **********************
-	//glClear(GL_DEPTH_BUFFER_BIT);
+	// **********************
+	// Clear depth buffer bit
+	// **********************
+	glClear(GL_DEPTH_BUFFER_BIT);
 
-	//// ****************************
-	//// Set render mode to cull face
-	//// ****************************
-	//glCullFace(GL_FRONT);
+	// ****************************
+	// Set render mode to cull face
+	// ****************************
+	glCullFace(GL_FRONT);
 
-	//// Bind shader
-	//renderer::bind(*myScene->shadow_eff);
+	// Bind shader
+	renderer::bind(*myScene->shadow_eff);
 
-	//// Render meshes
-	//for (auto &e : myScene->meshes)
-	//{
-	//	auto m = e.second;
-	//	// Create MVP matrix
-	//	auto M = m.get_transform().get_transform_matrix();
-	//	// *********************************
-	//	// View matrix taken from shadow map
-	//	// *********************************
-	//	auto V = myScene->shadow.get_view();
+	// Render meshes
+	for (auto &e : myScene->list)
+	{
+		//auto m = e->mworld;
+		// Create MVP matrix
+		if (e->myType != sky)
+		{
+			auto M = e->mworld;
+			// *********************************
+			// View matrix taken from shadow map
+			// *********************************
+			auto V = myScene->shadow.get_view();
 
-	//	auto P = myScene->cam->get_projection();
-	//	auto MVP = P * V * M;
-	//	// Set MVP matrix uniform
-	//	glUniformMatrix4fv(
-	//		myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
-	//		1, // Number of values - 1 mat4
-	//		GL_FALSE, // Transpose the matrix?
-	//		value_ptr(MVP)); // Pointer to matrix data
-	//	// Render mesh
-	//	renderer::render(m);
-	//}
+			auto P = myScene->cam->get_projection();
+			auto MVP = P * V * M;
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(
+				myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
+				1, // Number of values - 1 mat4
+				GL_FALSE, // Transpose the matrix?
+				value_ptr(MVP)); // Pointer to matrix data
+			// Render mesh
+			auto m = e->m;
+			renderer::render(*m);
+		}
+	}
 
-	//// ************************************
-	//// Set render target back to the screen
-	//// ************************************
-	//renderer::set_render_target();
+	// ************************************
+	// Set render target back to the screen
+	// ************************************
+	renderer::set_render_target();
 
-	//// *********************
-	//// Set cull face to back
-	//// *********************
-	//glCullFace(GL_BACK);
+	// *********************
+	// Set cull face to back
+	// *********************
+	glCullFace(GL_BACK);
 
 	if (myScene->debug)
 	{
@@ -588,38 +608,41 @@ bool render()
 
 		renderer::render(myScene->radiusGeom);
 
+		if (myScene->fixCull)
+		{
 
-		// show view frustrum
-		generateFrustrumPlanes();
+			// show view frustrum
+			generateFrustrumPlanes();
 
-		glLineWidth(5.0f);
+			glLineWidth(5.0f);
 
-		renderer::bind(frustrumEff);
+			renderer::bind(frustrumEff);
 
-		auto MVP = VP;  // already in world position
-		glUniformMatrix4fv(
-			frustrumEff.get_uniform_location("MVP"),
-			1,
-			GL_FALSE,
-			value_ptr(MVP));
+			auto MVP = VP;  // already in world position
+			glUniformMatrix4fv(
+				frustrumEff.get_uniform_location("MVP"),
+				1,
+				GL_FALSE,
+				value_ptr(MVP));
 
-		renderer::render(m);
-
-
-		//glBegin(GL_LINES);
-		//glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
-		//glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*3.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*3.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*3.0f);
-		//glEnd();
-
-		//vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
-
-		//glBegin(GL_LINES);
-		//glVertex3f(start.x, start.y, start.z);
-		//glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
-		//glEnd();
+			renderer::render(m);
 
 
-		glLineWidth(1.0f);
+			glBegin(GL_LINES);
+			glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
+			glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*30.0f);
+			glEnd();
+
+			vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
+
+			glBegin(GL_LINES);
+			glVertex3f(start.x, start.y, start.z);
+			glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
+			glEnd();
+
+
+			glLineWidth(1.0f);
+		}
 	
 	}
 
