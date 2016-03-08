@@ -333,7 +333,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 }
 
 
-void GenerateBack::generate_lip(geometry &geom)
+void GenerateBack::generate_bar(geometry &geom)
 {
 	geom.set_type(GL_TRIANGLES);
 
@@ -383,8 +383,54 @@ void GenerateBack::generate_lip(geometry &geom)
 
 	};
 
-	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	vector<vec2> tex_coords
+	{
+		vec2(0.0f, 0.0f),
+		vec2(5.0f, 0.0f),
+		vec2(1.0, 1.0f),
 
+		vec2(1.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(5.0f, 1.0f),
+
+		vec2(5.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(6.0f, 0.0f),
+
+
+		vec2(5.0f, 1.0f),  // end on
+		vec2(6.0, 0.0f),
+		vec2(6.0f, 0.0f),
+
+
+		vec2(1.0f, 1.0f), // back side
+		vec2(5.0f, 0.0f),
+		vec2(0.0f, 0.0f),
+
+		vec2(5.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+
+		vec2(6.0f, 0.0f),
+		vec2(5.0f, 0.0f),
+		vec2(5.0f, 1.0f),
+
+
+		vec2(0.0f, 0.0f),  // end on
+		vec2(0.0, 0.0f),
+		vec2(1.0f, 1.0f),
+
+		vec2(6.0, 0.0),  			// bottom
+		vec2(0.0, 0.0),
+		vec2(0.0, 0.0),
+		vec2(0.0, 0.0),
+		vec2(6.0, 0.0),
+		vec2(6.0, 0.0),
+
+	};
+
+	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 }
 
 

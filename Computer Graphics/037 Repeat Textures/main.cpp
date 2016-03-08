@@ -15,15 +15,53 @@ bool load_content()
 {
 	// Construct geometry object
 	geometry geom;
-	geom.set_type(GL_QUADS);
+	geom.set_type(GL_TRIANGLES);
 	// Create triangle data
 	// Positions
 	vector<vec3> positions
 	{
+		vec3(0.0f, 0.0f, 1.0f),  // first side
+		vec3(5.0f, 0.0f, 1.0f),
 		vec3(1.0f, 1.0f, 0.0f),
-		vec3(-1.0f, 1.0f, 0.0f),
-		vec3(-1.0f, -1.0f, 0.0f),
-		vec3(1.0f, -1.0f, 0.0f)
+
+		vec3(1.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, 1.0f),
+		vec3(5.0f, 1.0f, 0.0f),
+
+		vec3(5.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, 1.0f),
+		vec3(6.0f, 0.0f, 1.0f),
+
+
+		vec3(5.0f, 1.0f, 0.0f),  // end on
+		vec3(6.0, 0.0f, 1.0f),
+		vec3(6.0f, 0.0f, -1.0f),
+
+
+		vec3(1.0f, 1.0f, 0.0f), // back side
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(0.0f, 0.0f, -1.0f),
+
+		vec3(5.0f, 1.0f, 0.0f),
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(1.0f, 1.0f, 0.0f),
+
+		vec3(6.0f, 0.0f, -1.0f),
+		vec3(5.0f, 0.0f, -1.0f),
+		vec3(5.0f, 1.0f, 0.0f),
+
+
+		vec3(0.0f, 0.0f, -1.0f),  // end on
+		vec3(0.0, 0.0f, 1.0f),
+		vec3(1.0f, 1.0f, 0.0f),
+
+		vec3(6.0, 0.0, 1.0),  			// bottom
+		vec3(0.0, 0.0, 1.0),
+		vec3(0.0, 0.0, -1.0),
+		vec3(0.0, 0.0, -1.0),
+		vec3(6.0, 0.0, -1.0),
+		vec3(6.0, 0.0, 1.0),
+
 	};
 	// *****************************************************
 	// Define texture coordinates for quad - remember repeat
@@ -31,10 +69,48 @@ bool load_content()
 
 	vector<vec2> tex_coords
 	{
-		vec2(2.0f, 2.0f),
-		vec2(-1.0f, 2.0f),
-		vec2(-1.0f, -1.0f),
-		vec2(2.0f, -1.0f)
+		vec2(0.0f, 0.0f),
+		vec2(5.0f, 0.0f),
+		vec2(1.0, 1.0f),
+
+		vec2(1.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(5.0f, 1.0f),
+		   
+		vec2(5.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(6.0f, 0.0f),
+		   
+		   
+		vec2(5.0f, 1.0f),  // end on
+		vec2(6.0, 0.0f),
+		vec2(6.0f, 0.0f),
+		   
+		   
+		vec2(1.0f, 1.0f), // back side
+		vec2(5.0f, 0.0f),
+		vec2(0.0f, 0.0f),
+		   
+		vec2(5.0f, 1.0f),
+		vec2(5.0f, 0.0f),
+		vec2(1.0f, 1.0f),
+		   
+		vec2(6.0f, 0.0f),
+		vec2(5.0f, 0.0f),
+		vec2(5.0f, 1.0f),
+		   
+		   
+		vec2(0.0f, 0.0f),  // end on
+		vec2(0.0, 0.0f),
+		vec2(1.0f, 1.0f),
+		   
+		vec2(6.0, 0.0),  			// bottom
+		vec2(0.0, 0.0),
+		vec2(0.0, 0.0),
+		vec2(0.0, 0.0),
+		vec2(6.0, 0.0),
+		vec2(6.0, 0.0),
+
 	};
 
 	// Add to the geometry

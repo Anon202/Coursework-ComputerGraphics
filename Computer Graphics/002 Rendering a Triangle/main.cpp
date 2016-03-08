@@ -91,43 +91,18 @@ bool load_content()
 		
 
 	};
-	// Colours
-	vector<vec4> colours
+
+	vector<vec2> tex_coords
 	{
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		vec4(1.0f, 0.0f, 0.0f, 1.0f),
-		vec4(0.0f, 1.0f, 0.0f, 1.0f),
-		vec4(0.0f, 0.0f, 1.0f, 1.0f)
+		vec2(0.0f, 0.0f),
+		vec2(5.0f, 0.0f),
+		vec2(-1.0f, -1.0f),
+		vec2(2.0f, -1.0f)
 	};
+
 	// Add to the geometry
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	geom.add_buffer(colours, BUFFER_INDEXES::COLOUR_BUFFER);
+	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 
 	// Load in shaders
 	eff.add_shader(

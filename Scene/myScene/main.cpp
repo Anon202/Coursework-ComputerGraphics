@@ -232,6 +232,14 @@ bool load_content()
 	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar3 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
+
+	geometry barGeom;
+	myScene->generator->generate_bar(barGeom);
+	myScene->meshes["bar"] = barGeom;
+
+	Obj *bar = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
+
+
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
 	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
@@ -267,8 +275,12 @@ bool load_content()
 	plat->addChild(pillarPlat2, "pillarPlat2");
 	
 	platBox->addChild(spoot, "spoot");
-	//platBox->addChild(pillarPlat, "pillarPlat1");
-	//pillarPlat->addChild(pillarPlat2, "pillarPlat2");
+	platBox->addChild(bar, "bar");
+
+
+	pillar->addChild(pillar2, "pillar2");
+
+	pillar2->addChild(pillar3, "pillar3");
 
 	box->addChild(pyra, "pyramid");
 
