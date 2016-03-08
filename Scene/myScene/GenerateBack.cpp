@@ -126,12 +126,12 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 
 	int halfWidth = height_map.get_width()/2;
 	int halfHeight = height_map.get_height()/2;
+	 
+	int start[4] =		 { 0,  halfWidth -1,     		  0, halfWidth -1 };
+	int startHeight[4] = { 0,	halfHeight, 	halfHeight,		    0 };
 
-	int start[4] = { 0, halfWidth, 0, halfWidth };
-	int startHeight[4] = { 0, halfHeight, halfHeight, 0 };
-
-	int end[4] = { halfWidth, halfWidth * 2, halfWidth, halfWidth *2 };
-	int endHeight[4] = { halfHeight, halfHeight * 2, halfHeight *2 , halfHeight };
+	int end[4] =		{ halfWidth,  halfWidth * 2,	  halfWidth, halfWidth *2 };
+	int endHeight[4] = { halfHeight, halfHeight * 2,  halfHeight *2,   halfHeight };
 
 	for (int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
 	{
@@ -246,9 +246,29 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		// *********************************************
 		// Part 3 - Add texture coordinates for geometry
 		// *********************************************
-		for (unsigned int x = 0; x < halfWidth; ++x)
+		int incrementX = 0;
+		int incrementY = 0;
+
+		//if (j == 0)
+		//{
+		//	incrementY++;// = 0;
+		//}
+		if (j == 1)
 		{
-			for (unsigned int z = 0; z < halfHeight; ++z)
+			incrementX++;
+		}
+		else if (j == 2)
+		{
+			
+		}
+		else if (j == 3)
+		{
+			incrementX++;
+		}
+		
+		for (unsigned int x = 0; x < halfWidth + incrementX; ++x)
+		{
+			for (unsigned int z = 0; z < halfHeight + incrementY; ++z)
 			{
 				vec2 v;
 				v.x = width_point * x;
