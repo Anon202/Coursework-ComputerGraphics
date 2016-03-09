@@ -26,6 +26,7 @@ public:
 		cubemap &cube_map,
 		float skyNum);
 
+	void generate_pane(geometry &geom);
 	void generate_bar(geometry &geom);
 };
 

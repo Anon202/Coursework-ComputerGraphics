@@ -23,6 +23,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	{
 		R = rotate(mat4(1.0f), theta, rot);
 	}
+
 	
 	mat4 S = scale(mat4(1.0f), scal);
 
@@ -87,10 +88,9 @@ vec4 Obj::getWorldPos()
 	if (myType == terrn)
 	{
 		pos = vec4(centreT, 1.0);
-		return pos;
 	}
 
-	if (myType == object || myType == spotty)
+	if (myType == object || myType == spotty || myType == terrn)
 	{
 		pos = mworld * pos;
 	}
@@ -129,6 +129,7 @@ void Obj::update(Obj* parent, float delta_time)
 	{
 		mat4 rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
 		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+
 		mworld *= rotationMatrix;
 		
 		angleIncrement += theta * delta_time;
@@ -221,11 +222,9 @@ void Obj::calculateSphere()
 		float curLen = length(p);
 		if (curLen > largest)
 		{
-			largest = curLen;
+			furthestPoint = p;
 		}
 	}
-
-	radius = largest;
 
 
 }

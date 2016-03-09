@@ -131,9 +131,15 @@ bool load_content()
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(1.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
+	geometry glassP;
+	myScene->generator->generate_pane(glassP);
+	myScene->meshes["glass"] = mesh(glassP);
+
+	myScene->materials["glass"].set_diffuse(vec4(0.0, 0.0, 0.0, 1.0));
+
 
 	// create torus geom for difference between gouraud and phong
-	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(100, 100));
+	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
 	myScene->materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
 
 	for (auto &e : myScene->materials)
@@ -169,9 +175,10 @@ bool load_content()
 	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	
-	myScene->list.push_back(terrain1);
+	
 	myScene->list.push_back(terrain2);
 	myScene->list.push_back(terrain3);
+	myScene->list.push_back(terrain1);
 	myScene->list.push_back(terrain4);
 
 	for (int i = 0; i < 4; ++i)
@@ -234,9 +241,8 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\shadowPart.frag");
 
 
-	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), pi<float>(), vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
-
 
 	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -253,24 +259,25 @@ bool load_content()
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
 	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
-
+	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
 	Obj *ball = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 	myScene->lightList[1]->set_position(myScene->meshes["ball"].get_transform().position);
 
 
-	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadeff, object);
-	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, shadeff, object);
+	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
+	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
 
-	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadeff, object);
+	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
 	
+	Obj *glassPane = new Obj(vec3(-100.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], platText, eff, glassOb);
 
-	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
-	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
+	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	
 	
-	Obj *spoot = new Obj(vec3(-35.0, 50.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, shadeff, spotty);
+	Obj *spoot = new Obj(vec3(-35.0, 50.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);
 
 	terrain1->addChild(box, "box");
 	terrain1->addChild(pillar, "pillar");
@@ -283,6 +290,7 @@ bool load_content()
 	plat->addChild(platBox, "platBox");
 	plat->addChild(pillarPlat, "pillarPlat");
 	plat->addChild(pillarPlat2, "pillarPlat2");
+	plat->addChild(glassPane, "glassPlane");
 	
 	platBox->addChild(spoot, "spoot");
 	//platBox->addChild(bar, "bar");
@@ -313,6 +321,7 @@ bool load_content()
 	myScene->list.push_back(spoot);
 	myScene->list.push_back(sphereG);
 	myScene->list.push_back(sphereP);
+	myScene->list.push_back(glassPane);
 
 	myScene->lightObjects.push_back(spoot);
 
@@ -546,58 +555,58 @@ void generateFrustrumPlanes()
 
 bool render()
 {
-	// render shadow map.
-	renderer::set_render_target(myScene->shadow);
+	//// render shadow map.
+	//renderer::set_render_target(myScene->shadow);
 
-	// **********************
-	// Clear depth buffer bit
-	// **********************
-	glClear(GL_DEPTH_BUFFER_BIT);
+	//// **********************
+	//// Clear depth buffer bit
+	//// **********************
+	//glClear(GL_DEPTH_BUFFER_BIT);
 
-	// ****************************
-	// Set render mode to cull face
-	// ****************************
-	glCullFace(GL_FRONT);
+	//// ****************************
+	//// Set render mode to cull face
+	//// ****************************
+	//glCullFace(GL_FRONT);
 
-	// Bind shader
-	renderer::bind(*myScene->shadow_eff);
+	//// Bind shader
+	//renderer::bind(*myScene->shadow_eff);
 
-	// Render meshes
-	for (auto &e : myScene->list)
-	{
-		//auto m = e->mworld;
-		// Create MVP matrix
-		if (e->myType != sky)
-		{
-			auto M = e->mworld;
-			// *********************************
-			// View matrix taken from shadow map
-			// *********************************
-			auto V = myScene->shadow.get_view();
+	//// Render meshes
+	//for (auto &e : myScene->list)
+	//{
+	//	//auto m = e->mworld;
+	//	// Create MVP matrix
+	//	if (e->myType != sky)
+	//	{
+	//		auto M = e->mworld;
+	//		// *********************************
+	//		// View matrix taken from shadow map
+	//		// *********************************
+	//		auto V = myScene->shadow.get_view();
 
-			auto P = myScene->cam->get_projection();
-			auto MVP = P * V * M;
-			// Set MVP matrix uniform
-			glUniformMatrix4fv(
-				myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
-				1, // Number of values - 1 mat4
-				GL_FALSE, // Transpose the matrix?
-				value_ptr(MVP)); // Pointer to matrix data
-			// Render mesh
-			auto m = e->m;
-			renderer::render(*m);
-		}
-	}
+	//		auto P = myScene->cam->get_projection();
+	//		auto MVP = P * V * M;
+	//		// Set MVP matrix uniform
+	//		glUniformMatrix4fv(
+	//			myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
+	//			1, // Number of values - 1 mat4
+	//			GL_FALSE, // Transpose the matrix?
+	//			value_ptr(MVP)); // Pointer to matrix data
+	//		// Render mesh
+	//		auto m = e->m;
+	//		renderer::render(*m);
+	//	}
+	//}
 
-	// ************************************
-	// Set render target back to the screen
-	// ************************************
-	renderer::set_render_target();
+	//// ************************************
+	//// Set render target back to the screen
+	//// ************************************
+	//renderer::set_render_target();
 
-	// *********************
-	// Set cull face to back
-	// *********************
-	glCullFace(GL_BACK);
+	//// *********************
+	//// Set cull face to back
+	//// *********************
+	//glCullFace(GL_BACK);
 
 	if (myScene->debug)
 	{
@@ -617,6 +626,7 @@ bool render()
 
 
 		renderer::bind(*myScene->rad_eff);
+	
 
 		auto V = myScene->cam->get_view();
 		auto P = myScene->cam->get_projection();
@@ -630,6 +640,8 @@ bool render()
 
 
 		renderer::render(myScene->radiusGeom);
+		
+	
 
 		if (myScene->fixCull)
 		{
