@@ -94,7 +94,7 @@ void addToBuffers(geometry &currentGeom, vector<vec3> &positions, vector<unsigne
 	currentGeom.add_buffer(tex_weights, BUFFER_INDEXES::TEXTURE_COORDS_1);
 }
 
-void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale)
+void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &height_map, unsigned int width, unsigned int depth, float height_scale, vector<vec3> &centre)
 {
 	// Contains our position data
 	vector<vec3> positions;
@@ -106,6 +106,8 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	vector<vec4> tex_weights;
 	// Contains our index data
 	vector<unsigned int> indices;
+
+	//vector<vec3> centre;
 
 	geometry geomTemp[4];  // temporary geometry values
 
@@ -128,10 +130,10 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	int halfHeight = height_map.get_height()/2;
 	 
 	int start[4] =		 { 0,  halfWidth -1,     		  0, halfWidth -1 };
-	int startHeight[4] = { 0,	halfHeight, 	halfHeight,		    0 };
+	int startHeight[4] = { 0,	halfHeight -1 , 	 halfHeight -1,		    0 };
 
 	int end[4] =		{ halfWidth,  halfWidth * 2,	  halfWidth, halfWidth *2 };
-	int endHeight[4] = { halfHeight, halfHeight * 2,  halfHeight *2,   halfHeight };
+	int endHeight[4] = { halfHeight, (halfHeight * 2) -1,  (halfHeight *2) -1,   halfHeight};
 
 	for (int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
 	{
@@ -170,9 +172,9 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		// ***********************
 		// Part 1 - Add index data
 		// ***********************
-		for (unsigned int x = 0; x < halfWidth -1; ++x)
+		for (unsigned int x = 0; x < halfWidth -1 ; ++x)
 		{
-			for (unsigned int y = 0; y < halfHeight - 1; ++y)
+			for (unsigned int y = 0; y < halfHeight -1 ; ++y)
 			{
 				// *************************
 				// Get four corners of patch
@@ -180,7 +182,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 				int top_left = (y * halfWidth) + x;
 				int top_right = (y * halfWidth) + x + 1;
 				int bottom_left = ((y + 1)*halfWidth) + x;
-				int bottom_right = ((y + 1)*halfHeight) + x + 1;
+				int bottom_right = ((y + 1)*halfWidth) + x + 1;
 
 				// ********************************
 				// Push back indices for triangle 1
@@ -198,6 +200,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 
 			}
 		}
+
 
 		// Resize the normals buffer
 		normals.resize(positions.size());
@@ -249,17 +252,14 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		int incrementX = 0;
 		int incrementY = 0;
 
-		//if (j == 0)
-		//{
-		//	incrementY++;// = 0;
-		//}
+
 		if (j == 1)
 		{
 			incrementX++;
 		}
 		else if (j == 2)
 		{
-			
+	//		incrementY++;
 		}
 		else if (j == 3)
 		{
@@ -312,6 +312,14 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		
 		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);  // add buffers to geometry
 		
+
+		vec3 tl = positions.at(0);
+		vec3 tr = positions.at(256);
+		vec3 bl = positions.at(positions.size() - 257);
+		vec3 br = positions.at(positions.size()-1);
+
+		centre.push_back((tl + tr + bl + br) * 0.25f);
+
 		// clear vectors for next pass
 		positions.clear();
 		normals.clear();

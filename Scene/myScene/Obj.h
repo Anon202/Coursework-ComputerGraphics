@@ -29,7 +29,7 @@ class Obj
 	string				myName;
 	vec3 rotV;
 	
-
+	vec3 centreT;
 public:
 	vec3				cent;    // to create bounding spheres
 	mat4				mworld;
@@ -65,6 +65,8 @@ public:
 	vec4  getWorldPos();
 	float getRadius();
 	void  setName(string name);
+
+	void setCenterTerr(vec3 cent);
 
 	~Obj() { }
 

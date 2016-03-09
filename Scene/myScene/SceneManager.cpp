@@ -54,8 +54,8 @@ void SceneManager::Create()
 	spot_light *spot = new spot_light;
 	spot->set_direction(normalize(vec3(-1, 0, 0)));
 	spot->set_light_colour(vec4(1.0, 1.0, 0.0, 1.0));
-	spot->set_range(200);
-	spot->set_power(50);
+	spot->set_range(50);
+	spot->set_power(10);
 	Light* spotPtr = spot;
 	lightList.push_back(spotPtr);
 

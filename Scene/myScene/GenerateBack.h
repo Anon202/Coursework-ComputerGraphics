@@ -18,7 +18,8 @@ public:
 		const texture &height_map,
 		unsigned int width,
 		unsigned int depth,
-		float height_scale);
+		float height_scale,
+		vector<vec3> &centre);
 
 	void generate_skybox(
 		mesh &skybox,

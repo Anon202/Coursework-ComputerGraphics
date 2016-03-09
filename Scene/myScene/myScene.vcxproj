@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GenerateBack.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Obj.h" />
     <ClInclude Include="SceneManager.h" />

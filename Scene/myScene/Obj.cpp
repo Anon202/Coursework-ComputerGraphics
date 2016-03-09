@@ -74,10 +74,21 @@ void Obj::setName(string name)
 	myName = name;
 }
 
+void Obj::setCenterTerr(vec3 cent)
+{
+	centreT = cent;
+}
+
+
 vec4 Obj::getWorldPos()
 {
 	vec4 pos = vec4(m->get_transform().position, 1.0);
 
+	if (myType == terrn)
+	{
+		pos = vec4(centreT, 1.0);
+		return pos;
+	}
 
 	if (myType == object || myType == spotty)
 	{
@@ -93,7 +104,7 @@ float Obj::getRadius()
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 
 	radius = abs(length(scale*furthestPoint));
-
+	radius *= 1.1; // add a little more room
 	return radius;
 }
 
@@ -163,7 +174,7 @@ void Obj::intersection()
 			vec3 pointOnPlane;
 
 			if (i < 3)
-				pointOnPlane = myScene->planePoints[ftl];
+				pointOnPlane = myScene->planePoints[ftl];		// first three planes are far, top and left therefore corner is in all three
 			else
 				pointOnPlane = myScene->planePoints[nbr];
 
@@ -172,7 +183,7 @@ void Obj::intersection()
 			float d;
 			d = dot(myScene->planeNormals[i], centre - pointOnPlane);
 
-			if (d < -radius)
+			if (d < - getRadius())
 			{
 				cout << "CULLING! " << this->myName << endl;
 				visible = false;
@@ -211,7 +222,6 @@ void Obj::calculateSphere()
 		if (curLen > largest)
 		{
 			largest = curLen;
-			furthestPoint = p;
 		}
 	}
 
@@ -280,18 +290,18 @@ void Obj::render()
 			value_ptr(N));
 
 
-		auto T = glm::translate(mat4(1.0f), myScene->lightList[2]->get_position());
-		auto R = glm::mat4_cast(glm::quat(myScene->lightList[2]->get_direction()));
-		auto matrix = T * R;
-		auto lV = myScene->shadow.get_view();
+		//auto T = glm::translate(mat4(1.0f), myScene->lightList[2]->get_position());
+		//auto R = glm::mat4_cast(glm::quat(myScene->lightList[2]->get_direction()));
+		//auto matrix = T * R;
+		//auto lV = myScene->shadow.get_view();
 
-		auto lMVP = P * lV * matrix;
-			
-		glUniformMatrix4fv(
-			eff->get_uniform_location("lightMVP"),
-			1,
-			GL_FALSE,
-			value_ptr(lMVP));
+		//auto lMVP = P * lV * matrix;
+		//	
+		//glUniformMatrix4fv(
+		//	eff->get_uniform_location("lightMVP"),
+		//	1,
+		//	GL_FALSE,
+		//	value_ptr(lMVP));
 	
 
 		if (waterObj)  // water flag to assign uniform moving water!
@@ -332,7 +342,7 @@ void Obj::render()
 			}
 		}
 
-		renderer::bind(myScene->shadow.buffer->get_depth(), 1);
+		//renderer::bind(myScene->shadow.buffer->get_depth(), 1);
 
 
 		if (myType == sky)

@@ -72,12 +72,13 @@ bool load_content()
 	// CREATE TERRAIN
 
 	vector<geometry> terrainBlocks;
+	vector<vec3> centres;
 	
 	// Load height map
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMapNEW.png");
 
 	// Generate terrain
-	myScene->generator->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f);
+	myScene->generator->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f, centres);
 
 	// create terrain object
 	// Use geometry to create terrain 
@@ -167,7 +168,16 @@ bool load_content()
 	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);	
 	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
+	
+	myScene->list.push_back(terrain1);
+	myScene->list.push_back(terrain2);
+	myScene->list.push_back(terrain3);
+	myScene->list.push_back(terrain4);
 
+	for (int i = 0; i < 4; ++i)
+	{
+		myScene->list.at(i)->setCenterTerr(centres[i]);
+	}
 
 	vector<texture*> sphereText;
 	sphereText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
@@ -256,7 +266,7 @@ bool load_content()
 	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadeff, object);
 	
 
-	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 250.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
+	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
 	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadeff, object);
 	
 	
@@ -275,7 +285,7 @@ bool load_content()
 	plat->addChild(pillarPlat2, "pillarPlat2");
 	
 	platBox->addChild(spoot, "spoot");
-	platBox->addChild(bar, "bar");
+	//platBox->addChild(bar, "bar");
 
 
 	pillar->addChild(pillar2, "pillar2");
@@ -337,15 +347,12 @@ bool load_content()
 	skybx2->addChild(terrain4, "terrain4");
 	myScene->list.push_back(myScene->skybx);
 
-	myScene->list.push_back(terrain1);
-	myScene->list.push_back(terrain2);
-	myScene->list.push_back(terrain3);
-	myScene->list.push_back(terrain4);
+	
 
 	// create a new shadow effect
 	effect *shadow_effect = new effect;
-	shadow_effect->add_shader("..\\resources\\shaders\\phong.vert", GL_VERTEX_SHADER);
-	shadow_effect->add_shader("..\\resources\\shaders\\phong.frag", GL_FRAGMENT_SHADER);
+	shadow_effect->add_shader("..\\resources\\shaders\\spot.vert", GL_VERTEX_SHADER);
+	shadow_effect->add_shader("..\\resources\\shaders\\spot.frag", GL_FRAGMENT_SHADER);
 	shadow_effect->build();
 	myScene->shadow_eff = shadow_effect;
 	myScene->effectList.push_back(shadow_effect);
@@ -376,9 +383,11 @@ bool update(float delta_time)
 {
 	//vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
 	
-	
+	myScene->lightList[2]->set_position(vec3(myScene->lightObjects.at(0)->getWorldPos()));
 	//->get_direction();  /// ???
+	auto lpos = myScene->lightList[2]->get_position();
 	myScene->shadow.light_position = myScene->lightList[2]->get_position();
+	auto ldir = myScene->lightList[2]->get_direction();
 	myScene->shadow.light_dir = myScene->lightList[2]->get_direction();
 
 	// Press s to save
@@ -482,8 +491,10 @@ bool update(float delta_time)
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
-	myScene->lightList[2]->set_position(vec3(myScene->lightObjects.at(0)->getWorldPos()));
+	
 
+	//if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))
+	//	cout << "Terrain 1 pos: " << myScene->list.at(myScene->list.size() - 3)->getWorldPos() << endl;
 
     return true;
 }
@@ -598,6 +609,7 @@ bool render()
 			radii.push_back(c->getRadius());
 			vec3 centre = vec3(c->getWorldPos());
 			positions.push_back(centre);  // get centre positions
+
 		}
 
 		myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
