@@ -38,6 +38,7 @@ public:
 	vector<effect*> effectList;
 
 	vector<Obj*> list;
+	vector<Obj*> transparentObjects;
 
 	vector<Obj*> lightObjects;
 

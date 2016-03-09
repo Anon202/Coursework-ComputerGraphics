@@ -59,6 +59,7 @@ public:
 	void update(Obj* parent, float time);
 
 	void render();
+	void renderGlass();
 
 	void addChild(Obj* child, string name);
 

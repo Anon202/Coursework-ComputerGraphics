@@ -133,9 +133,9 @@ bool load_content()
 
 	geometry glassP;
 	myScene->generator->generate_pane(glassP);
-	myScene->meshes["glass"] = mesh(glassP);
+	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 3.0, 1.0)));// mesh(glassP);
 
-	myScene->materials["glass"].set_diffuse(vec4(0.0, 0.0, 0.0, 1.0));
+	myScene->materials["glass"].set_diffuse(vec4(1.0, 0.0, 0.0, 1.0));
 
 
 	// create torus geom for difference between gouraud and phong
@@ -196,6 +196,10 @@ bool load_content()
 	myScene->texList.push_back(objTextList);
 
 
+	vector<texture*> glassText;
+	glassText.push_back(new texture("..\\resources\\textures\\blending_transparent_window.png"));
+	myScene->texList.push_back(glassText);
+
 	vector<texture*> waterText;
 	waterText.push_back(new texture("..\\resources\\textures\\water.jpg"));
 
@@ -241,6 +245,13 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\shadowPart.frag");
 
 
+	effect *glassEff = myScene->createEffect(
+		"..\\resources\\shaders\\glass.vert",
+		"..\\resources\\shaders\\glass.frag",
+		NULL,
+		NULL);
+
+
 	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
@@ -271,7 +282,7 @@ bool load_content()
 
 	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
 	
-	Obj *glassPane = new Obj(vec3(-100.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], platText, eff, glassOb);
+	Obj *glassPane = new Obj(vec3(-100.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, glassEff, glassOb);
 
 	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
@@ -322,6 +333,8 @@ bool load_content()
 	myScene->list.push_back(sphereG);
 	myScene->list.push_back(sphereP);
 	myScene->list.push_back(glassPane);
+
+	myScene->transparentObjects.push_back(glassPane);
 
 	myScene->lightObjects.push_back(spoot);
 
@@ -685,6 +698,8 @@ bool render()
 
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
+
+	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 
     return true;
 }

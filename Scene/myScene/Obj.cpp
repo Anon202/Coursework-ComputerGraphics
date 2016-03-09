@@ -90,10 +90,13 @@ vec4 Obj::getWorldPos()
 		pos = vec4(centreT, 1.0);
 	}
 
-	if (myType == object || myType == spotty || myType == terrn)
+	if (myType == pointLightObj)
 	{
-		pos = mworld * pos;
+		return pos;
 	}
+	
+	pos = mworld * pos;
+	
 
 	return pos;
 
@@ -186,7 +189,7 @@ void Obj::intersection()
 
 			if (d < - getRadius())
 			{
-				cout << "CULLING! " << this->myName << endl;
+				//cout << "CULLING! " << this->myName << endl;
 				visible = false;
 				break;
 			}
@@ -236,12 +239,107 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
+void Obj::renderGlass()
+{
+	extern SceneManager* myScene;
+
+	camera* cam = myScene->cam;			 // camera pointer 
+
+	// get matrices + eye postion from the camera
+	mat4 P = cam->get_projection();
+	mat4 V = cam->get_view();
+	vec3 eyeP = cam->get_position();
+
+	mat3 N = normalMatrix;  // object has own normalMatrix taken from the rotation from its model matrix
+
+	// calculate MVP from world
+	auto MVP = P * V * mworld;
+
+	glEnable(GL_BLEND);									 // enable blend for transparency
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Bind the effect
+	renderer::bind(*eff);
+
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(
+		eff->get_uniform_location("MVP"), // Location of uniform
+		1,									    // Number of values - 1 mat4
+		GL_FALSE,							    // Transpose the matrix?
+		value_ptr(MVP));						// Pointer to matrix data
+
+
+	// Set M matrix Uniform
+	glUniformMatrix4fv(
+		eff->get_uniform_location("M"),
+		1,
+		GL_FALSE,
+		value_ptr(mworld));
+
+	// Set 3x3 normal matrix from mesh
+	glUniformMatrix3fv(
+		eff->get_uniform_location("N"),
+		1,
+		GL_FALSE,
+		value_ptr(N));
+
+	// Bind Materials/lights/texture
+	renderer::bind(*mat, "mat");
+
+	// cast light to correct type to call render bind
+	for (auto &e : myScene->lightList)
+	{
+		directional_light *myLight = dynamic_cast<directional_light*>(e);
+		if (myLight != NULL)
+		{
+			renderer::bind(*myLight, "light");
+		}
+		else
+		{
+			point_light *pointLight = dynamic_cast<point_light*>(e);
+			if (pointLight != NULL)
+			{
+				renderer::bind(*pointLight, "point");
+			}
+			else
+			{
+
+				spot_light *spotLight = dynamic_cast<spot_light*>(e);
+				if (spotLight != NULL)
+				{
+					renderer::bind(*spotLight, "spot");
+				}
+			}
+		}
+	}
+
+
+	for (uint i = 0; i < tex.size(); ++i)  // bind every texture from object's list
+	{
+		renderer::bind(*tex[i], i);
+		stringstream stream;
+		stream << "tex[" << i << "]";
+
+		glUniform1i(eff->get_uniform_location(stream.str()), i);
+	}
+
+	// set eye position (from active camera)
+	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+
+	// render mesh
+	renderer::render(*m);
+
+	//glDisable(GL_BLEND);									 // enable blend for transparency
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+}
+
 void Obj::render()
 {
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-	if (visible)
+	if (visible && myType != glassOb)
 	{
 		extern SceneManager* myScene;
 
@@ -262,6 +360,7 @@ void Obj::render()
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
 		}
+	
 
 		// Bind the effect
 		renderer::bind(*eff);
@@ -395,4 +494,5 @@ void Obj::render()
 	}
 
 
+	
 }
