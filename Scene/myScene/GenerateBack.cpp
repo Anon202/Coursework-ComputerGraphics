@@ -398,9 +398,9 @@ void GenerateBack::generate_bar(geometry &geom)
 		vec2(6.0f, 0.0f),
 
 
-		vec2(5.0f, 1.0f),  // end on
-		vec2(6.0, 0.0f),
-		vec2(6.0f, 0.0f),
+		vec2(1.0f, 1.0f),  // end on
+		vec2(0.0, 0.0f),
+		vec2(2.0f, 0.0f),
 
 
 		vec2(1.0f, 1.0f), // back side
@@ -416,11 +416,11 @@ void GenerateBack::generate_bar(geometry &geom)
 		vec2(5.0f, 1.0f),
 
 
-		vec2(0.0f, 0.0f),  // end on
+		vec2(2.0f, 0.0f),  // end on
 		vec2(0.0, 0.0f),
 		vec2(1.0f, 1.0f),
 
-		vec2(6.0, 0.0),  			// bottom
+		vec2(6.0, 0.0),    // bottom
 		vec2(0.0, 0.0),
 		vec2(0.0, 0.0),
 		vec2(0.0, 0.0),
@@ -429,8 +429,22 @@ void GenerateBack::generate_bar(geometry &geom)
 
 	};
 
+	vector<vec3> normals;
+
+	for (unsigned int i = 0; i < 30; i += 3)
+	{
+		// Calculate normal from position data
+		auto v1 = positions[i + 1] - positions[i];
+		auto v2 = positions[i + 2] - positions[i];
+		auto norm = glm::normalize(glm::cross(v1, v2));
+		// Add to normals
+		for (unsigned int j = 0; j < 3; ++j)
+			normals.push_back(norm);
+	}
+
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
 }
 
 

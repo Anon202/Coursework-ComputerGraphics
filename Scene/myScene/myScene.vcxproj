@@ -100,6 +100,7 @@
     <None Include="normShader.vert" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
+    <None Include="shadowShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GenerateBack.h" />
