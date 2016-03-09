@@ -19,7 +19,10 @@ void main()
 	colour = texture(cubemap, tex_coord);
 	if (transparency == 0)
 	{
-		colour.a = 0.5f;
+	   if (colour.a < 0.01)
+	   {
+		 discard; // yes: discard this fragment
+	   }
 	}
 	else
 	{	
