@@ -148,6 +148,7 @@ void SceneManager::calculateFrustrum()
 }
 
 
+
 SceneManager::~SceneManager()
 {
 

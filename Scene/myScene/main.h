@@ -8,8 +8,3 @@
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
-
-class main
-{
-	SceneManager myScene;
-};

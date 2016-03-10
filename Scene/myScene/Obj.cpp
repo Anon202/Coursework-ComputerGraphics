@@ -8,9 +8,6 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff, float myType)
 {
-	if (myType == pointLightObj)
-		pos = me->get_transform().position;
-
 	mat4 T = translate(mat4(1.0f), pos);
 
 	mat4 R;
@@ -91,15 +88,9 @@ vec4 Obj::getWorldPos()
 	{
 		pos = vec4(centreT, 1.0);
 	}
-
-	if (myType == pointLightObj)
-	{
-		return pos;
-	}
 	
 	pos = mworld * pos;
 	
-
 	return pos;
 
 }
@@ -159,6 +150,7 @@ void Obj::update(Obj* parent, float delta_time)
 
 	
 }
+
 
 
 

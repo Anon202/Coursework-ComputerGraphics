@@ -105,7 +105,6 @@ bool load_content()
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
 	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
-	myScene->meshes["ball"].get_transform().position = (vec3(250, 35, -400));
 	myScene->materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
@@ -273,9 +272,7 @@ bool load_content()
 	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(0.0, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	myScene->lightList[1]->set_position(myScene->meshes["ball"].get_transform().position);
-
+	Obj *ball = new Obj(vec3(250, 35, -400), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 
 	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
 	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
@@ -304,7 +301,7 @@ bool load_content()
 	plat->addChild(glassPane, "glassPlane");
 	
 	platBox->addChild(spoot, "spoot");
-	//platBox->addChild(bar, "bar");
+	platBox->addChild(bar, "bar");
 
 
 	pillar->addChild(pillar2, "pillar2");
@@ -336,7 +333,9 @@ bool load_content()
 
 	myScene->transparentObjects.push_back(glassPane);
 
+	myScene->lightObjects.push_back(ball);
 	myScene->lightObjects.push_back(spoot);
+
 
     // ******************************
     // Create box geometry for skybox
@@ -401,11 +400,20 @@ bool load_content()
     return true;
 }
 
+void updateLightPositions()
+{
+	// int starting at 1 as directional light is the first light in the list
+	for (unsigned int i = 1; i < myScene->lightList.size(); ++i)
+	{
+		myScene->lightList[i]->set_position(vec3(myScene->lightObjects[i-1]->getWorldPos()));
+	}
+}
+
 bool update(float delta_time)
 {
 	//vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
-	
-	myScene->lightList[2]->set_position(vec3(myScene->lightObjects.at(0)->getWorldPos()));
+	updateLightPositions();
+	//myScene->lightList[2]->set_position(vec3(myScene->);
 	//->get_direction();  /// ???
 	auto lpos = myScene->lightList[2]->get_position();
 	myScene->shadow.light_position = myScene->lightList[2]->get_position();
@@ -567,6 +575,8 @@ void generateFrustrumPlanes()
 	m = mesh(myScene->frustrumGeom);
 
 }
+
+
 
 bool render()
 {
