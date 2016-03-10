@@ -682,19 +682,24 @@ bool render()
 
 			renderer::render(m);
 
+			vec3 midNear = (myScene->planePoints[ntl] + myScene->planePoints[ntr]) * vec3(0.5, 0.5, 0.5);
+
 
 			glBegin(GL_LINES);
-			glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
-			glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*30.0f);
+			glVertex3f(midNear.x, midNear.y, midNear.z);
+			glVertex3f(midNear.x + myScene->planeNormals[nearN].x*3.0f, midNear.y + myScene->planeNormals[nearN].y*3.0f, midNear.z + myScene->planeNormals[nearN].z*3.0f);
+
+			//glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
+			//glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*30.0f);
 			glEnd();
 
 			vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
 
-			glBegin(GL_LINES);
+			/*glBegin(GL_LINES);
 			glVertex3f(start.x, start.y, start.z);
 			glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
 			glEnd();
-
+*/
 
 			glLineWidth(1.0f);
 		}

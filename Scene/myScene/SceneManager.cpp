@@ -93,7 +93,7 @@ void SceneManager::calculateFrustrum()
 	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
 
 	//near plane
-	float fov = 2.414f;
+	float fov =2.414;
 	float near = 0.1f;
 	float far = 1000.f;
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
@@ -132,12 +132,12 @@ void SceneManager::calculateFrustrum()
 	planeNormals[farN] = -lookAt;
 
 	// Calculate the left and right planes (cross product to get the normals of the triangles and a point on the planes)
-	planeNormals[leftN] = cross(up, (planePoints[fbl] - planePoints[nbl])); 
-	planeNormals[rightN] = -cross(up, (planePoints[fbl] - planePoints[nbl]));
+	planeNormals[leftN] = cross(up, normalize(planePoints[fbl] - planePoints[nbl])); 
+	planeNormals[rightN] = -cross(up, normalize(planePoints[fbl] - planePoints[nbl]));
 
 	// Calculate the top and bottom planes (similar to the left and right)
-	planeNormals[topN] = cross(-right, (planePoints[ntr] - planePoints[ftr]));
-	planeNormals[bottN] = cross(-right, (planePoints[fbr] - planePoints[nbr]));
+	planeNormals[topN] = cross(-right, normalize(planePoints[ntr] - planePoints[ftr]));
+	planeNormals[bottN] = cross(-right, normalize(planePoints[fbr] - planePoints[nbr]));
 
 	// normalise normals
 	for (int i = 0; i < 6; ++i)

@@ -76,7 +76,7 @@ void Obj::setCenterTerr(vec3 cent)
 {
 	centreT = cent;
 
-	furthestPoint = centreT;
+	furthestPoint = centreT * vec3(0.7, 0.7, 0.7);
 }
 
 
@@ -172,9 +172,13 @@ void Obj::intersection()
 			vec3 pointOnPlane;
 
 			if (i < 3)
+			{
 				pointOnPlane = myScene->planePoints[ftl];		// first three planes are far, top and left therefore corner is in all three
+			}
 			else
+			{
 				pointOnPlane = myScene->planePoints[nbr];
+			}
 
 			vec3 centre = vec3(getWorldPos());
 
