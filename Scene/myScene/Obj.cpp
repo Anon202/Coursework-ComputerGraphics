@@ -8,33 +8,27 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	mesh* me, material* mate, vector<texture*> texture,
 	effect* eff, float myType)
 {
-	mat4 T = translate(mat4(1.0f), pos);
-
-	mat4 R;
-
-	if (rot == vec3(0.0, 0.0, 0.0))  // if no rotation is given R is just identity matrix
-	{
-		R = mat4(1.0f);
-	}
-	else
-	{
-		R = rotate(mat4(1.0f), theta, rot);
-	}
-
-	
-	mat4 S = scale(mat4(1.0f), scal);
-
-	mat4 trans = T * (R* S);
-
-	this->mlocal = trans;		// initial local m
 	this->m = me;
 	this->mat = mate;
 	this->eff = eff;
 	this->myType = myType;
 	this->tex = texture;
 	this->theta = theta;
-	this->rotV = rot;
-	this->normalMatrix = mat3(R);  // normal matrix is top corner of model matrix (it's orentation)
+	this->rotVect = rot;
+	this->translation = pos;
+	this->scaleVect = scal;
+
+	mat4 trans = translate(mat4(1.0f), translation);
+	mat4 rotat;
+	
+	if (rot == vec3(0, 0, 0))
+	{
+		rotat = rotate(mat4(1.0f), angleIncrement, rotVect);
+	}
+
+	mat4 scaleM = scale(mat4(1.0f), scaleVect);
+
+	this->mlocal = trans * rotat * scaleM;
 
 	visible = true;
 	
@@ -58,7 +52,7 @@ Obj::Obj(vec3 rot, float theta, vec3 scal,
 	this->myType = sky;
 	this->myCubemap = skybox;
 	this->theta = theta;
-	this->rotV = rot;
+	this->rotVect = rot;
 
 	visible = true;
 
@@ -76,12 +70,15 @@ void Obj::setCenterTerr(vec3 cent)
 {
 	centreT = cent;
 
-	furthestPoint = centreT * vec3(0.7, 0.7, 0.7);
+	furthestPoint = centreT;
 }
 
 
 vec4 Obj::getWorldPos()
 {
+	// gets the world postion of the center of an object, if terrain use it's centre, otherwise use the mesh positon
+
+
 	vec4 pos = vec4(m->get_transform().position, 1.0);
 
 	if (myType == terrn)
@@ -110,32 +107,53 @@ void Obj::update(Obj* parent, float delta_time)
 
 	extern SceneManager* myScene;  // used to get camera transform
 
-	mworld = mlocal;
-
 	if (myType == sky)
 	{
 		mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
 
-		mat4 rotation = rotate(mat4(1.0f), angleIncrement, rotV);
+		mat4 rotation = rotate(mat4(1.0f), angleIncrement, rotVect);
 		angleIncrement += theta * delta_time * 0.01f;   // increment theta over time
 
-		mworld = trans * rotation * mworld;
+		mat4 scal = scale(mat4(1.0f), scaleVect);
+		mworld = trans * rotation * mlocal;
 	}
-	else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
+	else
 	{
-		mat4 rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
+		mat4 trans = translate(mat4(1.0f), translation);
+		mat4 rotationMatrix = mat4(1.0f);
+
+		if (rotVect != vec3(0, 0, 0))
+		{
+			rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
+		}
+
+		mat4 scal = scale(mat4(1.0f), scaleVect);
+
+		mlocal = trans * rotationMatrix * scal;
 		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
 
-		mworld *= rotationMatrix;
-		
 		angleIncrement += theta * delta_time;
-
 	}
+
+	
+	mworld = mlocal;
+	//mat4 rotationMatrix = mat4(1.0f);
+
+
+	//else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
+	//{
+	//	rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
+	//	normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+	//	
+	//	mworld *= rotationMatrix;
+	//	angleIncrement += theta * delta_time;
+
+	//}
 
 	if (parent){
 		if (parent->myType != sky && myType != sky)
 		{
-			mworld *= parent->mworld;
+			mworld = mlocal * parent->mworld;
 		}
 	}
 
@@ -233,6 +251,9 @@ void Obj::addChild(Obj* child, string name)
 
 void Obj::renderGlass()
 {
+	if (!visible)  // if not visible return and don't render.
+		return;
+
 	extern SceneManager* myScene;
 
 	camera* cam = myScene->cam;			 // camera pointer 
