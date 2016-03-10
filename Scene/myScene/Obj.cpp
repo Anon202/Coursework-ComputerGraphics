@@ -100,7 +100,7 @@ float Obj::getRadius()
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 
 	radius = abs(length(scale*furthestPoint));
-	radius *= 1.05; // add a little more room
+	//radius *= 1.05; // add a little more room
 	return radius;
 }
 

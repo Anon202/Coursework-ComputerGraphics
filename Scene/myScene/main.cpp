@@ -209,7 +209,8 @@ bool load_content()
 
 	vector<texture*> platText;
 	platText.push_back(new texture("..\\resources\\textures\\Gray_swirl_marble_pxr128.tif"));
-	platText.push_back(new texture("..\\resources\\textures\\myNMap.png"));
+	platText.push_back(new texture("..\\resources\\textures\\Ivy_pxr128.tif"));
+	platText.push_back(new texture("..\\resources\\textures\\dissolve.png"));
 	myScene->texList.push_back(platText);
 
 	vector<texture*> pillarText;
@@ -246,6 +247,11 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\spotPart.frag",
 		"..\\resources\\shaders\\parts\\shadowPart.frag");
 
+	effect *blending = myScene->createEffect(
+		"..\\resources\\shaders\\blending.vert",
+		"..\\resources\\shaders\\blending.frag",
+		NULL, NULL);
+
 	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
@@ -270,7 +276,7 @@ bool load_content()
 	Obj *ball = new Obj(vec3(250, 35, -400), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 
 	Obj *plat = new Obj(vec3(-300.0f, 150.0f, 300.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
-	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, eff, object);
+	Obj *platBox = new Obj(vec3(160.0, 87.0, 130.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
 
 	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
 	
@@ -296,7 +302,7 @@ bool load_content()
 	plat->addChild(glassPane, "glassPlane");
 	
 	platBox->addChild(spoot, "spoot");
-	platBox->addChild(bar, "bar");
+	//platBox->addChild(bar, "bar");
 
 
 	pillar->addChild(pillar2, "pillar2");
@@ -542,9 +548,9 @@ void generateFrustrumPlanes()
 
 		// left plane
 		myScene->planePoints[ftl],
-		myScene->planePoints[ntl],
-		myScene->planePoints[nbl],
 		myScene->planePoints[fbl],
+		myScene->planePoints[nbl],
+		myScene->planePoints[ntl],
 
 		// right plane 
 		myScene->planePoints[ntr],
@@ -683,14 +689,18 @@ bool render()
 			renderer::render(m);
 
 			vec3 midNear = (myScene->planePoints[ntl] + myScene->planePoints[ntr]) * vec3(0.5, 0.5, 0.5);
+			vec3 midLeftNear = (myScene->planePoints[ntl] + myScene->planePoints[nbl]) * vec3(0.5, 0.5, 0.5);
 
 
-			glBegin(GL_LINES);
+			/*glBegin(GL_LINES);
 			glVertex3f(midNear.x, midNear.y, midNear.z);
-			glVertex3f(midNear.x + myScene->planeNormals[nearN].x*3.0f, midNear.y + myScene->planeNormals[nearN].y*3.0f, midNear.z + myScene->planeNormals[nearN].z*3.0f);
-
-			//glVertex3f(myScene->cameraList[0]->get_position().x, myScene->cameraList[0]->get_position().y, myScene->cameraList[0]->get_position().z);
-			//glVertex3f(myScene->cameraList[0]->get_position().x + myScene->planeNormals[nearN].x*30.0f, myScene->cameraList[0]->get_position().y + myScene->planeNormals[nearN].y*30.0f, myScene->cameraList[0]->get_position().z + myScene->planeNormals[nearN].z*30.0f);
+			glVertex3f(midNear.x + myScene->planeNormals[nearN].x*10.0f, midNear.y + myScene->planeNormals[nearN].y*10.0f, midNear.z + myScene->planeNormals[nearN].z*10.0f);
+			glEnd();
+			
+*/
+			glBegin(GL_LINES);
+			glVertex3f(midLeftNear.x, midLeftNear.y, midLeftNear.z);
+			glVertex3f(midLeftNear.x + myScene->planeNormals[leftN].x*10.0f, midLeftNear.y + myScene->planeNormals[leftN].y*10.0f, midLeftNear.z + myScene->planeNormals[leftN].z*10.0f);
 			glEnd();
 
 			vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
