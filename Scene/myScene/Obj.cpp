@@ -78,6 +78,8 @@ void Obj::setName(string name)
 void Obj::setCenterTerr(vec3 cent)
 {
 	centreT = cent;
+
+	furthestPoint = centreT;
 }
 
 
@@ -107,7 +109,7 @@ float Obj::getRadius()
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 
 	radius = abs(length(scale*furthestPoint));
-	radius *= 1.1; // add a little more room
+	radius *= 1.05; // add a little more room
 	return radius;
 }
 
@@ -206,12 +208,6 @@ void Obj::intersection()
 void Obj::calculateSphere()
 {
 	// need to calculate bounding sphere for the object
-
-	if (myType == terrn)
-	{
-		radius = 256.0f;
-		return;
-	}
 	
 	vector<vec3> data;
 	int count = m->get_geometry().get_vertex_count();

@@ -64,7 +64,7 @@ void SceneManager::Create()
 
 effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[])
 {
-	effect* myEffect = new effect;
+	effect* myEffect = new effect;								// takes in paths of shaders, builds the effect and adds to a list of pointers.
 	myEffect->add_shader(vertPath, GL_VERTEX_SHADER);
 	myEffect->add_shader(fragPath, GL_FRAGMENT_SHADER);
 
@@ -85,7 +85,7 @@ void SceneManager::calculateFrustrum()
 {
 	//if (fixCull)
 	//{
-	//	if (cam != cameraList[0])
+	//if (cam != cameraList[0])
 	//		return;
 	//}
 
@@ -132,12 +132,12 @@ void SceneManager::calculateFrustrum()
 	planeNormals[farN] = -lookAt;
 
 	// Calculate the left and right planes (cross product to get the normals of the triangles and a point on the planes)
-	planeNormals[leftN] = cross(up, normalize(planePoints[fbl] - planePoints[nbl])); 
-	planeNormals[rightN] = -cross(up, normalize(planePoints[fbl] - planePoints[nbl]));
+	planeNormals[leftN] = cross(up, (planePoints[fbl] - planePoints[nbl])); 
+	planeNormals[rightN] = -cross(up, (planePoints[fbl] - planePoints[nbl]));
 
 	// Calculate the top and bottom planes (similar to the left and right)
-	planeNormals[topN] = cross(-right, normalize(planePoints[ntr] - planePoints[ftr]));
-	planeNormals[bottN] = cross(-right, normalize(planePoints[fbr] - planePoints[nbr]));
+	planeNormals[topN] = cross(-right, (planePoints[ntr] - planePoints[ftr]));
+	planeNormals[bottN] = cross(-right, (planePoints[fbr] - planePoints[nbr]));
 
 	// normalise normals
 	for (int i = 0; i < 6; ++i)

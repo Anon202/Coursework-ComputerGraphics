@@ -1,8 +1,5 @@
 #version 440
 
-// Model view projection matrix
-uniform mat4 VP;
-
 layout (location = 0) in vec3 position;
 layout (location = 1) in float radius;
 
@@ -12,10 +9,10 @@ layout (location = 1) out float out_radius;
 
 void main()
 {
-	// Calculate screen position of vertex
+	// pass position through without transforming as transformation is performed in the geom shader
 	gl_Position = vec4(position, 1.0);
 
-	vertex_position = position;
+	vertex_position = position;  // set outgoing to incoming
 	out_radius = radius;
 
 }

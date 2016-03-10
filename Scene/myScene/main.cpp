@@ -131,7 +131,7 @@ bool load_content()
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(1.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
-	geometry glassP;
+	geometry glassP; // buffer for something is wrong (texture coords possible)
 	myScene->generator->generate_pane(glassP);
 	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 3.0, 1.0)));// mesh(glassP);
 
@@ -523,44 +523,46 @@ bool update(float delta_time)
 
 void generateFrustrumPlanes()
 {
-	vector<vec3> positions;
-
-	for (int i = 0; i < 8; ++i)
+	vector<vec3> positions
 	{
-		positions.push_back(myScene->planePoints[i]);  // add all points to vertex buffer  //{ftl 0, ftr 1, fbl 2, fbr 3, ntl 4, ntr 5, nbl 6, nbr 7 };
-	}
+		//near plane
+		myScene->planePoints[ntl],
+		myScene->planePoints[nbl],
+		myScene->planePoints[nbr],
+		myScene->planePoints[ntr],
 
-	vector<GLuint> indices
-	{
-		// near
-		ntl, nbl, nbr,
-		nbr, ntr, ntl,
+		// far plane
+		myScene->planePoints[ftl],
+		myScene->planePoints[ftr],
+		myScene->planePoints[fbr],
+		myScene->planePoints[fbl],
 
-		// far
-		ftr, fbr, fbl,
-		fbl, ftl, ftr,
+		// left plane
+		myScene->planePoints[ftl],
+		myScene->planePoints[ntl],
+		myScene->planePoints[nbl],
+		myScene->planePoints[fbl],
 
-		// Right
-		ntr, nbr, fbr,
-		fbr, ftr, ntr,
+		// right plane 
+		myScene->planePoints[ntr],
+		myScene->planePoints[nbr],
+		myScene->planePoints[fbr],
+		myScene->planePoints[ftr],
 
-		// Left
-		ftl, fbl, nbl,
-		nbl, ntl, ftl,
+		// top plane
+		myScene->planePoints[ftl],
+		myScene->planePoints[ntl],
+		myScene->planePoints[ntr],
+		myScene->planePoints[ftr],
 
-		// Top
-		nbl, fbl, fbr,
-		fbr, nbr, nbl,
-
-		// Bottom
-		ftl, ntl, ntr,
-		ntr, ftr, ftl
-
-
+		// bottom plane
+		myScene->planePoints[nbl],
+		myScene->planePoints[fbl],
+		myScene->planePoints[fbr],
+		myScene->planePoints[nbr],
 	};
 
-	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
-	myScene->frustrumGeom.add_index_buffer(indices);
+	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 
 	m = mesh(myScene->frustrumGeom);
 
@@ -662,7 +664,7 @@ bool render()
 			// show view frustrum
 			generateFrustrumPlanes();
 
-			glLineWidth(5.0f);
+			glLineWidth(3.0f);
 
 			renderer::bind(frustrumEff);
 
