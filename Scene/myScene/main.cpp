@@ -134,7 +134,7 @@ bool load_content()
 	myScene->generator->generate_pane(glassP);
 	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 3.0, 1.0)));// mesh(glassP);
 
-	myScene->materials["glass"].set_diffuse(vec4(1.0, 0.0, 0.0, 1.0));
+	myScene->materials["glass"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
 
 
 	// create torus geom for difference between gouraud and phong
@@ -147,6 +147,9 @@ bool load_content()
 		e.second.set_specular(vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		e.second.set_shininess(10.0f);
 	}
+
+	myScene->materials["glass"].set_shininess(50.0f);
+
 
 	myScene->materials["sphere"].set_shininess(50.0f);
 	
@@ -243,14 +246,6 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\spotPart.frag",
 		"..\\resources\\shaders\\parts\\shadowPart.frag");
 
-
-	effect *glassEff = myScene->createEffect(
-		"..\\resources\\shaders\\glass.vert",
-		"..\\resources\\shaders\\glass.frag",
-		NULL,
-		NULL);
-
-
 	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
@@ -279,7 +274,7 @@ bool load_content()
 
 	Obj *platWall = new Obj(vec3(-160.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
 	
-	Obj *glassPane = new Obj(vec3(-100.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, glassEff, glassOb);
+	Obj *glassPane = new Obj(vec3(-100.0, 90.0, 90.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, eff, glassOb);
 
 	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);

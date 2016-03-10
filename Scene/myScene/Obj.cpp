@@ -314,6 +314,9 @@ void Obj::renderGlass()
 	// set eye position (from active camera)
 	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
+	float transparencyValue = 0.4f;
+	glUniform1f(eff->get_uniform_location("alphaVal"), transparencyValue); // glass object so true
+
 	// render mesh
 	renderer::render(*m);
 
@@ -459,6 +462,9 @@ void Obj::render()
 		// set eye position (from active camera)
 		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
+
+		// all objects in this loop are opaque objects therefore alpha is 1
+		glUniform1f(eff->get_uniform_location("alphaVal"), 1.0f); 
 
 
 

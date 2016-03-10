@@ -61,12 +61,17 @@ uniform vec3 eye_pos;
 // Texture
 uniform sampler2D tex;
 
+// incoming alphaVal for output pixel.
+uniform float alphaVal;
+
 // Incoming position
 layout (location = 0) in vec3 position;
 // Incoming normal
 layout (location = 1) in vec3 normal;
 // Incoming texture coordinate
 layout (location = 2) in vec2 tex_coord;
+
+
 
 // Outgoing colour
 layout (location = 0) out vec4 colour;
@@ -228,8 +233,6 @@ void main()
 
 	// check 
 	//colour = primary*tex_colour;
-	
-	colour.a = 1.0f;
-	
+	colour.a = alphaVal;
 
 }
