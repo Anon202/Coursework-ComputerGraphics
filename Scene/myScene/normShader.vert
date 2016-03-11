@@ -43,11 +43,27 @@ void main()
 	// *****************
 	// Transform tangent
 	// *****************
-	tangent_out = N * tangent;
+	vec3 calcTang = tangent;
+	vec3 calcBi = binormal;
+
+//	if (tangent == vec3(0))
+	//{
+		vec3 c1 = cross(normal, vec3(0, 0, 1));
+		vec3 c2 = cross(normal, vec3(0, 1, 0));
+
+		if (length(c1) > length(c2))
+			calcTang = normalize(c1);
+		else
+			calcTang = normalize(c2);
+
+		calcBi = normalize(cross(normal, tangent));
+
+//	}
+	tangent_out = N * calcTang;
 	
 	// ******************
 	// Transform binormal
 	// ******************
-	binormal_out = N * binormal;
+	binormal_out = N * calcBi;
 	
 }

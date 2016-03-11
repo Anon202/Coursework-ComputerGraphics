@@ -10,6 +10,9 @@ class Obj
 	mat3				normalMatrix;
 	mat4				mlocal;
 
+	mat4				translateMatrix;
+	mat4				scaleMatrix;
+	mat4				rotationMatrix;
 
 	material*			mat;
 	effect*				eff;

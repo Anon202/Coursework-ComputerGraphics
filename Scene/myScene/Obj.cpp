@@ -18,22 +18,26 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->translation = pos;
 	this->scaleVect = scal;
 
-	mat4 trans = translate(mat4(1.0f), translation);
-	mat4 rotat;
+	mat4 T = translate(mat4(1.0f), translation);
+	mat4 R;
 	
 	if (rot == vec3(0, 0, 0))
 	{
-		rotat = rotate(mat4(1.0f), angleIncrement, rotVect);
+		R = rotate(mat4(1.0f), angleIncrement, rotVect);
 	}
 
-	mat4 scaleM = scale(mat4(1.0f), scaleVect);
+	mat4 S = scale(mat4(1.0f), scaleVect);
 
-	this->mlocal = trans * rotat * scaleM;
+	this->mlocal = T * R * S;
 
 	visible = true;
 	
 	calculateSphere(); // calculate bounding sphere
 	
+
+	this->translateMatrix = T;
+	this->scaleMatrix = S;
+	this->rotationMatrix = R; // mat4_cast(m->get_transform().orientation);
 }
 
 
@@ -107,6 +111,9 @@ void Obj::update(Obj* parent, float delta_time)
 
 	extern SceneManager* myScene;  // used to get camera transform
 
+
+	mworld = mlocal;
+
 	if (myType == sky)
 	{
 		mat4 trans = translate(mat4(1.0f), myScene->cam->get_position());
@@ -117,43 +124,50 @@ void Obj::update(Obj* parent, float delta_time)
 		mat4 scal = scale(mat4(1.0f), scaleVect);
 		mworld = trans * rotation * mlocal;
 	}
-	else
-	{
-		mat4 trans = translate(mat4(1.0f), translation);
-		mat4 rotationMatrix = mat4(1.0f);
+	//else if (theta != 0.0)
+	//{
 
-		if (rotVect != vec3(0, 0, 0))
-		{
-			rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
-		}
+	//	rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
+	//	normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
 
-		mat4 scal = scale(mat4(1.0f), scaleVect);
+	//	mlocal = translateMatrix * rotationMatrix * scaleMatrix;
 
-		mlocal = trans * rotationMatrix * scal;
-		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+	//	angleIncrement += theta * delta_time;
+	//}
 
-		angleIncrement += theta * delta_time;
-	}
+	//mat4 trans = translate(mat4(1.0f), translation);
+	//mat4 rotationMatrix = mat4(1.0f);
 
-	
-	mworld = mlocal;
+	//if (rotVect != vec3(0, 0, 0))
+	//{
+	//	rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
+	//}
+
+	//mat4 scal = scale(mat4(1.0f), scaleVect);
+
+	//mlocal = trans * rotationMatrix * scal;
+	//normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local mode
+
+	//mworld = mlocal;
 	//mat4 rotationMatrix = mat4(1.0f);
 
 
-	//else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
-	//{
-	//	rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
-	//	normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
-	//	
-	//	mworld *= rotationMatrix;
-	//	angleIncrement += theta * delta_time;
+	if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
+	{
+		rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotVect);
+		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+		
+		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
+		angleIncrement += theta * delta_time;
 
-	//}
+	}
 
 	if (parent){
 		if (parent->myType != sky && myType != sky)
 		{
-			mworld = mlocal * parent->mworld;
+
+			mworld = parent->mworld * mlocal;
+
 		}
 	}
 
