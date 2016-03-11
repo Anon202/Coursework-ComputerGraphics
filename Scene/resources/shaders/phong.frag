@@ -227,7 +227,15 @@ void main()
 	// - remember alpha 1.0
 	// **********************
 
-	colour = primary*tex_colour + specular;
+	colour = tex_colour;
+
+	// if semi-transparent dont use primary lighting
+	if (alphaVal >= 1.0)
+	{
+		colour *= primary;
+	}
+
+	colour += specular;
 	colour += calculate_point(point, mat, position, normal, view_dir, tex_colour);
 	colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 

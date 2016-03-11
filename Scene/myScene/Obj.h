@@ -12,7 +12,7 @@ class Obj
 
 	mat4				translateMatrix;
 	mat4				scaleMatrix;
-	mat4 rotationMatrix;
+	mat4				rotationMatrix;
 
 	material*			mat;
 	effect*				eff;

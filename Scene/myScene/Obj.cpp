@@ -138,9 +138,9 @@ void Obj::update(Obj* parent, float delta_time)
 	}
 
 	if (parent){
-		if (parent->myType != sky && myType != sky && parent->myType != terrn)
+		if (parent->myType != sky && myType != sky)
 		{
-			mworld = parent->mworld * mlocal; // *translateMatrix * scaleMatrix * rotationMatrix;
+			mworld = parent->mworld * mlocal;
 		}
 	}
 
