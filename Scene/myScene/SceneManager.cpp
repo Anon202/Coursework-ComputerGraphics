@@ -34,7 +34,7 @@ void SceneManager::Create()
 	light->set_ambient_intensity(vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	// Light colour white
-	light->set_light_colour(vec4(1.0f, 0.89f, 0.65f, 1.0f));
+	light->set_light_colour(vec4(0.9f, 0.79f, 0.55f, 1.0f));
 
 	// Light direction (1.0, 1.0, -1.0)
 	light->set_direction(vec3(1.0f, 1.0f, -1.0f));
@@ -42,20 +42,28 @@ void SceneManager::Create()
 	lightList.push_back(lightPtr);
 	
 	point_light *pointLight = new point_light;
-	pointLight->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	pointLight->set_range(200);
-	//pointLight->set_position(vec3(31.5, 35.75, 63.0));
+	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	pointLight->set_range(20);
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
 	pointLight->set_quadratic_attenuation(0.01f);
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
 
+	point_light *pointLightChild = new point_light;
+	pointLightChild->set_light_colour(vec4(0.0f, 0.0f,1.0f, 1.0f));
+	pointLightChild->set_range(20);
+	pointLightChild->set_constant_attenuation(0.5f);
+	pointLightChild->set_linear_attenuation(0.2f);
+	pointLightChild->set_quadratic_attenuation(0.01f);
+	Light* pointPtrChild = pointLightChild;
+	lightList.push_back(pointPtrChild);
+
 	spot_light *spot = new spot_light;
 	spot->set_direction(normalize(vec3(-1, 0, 0)));
 	spot->set_light_colour(vec4(1.0, 1.0, 0.0, 1.0));
-	spot->set_range(50);
-	spot->set_power(10);
+	spot->set_range(100);
+	spot->set_power(0.01);
 	Light* spotPtr = spot;
 	lightList.push_back(spotPtr);
 

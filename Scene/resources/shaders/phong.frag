@@ -50,7 +50,7 @@ struct spot_light
 // Directional light for the scene
 uniform directional_light light;
 
-uniform point_light point;
+uniform point_light point[2];
 
 uniform spot_light spot;
 

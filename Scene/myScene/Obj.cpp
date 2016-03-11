@@ -426,7 +426,7 @@ void Obj::render()
 				point_light *pointLight = dynamic_cast<point_light*>(e);
 				if (pointLight != NULL)
 				{
-					renderer::bind(*pointLight, "point");
+					renderer::bind(*pointLight, "point[2]");
 				}
 				else
 				{

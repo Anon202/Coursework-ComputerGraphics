@@ -132,7 +132,7 @@ bool load_content()
 
 	geometry glassP; // buffer for something is wrong (texture coords possible)
 	myScene->generator->generate_pane(glassP);
-	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 3.0, 1.0)));// mesh(glassP);
+	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 2.0, 1.0)));// mesh(glassP);
 
 	myScene->materials["glass"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
 
@@ -272,12 +272,13 @@ bool load_content()
 	Obj *pillar4 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
-	Obj *platBox = new Obj(vec3(2.0, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
-	Obj *platWall = new Obj(vec3(-3.0, 1.0, 3.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
-	Obj *glassPane = new Obj(vec3(-1.0, 1.0, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, eff, glassOb);
+	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
+	Obj *platWall = new Obj(vec3(-3.0, 1.5, 3.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
+	Obj *glassPane = new Obj(vec3(-1.0, 1.5, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, eff, glassOb);
 	
+
 	// loaded model
-	Obj *stoneModel = new Obj(vec3(3, 0, 3), vec3(0), 0, vec3(0.05), &myScene->meshes["model"], &myScene->materials["platform"], stoneModText, norm_eff, object);
+	Obj *stoneModel = new Obj(vec3(3, 0, 3), vec3(0), 0, vec3(0.05), &myScene->meshes["model"], &myScene->materials["cylinder"], stoneModText, norm_eff, object);
 
 	geometry barGeom;
 	myScene->generator->generate_bar(barGeom);
@@ -290,20 +291,17 @@ bool load_content()
 
 	Obj *box = new Obj(vec3(1,1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 	
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(250, 35, -400), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-
-	
-	
+	Obj *ball = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 
 	
-
-	Obj *pillarPlat = new Obj(vec3(-120.0f, 100.0f, 290.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
-	Obj *pillarPlat2 = new Obj(vec3(-30.0f, 100.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	
 	
-	Obj *spoot = new Obj(vec3(-35.0, 50.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);
+	Obj *spoot = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);
 
 	terrain1->addChild(box, "box");
 	
@@ -316,7 +314,7 @@ bool load_content()
 	plat->addChild(platWall, "platWall");
 	plat->addChild(platBox, "platBox");
 	plat->addChild(pillarPlat, "pillarPlat");
-	plat->addChild(pillarPlat2, "pillarPlat2");
+	spoot->addChild(pillarPlat2, "pillarPlat2");
 	plat->addChild(glassPane, "glassPlane");
 	plat->addChild(stoneModel, "model");
 	
@@ -334,7 +332,8 @@ bool load_content()
 
 	box->addChild(pyra, "pyramid");
 
-	box->addChild(ball, "ball");
+	terrain4->addChild(ball, "ball");
+	ball->addChild(pointLightChildBall, "pointChild");
 
 
 
@@ -357,10 +356,14 @@ bool load_content()
 	//myScene->list.push_back(sphereP2);
 	myScene->list.push_back(glassPane);
 	myScene->list.push_back(stoneModel);
+	myScene->list.push_back(bar);
+	myScene->list.push_back(pointLightChildBall);
 
 	myScene->transparentObjects.push_back(glassPane);
 
 	myScene->lightObjects.push_back(ball);
+	myScene->lightObjects.push_back(pointLightChildBall);
+	
 	myScene->lightObjects.push_back(spoot);
 
 
