@@ -30,14 +30,9 @@ class Obj
 	map<string, Obj*>   children;  // map of children object pointers
 
 	string				myName;
-	vec3				translation;
-	vec3				scaleVect;
-	vec3				rotVect;
-	mat4			    initialTrans;
-
-
-
-	vec3				centreT;
+	vec3 rotV;
+	
+	vec3 centreT;
 public:
 	vec3				cent;    // to create bounding spheres
 	mat4				mworld;

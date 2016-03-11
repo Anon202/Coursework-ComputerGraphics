@@ -256,9 +256,7 @@ bool load_content()
 		"..\\resources\\shaders\\blending.frag",
 		NULL, NULL);
 
-
 	myScene->meshes["model"] = geometry("..\\resources\\stoneEnd.obj");
-
 
 	Obj *sphereG = new Obj(vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -2.0), vec3(1.0f, 0.0f, 0.0f), 0, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
@@ -295,8 +293,6 @@ bool load_content()
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
 	Obj *ball = new Obj(vec3(250, 35, -400), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(0.1f, 0.1f, 0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *ballChild = new Obj(vec3(-40, 0, 0), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0, 1.0, 1.0), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-
 
 	
 	
@@ -338,8 +334,7 @@ bool load_content()
 
 	box->addChild(pyra, "pyramid");
 
-	terrain4->addChild(ball, "ball");
-	ball->addChild(ballChild, "ballChild");
+	box->addChild(ball, "ball");
 
 
 
@@ -362,7 +357,6 @@ bool load_content()
 	//myScene->list.push_back(sphereP2);
 	myScene->list.push_back(glassPane);
 	myScene->list.push_back(stoneModel);
-
 
 	myScene->transparentObjects.push_back(glassPane);
 
