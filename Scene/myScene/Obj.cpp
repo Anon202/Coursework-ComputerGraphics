@@ -40,6 +40,10 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	
 	calculateSphere(); // calculate bounding sphere
 	
+
+	this->translateMatrix = T;
+	this->scaleMatrix = S;
+	this->rotationMatrix = R; // mat4_cast(m->get_transform().orientation);
 }
 
 
@@ -111,6 +115,7 @@ void Obj::update(Obj* parent, float delta_time)
 	extern SceneManager* myScene;  // used to get camera transform
 
 	mworld = mlocal;
+	
 
 	if (myType == sky)
 	{
@@ -123,19 +128,19 @@ void Obj::update(Obj* parent, float delta_time)
 	}
 	else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
 	{
-		mat4 rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
+		rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
 		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
 
-		mworld *= rotationMatrix;
+		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
 		
 		angleIncrement += theta * delta_time;
 
 	}
 
 	if (parent){
-		if (parent->myType != sky && myType != sky)
+		if (parent->myType != sky && myType != sky && parent->myType != terrn)
 		{
-			mworld *= parent->mworld;
+			mworld = parent->mworld * mlocal; // *translateMatrix * scaleMatrix * rotationMatrix;
 		}
 	}
 

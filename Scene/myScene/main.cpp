@@ -252,8 +252,8 @@ bool load_content()
 		"..\\resources\\shaders\\blending.frag",
 		NULL, NULL);
 
-	Obj *sphereG = new Obj(vec3(450.0f, 100.0f, 300.0f), vec3(1.0f, 0.0f, 0.0f), 0.0, vec3(0.1, 0.1, 0.1), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
-	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
+	Obj *sphereG = new Obj(vec3(50.0f, 50.0f, 50.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(2, 2, 2), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -20.0), vec3(0.0f, 0.0f, 0.0f),0 , vec3(1.0, 1.0, 1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
 
 	Obj *pillar = new Obj(vec3(-150.0f, 65.0f, 120.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 	Obj *pillar2 = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -268,8 +268,8 @@ bool load_content()
 
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
-
-	Obj *box = new Obj(vec3(30.0f, 15.0f, 60.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
+	//30.0f, 15.0f, 60.0f
+	Obj *box = new Obj(vec3(1,1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
 	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
