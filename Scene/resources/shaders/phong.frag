@@ -50,7 +50,7 @@ struct spot_light
 // Directional light for the scene
 uniform directional_light light;
 
-uniform point_light point[2];
+uniform point_light point[3];
 
 uniform spot_light spot;
 
@@ -193,7 +193,7 @@ void main()
 
 	colour += specular;
 	
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		colour += calculate_point(point[i], mat, position, normal, view_dir, tex_colour);
 	}

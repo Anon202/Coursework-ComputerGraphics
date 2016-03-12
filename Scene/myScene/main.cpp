@@ -102,7 +102,6 @@ bool load_content()
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
 	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere(50, 50)); // creat ball to emit light
-	myScene->materials["pointLightParent"].set_diffuse(vec4(0.0, 0.0, 0.0f, 1.0f));
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
 	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
@@ -151,7 +150,17 @@ bool load_content()
 	myScene->materials["sphere"].set_shininess(50.0f);
 	
 	// set emissive for point
-	myScene->materials["pointLightParent"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	myScene->materials["pointLightYellow"].set_diffuse(vec4(0.8, 0.8, 0.0f, 1.0f));
+	myScene->materials["pointLightYellow"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	myScene->materials["pointLightYellow"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	myScene->materials["pointLightBlue"].set_emissive(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	myScene->materials["pointLightBlue"].set_diffuse(vec4(0.0, 0.0, 1.0f, 1.0f));
+	myScene->materials["pointLightBlue"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	myScene->materials["pointLightRed"].set_emissive(vec4(1.0f, 0.0f, 1.0f, 1.0f));
+	myScene->materials["pointLightRed"].set_diffuse(vec4(0.6, 0.0, 1.0f, 1.0f));
+	myScene->materials["pointLightRed"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	// set emissive for spot
 	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -304,9 +313,9 @@ bool load_content()
 	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(0.0f, 0.0f, 1.0f), pi<float>() * 2, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 0.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightYellow"], displacementTextures, displacement, pointLightObj);
+	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 2*pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightBlue"], displacementTextures, displacement, pointLightObj);
+	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 5.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightRed"], displacementTextures, displacement, pointLightObj);
 
 	
 	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, norm_eff, object);
@@ -384,6 +393,7 @@ bool load_content()
 
 	myScene->lightObjects.push_back(pointLightParent);
 	myScene->lightObjects.push_back(pointLightChildBall);
+	myScene->lightObjects.push_back(pointLightChildBall2);
 	
 	myScene->lightObjects.push_back(spoot);
 
@@ -499,7 +509,7 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_ADD))
 	{
 		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) * delta_time));
+		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) + vec3(0.0, 0.0, 1.0)) * delta_time);
 	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_SUBTRACT))

@@ -80,7 +80,7 @@ void Obj::setCenterTerr(vec3 cent)
 {
 	centreT = cent;
 
-	furthestPoint = centreT * vec3(0.7, 0.7, 0.7);
+	furthestPoint = centreT;
 }
 
 
@@ -286,7 +286,7 @@ void Obj::renderGlass()
 	// Bind Materials/lights/texture
 	renderer::bind(*mat, "mat");
 
-	vector<point_light> points(2);
+	vector<point_light> points(3);
 	int pointCount = 0;
 	// cast light to correct type to call render bind
 	for (auto &e : myScene->lightList)
@@ -430,7 +430,7 @@ void Obj::render()
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 
-		vector<point_light> points(2);
+		vector<point_light> points(3);
 		int pointCount = 0;
 		// cast light to correct type to call render bind
 		for (auto &e : myScene->lightList)

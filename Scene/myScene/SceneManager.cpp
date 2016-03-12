@@ -58,6 +58,14 @@ void SceneManager::createLights()
 	Light* pointPtrChild = pointLightChild;
 	lightList.push_back(pointPtrChild);
 
+	point_light *pointLightChildChild = new point_light;
+	pointLightChildChild->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	pointLightChildChild->set_constant_attenuation(0.01f);
+	pointLightChildChild->set_linear_attenuation(0.05f);
+	pointLightChildChild->set_quadratic_attenuation(0.01f);
+	Light* ptrChildChild = pointLightChildChild;
+	lightList.push_back(ptrChildChild);
+
 	spot_light *spot = new spot_light;
 	spot->set_direction(normalize(vec3(-1, 0, 0)));
 	spot->set_light_colour(vec4(1.0, 1.0, 0.0, 1.0));
