@@ -34,13 +34,14 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
 	// ****************************
 	// Calculate attenuation factor
 	// ****************************	
-	float att = point.constant + point.linear*d + point.quadratic*d*d;
+	//(
+	float att =  point.constant + point.linear*d + point.quadratic*d*d;
 
 	// **********************
 	// Calculate light colour
 	// **********************
 	vec4 lightCol = point.light_colour * (1 / att);
-
+	
 
 	// *******************
 	// Calculate light dir
@@ -65,7 +66,7 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
 	vec4 primary = mat.emissive + diffuse;
 
 	vec4 colour = primary * tex_colour + specular;
-
+	colour.a = 1.0f;
 
 	return colour;
 }

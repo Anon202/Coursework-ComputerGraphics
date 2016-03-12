@@ -420,6 +420,12 @@ void Obj::render()
 
 			transparencyValue = 0.7f;
 		}
+		if (myType == pointLightObj)
+		{
+			static float dd = 0.0f;
+			dd += 0.002f;
+			glUniform1f(eff->get_uniform_location("myTime"), dd);
+		}
 
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");

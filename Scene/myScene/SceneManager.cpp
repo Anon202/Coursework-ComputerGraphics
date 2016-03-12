@@ -43,19 +43,17 @@ void SceneManager::createLights()
 	
 	point_light *pointLight = new point_light;
 	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	pointLight->set_range(100);
-	pointLight->set_constant_attenuation(0.5f);
-	pointLight->set_linear_attenuation(0.2f);
+	pointLight->set_constant_attenuation(0.01f);
+	pointLight->set_linear_attenuation(0.05f);
 	pointLight->set_quadratic_attenuation(0.01f);
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
 	
 
 	point_light *pointLightChild = new point_light;
-	pointLightChild->set_light_colour(vec4(0.0f, 0.0f,1.0f, 1.0f));
-	pointLightChild->set_range(100);
-	pointLightChild->set_constant_attenuation(0.5f);
-	pointLightChild->set_linear_attenuation(0.2f);
+	pointLightChild->set_light_colour(vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	pointLightChild->set_constant_attenuation(0.01f);
+	pointLightChild->set_linear_attenuation(0.05f);
 	pointLightChild->set_quadratic_attenuation(0.01f);
 	Light* pointPtrChild = pointLightChild;
 	lightList.push_back(pointPtrChild);

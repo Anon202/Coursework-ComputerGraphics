@@ -193,9 +193,10 @@ void main()
 
 	colour += specular;
 	
-	for (int i = 0; i < 2; ++i){
+	for (int i = 0; i < 2; ++i)
+	{
 		colour += calculate_point(point[i], mat, position, normal, view_dir, tex_colour);
-		}
+	}
 	
 	colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 

@@ -64,7 +64,7 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	}
 	else
 	{
-		folderName = "myClouds";
+		folderName = "new";
 		ext = "png";
 	}
 
@@ -340,83 +340,53 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	delete data;  // delete data
 }
 
-void GenerateBack::generate_pane(geometry &geom)
-{
-	geom.set_type(GL_QUADS);
-
-	vector<vec3> positions
-	{
-		vec3(-1.0, 0.0, 0.0),
-		vec3(1.0, 0.0, 0.0),
-		vec3(1.0, 1.0, 0.0),
-		vec3(-1.0, 1.0, 0.0)
-	};
-
-	vector<vec2> tex_coords
-	{
-		vec2(0, 0),
-		vec2(1, 0),
-		vec2(1, 1),
-		vec2(0, 1)
-	};
-
-	vec3 normal = normalize(cross((vec3(1.0, 0.0, 0.0) - vec3(-1.0, 0.0, 0.0)), (vec3(-1.0, 1.0, 0.0) - vec3(-1.0, 0.0, 0.0))));
-
-	vector<vec3> normals;
-	normals.push_back(normal);
-
-	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
-	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
-}
-
 void GenerateBack::generate_bar(geometry &geom)
 {
 	geom.set_type(GL_TRIANGLES);
 
 	vector<vec3> positions
 	{
-		vec3(0.0f, 0.0f, 1.0f),  // first side
-		vec3(5.0f, 0.0f, 1.0f),
-		vec3(1.0f, 1.0f, 0.0f),
+		vec3(-3.0f, -0.5f, 1.0f),  // first side
+		vec3(2.0f, -0.5f, 1.0f),
+		vec3(-2.0f, 0.5f, 0.0f),
 
-		vec3(1.0f, 1.0f, 0.0f),
-		vec3(5.0f, 0.0f, 1.0f),
-		vec3(5.0f, 1.0f, 0.0f),
+		vec3(-2.0f, 0.5f, 0.0f),
+		vec3(2.0f, -0.5f, 1.0f),
+		vec3(2.0f, 0.5f, 0.0f),
 
-		vec3(5.0f, 1.0f, 0.0f),
-		vec3(5.0f, 0.0f, 1.0f),
-		vec3(6.0f, 0.0f, 1.0f),
-
-
-		vec3(5.0f, 1.0f, 0.0f),  // end on
-		vec3(6.0, 0.0f, 1.0f),
-		vec3(6.0f, 0.0f, -1.0f),
+		vec3(2.0f, 0.5f, 0.0f),
+		vec3(2.0f, -0.5f, 1.0f),
+		vec3(3.0f, -0.5f, 1.0f),
 
 
-		vec3(1.0f, 1.0f, 0.0f), // back side
-		vec3(5.0f, 0.0f, -1.0f),
-		vec3(0.0f, 0.0f, -1.0f),
-
-		vec3(5.0f, 1.0f, 0.0f),
-		vec3(5.0f, 0.0f, -1.0f),
-		vec3(1.0f, 1.0f, 0.0f),
-
-		vec3(6.0f, 0.0f, -1.0f),
-		vec3(5.0f, 0.0f, -1.0f),
-		vec3(5.0f, 1.0f, 0.0f),
+		vec3(2.0f, 0.5f, 0.0f),  // end on
+		vec3(3.0f, -0.5f, 1.0f),
+		vec3(3.0f, -0.5f, -1.0f),
 
 
-		vec3(0.0f, 0.0f, -1.0f),  // end on
-		vec3(0.0, 0.0f, 1.0f),
-		vec3(1.0f, 1.0f, 0.0f),
+		vec3(-2.0f, 0.5f, 0.0f), // back side
+		vec3(2.0f, -0.5f, -1.0f),
+		vec3(-3.0f, -0.5f, -1.0f),
 
-		vec3(6.0, 0.0, 1.0),  			// bottom
-		vec3(0.0, 0.0, 1.0),
-		vec3(0.0, 0.0, -1.0),
-		vec3(0.0, 0.0, -1.0),
-		vec3(6.0, 0.0, -1.0),
-		vec3(6.0, 0.0, 1.0),
+		vec3(2.0f, 0.5f, 0.0f),
+		vec3(2.0f, -0.5f, -1.0f),
+		vec3(-2.0f, 0.5f, 0.0f),
+
+		vec3(3.0f, -0.5f, -1.0f),
+		vec3(2.0f, -0.5f, -1.0f),
+		vec3(2.0f, 0.5f, 0.0f),
+
+
+		vec3(-3.0f, -0.5f, -1.0f),  // end on
+		vec3(-3.0f, -0.5f, 1.0f),
+		vec3(-2.0f, 0.5f, 0.0f),
+
+		vec3(3.0, -0.5, 1.0),  			// bottom
+		vec3(-3.0, -0.5, 1.0),
+		vec3(-3.0, -0.5, -1.0),
+		vec3(-3.0, -0.5, -1.0),
+		vec3(3.0, -0.5, -1.0),
+		vec3(3.0, -0.5, 1.0),
 
 	};
 
@@ -457,12 +427,12 @@ void GenerateBack::generate_bar(geometry &geom)
 		vec2(0.0, 0.0f),
 		vec2(1.0f, 1.0f),
 
-		vec2(6.0, 0.0),    // bottom
-		vec2(0.0, 0.0),
+		vec2(6.0, 1.0),    // bottom
+		vec2(0.0, 1.0),
 		vec2(0.0, 0.0),
 		vec2(0.0, 0.0),
 		vec2(6.0, 0.0),
-		vec2(6.0, 0.0),
+		vec2(6.0, 1.0),
 
 	};
 

@@ -101,8 +101,8 @@ bool load_content()
 	
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
-	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
-	myScene->materials["pointLightParent"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
+	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere(50, 50)); // creat ball to emit light
+	myScene->materials["pointLightParent"].set_diffuse(vec4(0.0, 0.0, 0.0f, 1.0f));
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
 	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
@@ -127,8 +127,8 @@ bool load_content()
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(0.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
-	geometry glassP; // buffer for something is wrong (texture coords possible)
-	myScene->generator->generate_pane(glassP);
+	myScene->meshes["model"] = geometry("..\\resources\\stoneEnd.3ds");
+
 	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 2.0, 1.0)));// mesh(glassP);
 
 	myScene->materials["glass"].set_diffuse(vec4(1.0, 1.0, 1.0, 1.0));
@@ -151,7 +151,7 @@ bool load_content()
 	myScene->materials["sphere"].set_shininess(50.0f);
 	
 	// set emissive for point
-	myScene->materials["pointLightParent"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	myScene->materials["pointLightParent"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 
 	// set emissive for spot
 	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -228,13 +228,17 @@ bool load_content()
 	stoneModText.push_back(new texture("..\\resources\\textures\\stoneEnd_N.tga"));
 	myScene->texList.push_back(stoneModText);
 
+	vector<texture*> displacementTextures;
+	displacementTextures.push_back(new texture("..\\resources\\textures\\Iridescent_ribbon_pxr128.tif"));
+	displacementTextures.push_back(new texture("..\\resources\\textures\\Distortion2.jpg"));
+	myScene->texList.push_back(displacementTextures);
+
+
 	effect *water_eff = myScene->createEffect(
 		"..\\resources\\shaders\\water.vert",
 		"..\\resources\\shaders\\phong.frag",
 		"..\\resources\\shaders\\parts\\point.frag",
 		NULL);
-
-	
 
 	effect *norm_eff = myScene->createEffect(
 		"normShader.vert",
@@ -258,7 +262,12 @@ bool load_content()
 		"..\\resources\\shaders\\blending.frag",
 		"..\\resources\\shaders\\parts\\normal_map.frag", NULL);
 
-	myScene->meshes["model"] = geometry("..\\resources\\stoneEnd.3ds");
+	effect *displacement = myScene->createEffect(
+		"..\\resources\\shaders\\displacement.vert",
+		"..\\resources\\shaders\\displacement.frag",
+		"..\\resources\\shaders\\parts\\point.frag",
+		NULL);
+
 
 	Obj *sphereG = new Obj(vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -2.0), vec3(1.0f, 0.0f, 0.0f), 0, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
@@ -287,17 +296,17 @@ bool load_content()
 	myScene->generator->generate_bar(barGeom);
 	myScene->meshes["bar"] = barGeom;
 
-	Obj *bar = new Obj(vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
+	Obj *bar = new Obj(vec3(-1.0, 1.5, 2.0), vec3(0.0), 0.0f, vec3(0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
-	Obj *box = new Obj(vec3(1,1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], objTextList, eff, object);
+	Obj *box = new Obj(vec3(1,1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], displacementTextures, displacement, object);
 	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(0.0f, 0.0f, 1.0f), pi<float>() * 2, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 0.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], displacementTextures, displacement, pointLightObj);// point_eff, pointLight, pointLightObj);
 
 	
 	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, norm_eff, object);
@@ -328,7 +337,7 @@ bool load_content()
 
 	
 	platBox->addChild(spoot, "spoot");
-	//platBox->addChild(bar, "bar");
+	platBox->addChild(bar, "bar");
 
 	platformUpper->addChild(pillar, "pillar");
 
