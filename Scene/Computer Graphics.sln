@@ -12,9 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194805E-ABC9-4D12-A0CD-98C0073AEC73}"
 	ProjectSection(SolutionItems) = preProject
+		resources\shaders\blending.frag = resources\shaders\blending.frag
+		resources\shaders\blending.vert = resources\shaders\blending.vert
 		resources\shaders\explode.geom = resources\shaders\explode.geom
-		resources\shaders\glass.frag = resources\shaders\glass.frag
-		resources\shaders\glass.vert = resources\shaders\glass.vert
 		resources\shaders\gouraud.frag = resources\shaders\gouraud.frag
 		resources\shaders\gouraud.vert = resources\shaders\gouraud.vert
 		resources\shaders\normalFrag.frag = resources\shaders\normalFrag.frag

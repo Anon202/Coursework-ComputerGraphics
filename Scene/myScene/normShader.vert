@@ -46,8 +46,9 @@ void main()
 	vec3 calcTang = tangent;
 	vec3 calcBi = binormal;
 
-//	if (tangent == vec3(0))
-	//{
+	// if the vertex doesn't have a tangent, calculate it and it's binormal.
+	if (tangent == vec3(0))
+	{
 		vec3 c1 = cross(normal, vec3(0, 0, 1));
 		vec3 c2 = cross(normal, vec3(0, 1, 0));
 
@@ -56,14 +57,12 @@ void main()
 		else
 			calcTang = normalize(c2);
 
-		calcBi = normalize(cross(normal, tangent));
+		calcBi = normalize(cross(normal, calcTang));
 
-//	}
+	}
+
+	// transform tangent & binormal
 	tangent_out = N * calcTang;
-	
-	// ******************
-	// Transform binormal
-	// ******************
 	binormal_out = N * calcBi;
 	
 }
