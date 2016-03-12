@@ -45,7 +45,7 @@ void SceneManager::createLights()
 	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	pointLight->set_constant_attenuation(0.01f);
 	pointLight->set_linear_attenuation(0.05f);
-	pointLight->set_quadratic_attenuation(0.01f);
+	pointLight->set_quadratic_attenuation(0.001f);
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
 	
@@ -54,7 +54,7 @@ void SceneManager::createLights()
 	pointLightChild->set_light_colour(vec4(0.0f, 0.0f, 1.0f, 1.0f));
 	pointLightChild->set_constant_attenuation(0.01f);
 	pointLightChild->set_linear_attenuation(0.05f);
-	pointLightChild->set_quadratic_attenuation(0.01f);
+	pointLightChild->set_quadratic_attenuation(0.001f);
 	Light* pointPtrChild = pointLightChild;
 	lightList.push_back(pointPtrChild);
 
@@ -62,7 +62,7 @@ void SceneManager::createLights()
 	pointLightChildChild->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	pointLightChildChild->set_constant_attenuation(0.01f);
 	pointLightChildChild->set_linear_attenuation(0.05f);
-	pointLightChildChild->set_quadratic_attenuation(0.01f);
+	pointLightChildChild->set_quadratic_attenuation(0.001f);
 	Light* ptrChildChild = pointLightChildChild;
 	lightList.push_back(ptrChildChild);
 
@@ -98,14 +98,7 @@ effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPa
 
 void SceneManager::calculateFrustrum()
 {
-	//if (fixCull)
-	//{
-	//if (cam != cameraList[0])
-	//		return;
-	//}
-
-	//cout << "updatign" << endl;
-	// method to calculate view frustrum based on camera postion. Recalculated every time camera moves.
+	// method to calculate view frustrum based on camera postion. Called in update function unless fixCull is true.
 
 	//near plane
 	float fov = quarter_pi<float>();

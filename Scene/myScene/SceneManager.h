@@ -13,7 +13,7 @@ class GenerateBack;
 class Obj;				// forward declaration of object
 
 
-enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty, glassOb }; //  enum
+enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty, glassOb, transObject }; //  enum
 enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
 enum planePoints {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
 class SceneManager
@@ -69,5 +69,7 @@ public:
 	void createLights();
 	void calculateFrustrum();
 	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
+
+	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
 };
 

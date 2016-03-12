@@ -27,7 +27,7 @@ void main()
 {
 	vec3 position2 = position;
 
-	float y = sin(position2.x * 10.01 + myTime) * 0.3 + cos(position.z * 5.01f + myTime) * 0.2;
+	float y = sin(position2.x * 10.01f + myTime) * 0.4 + cos(position.z * 5.01f + myTime) * 0.2;
 
 	position2.y += y;
 
@@ -42,6 +42,7 @@ void main()
 
 	transformed_normal = N * normal;
 
-	tex_coord_out = tex_coord_in;
+	vec2 textureScroll = vec2(tex_coord_in.x - myTime * 0.05, tex_coord_in.y); // scroll texture coordinates
+	tex_coord_out = textureScroll;
 
 }

@@ -108,6 +108,16 @@ float Obj::getRadius()
 	return radius;
 }
 
+void Obj::translateObject(vec3 moveBy)
+{
+	this->translateMatrix = translate(mat4(1.0f), moveBy);
+}
+
+void Obj::scaleObject(vec3 scaleBy)
+{
+	this->scaleMatrix = scale(mat4(1.0f), scaleBy);
+}
+
 void Obj::update(Obj* parent, float delta_time)
 {
 	// used to recurse through children and concatenate transforms
@@ -398,35 +408,16 @@ void Obj::render()
 			value_ptr(N));
 
 
-		//auto T = glm::translate(mat4(1.0f), myScene->lightList[2]->get_position());
-		//auto R = glm::mat4_cast(glm::quat(myScene->lightList[2]->get_direction()));
-		//auto matrix = T * R;
-		//auto lV = myScene->shadow.get_view();
-
-		//auto lMVP = P * lV * matrix;
-		//	
-		//glUniformMatrix4fv(
-		//	eff->get_uniform_location("lightMVP"),
-		//	1,
-		//	GL_FALSE,
-		//	value_ptr(lMVP));
+		// uniform for float - used by water and point light to displace vertexes
+		//incremented in update function
+		glUniform1f(eff->get_uniform_location("myTime"), myScene->myTime);
 	
-
 		if (myType == waterObj)  // water flag to assign uniform moving water!
 		{
-			static float dd = 0.0f;
-			dd += 0.002f;
-			glUniform1f(eff->get_uniform_location("myTime"), dd);
 
 			transparencyValue = 0.7f;
 		}
-		if (myType == pointLightObj)
-		{
-			static float dd = 0.0f;
-			dd += 0.002f;
-			glUniform1f(eff->get_uniform_location("myTime"), dd);
-		}
-
+	
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 

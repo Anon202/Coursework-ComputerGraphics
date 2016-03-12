@@ -72,6 +72,10 @@ public:
 
 	void setCenterTerr(vec3 cent);
 
+	void translateObject(vec3 moveBy);
+
+	void scaleObject(vec3 scaleBy);
+
 	~Obj() { }
 
 };

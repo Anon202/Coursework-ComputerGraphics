@@ -37,4 +37,5 @@ void main()
 	vertex_tex_coord = tex_coord;
 	// Pass through tex_weight
 	vertex_tex_weight = tex_weight;
+
 }

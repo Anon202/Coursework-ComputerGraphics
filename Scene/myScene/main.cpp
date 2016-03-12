@@ -98,10 +98,9 @@ bool load_content()
 	myScene->meshes["box"] = mesh(geometry_builder::create_box());				// house shape
 	myScene->meshes["pyramid"] = mesh(geometry_builder::create_pyramid());
 
-	
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
-	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere(50, 50)); // creat ball to emit light
+	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere(50, 50)); // create ball to emit light (higher stacks as using vertex displacement on these)
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
 	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
@@ -115,13 +114,13 @@ bool load_content()
 	myScene->materials["cylinder"].set_diffuse(vec4(0.53, 0.45, 0.37, 1.0));
 
 
-	// create platform
+	// create platform geometry and set diffuse materials
 	myScene->meshes["platform"] = mesh(geometry_builder::create_box(vec3(8, 0.25, 8)));
 	myScene->meshes["platform"].get_geometry().get_maximal_point();
 	myScene->materials["platform"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
 
 	myScene->meshes["platBox"] = mesh(geometry_builder::create_box(vec3(0.5, 2.0, 3.0)));
-	myScene->materials["platBox"].set_diffuse(vec4(0.83, 0.91, 0.68, 1.0));
+	myScene->materials["platBox"].set_diffuse(vec4(0.83, 0.81, 0.68, 1.0));
 
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(0.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
@@ -134,9 +133,15 @@ bool load_content()
 
 
 	// create torus geom for difference between gouraud and phong
-	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(20, 20));
+	myScene->meshes["sphere"] = mesh(geometry_builder::create_sphere(15, 15));
 	myScene->materials["sphere"].set_diffuse(vec4(1.0, 0.0, 1.0, 1.0));
 
+	// create geometry from generator of bar for tops of pillars
+	geometry barGeom;
+	myScene->generator->generate_bar(barGeom);
+	myScene->meshes["bar"] = barGeom;
+
+	// set standard values for all materials
 	for (auto &e : myScene->materials)
 	{
 		e.second.set_emissive(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -144,12 +149,20 @@ bool load_content()
 		e.second.set_shininess(10.0f);
 	}
 
+	// set emissive for spot
+	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+	// water needs high spec
+	myScene->materials["water"].set_shininess(50.0f);
+	myScene->materials["cylinder"].set_shininess(50.0f);
+
+
 	myScene->materials["glass"].set_shininess(50.0f);
 
-
+	// high spec for gouraud/phong sphere to illustrate difference - phong will be more concentrated
 	myScene->materials["sphere"].set_shininess(50.0f);
 	
-	// set emissive for point
+	// set emissive for points, diffuse to alter texture col, specular is black
 	myScene->materials["pointLightYellow"].set_diffuse(vec4(0.8, 0.8, 0.0f, 1.0f));
 	myScene->materials["pointLightYellow"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	myScene->materials["pointLightYellow"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -162,20 +175,13 @@ bool load_content()
 	myScene->materials["pointLightRed"].set_diffuse(vec4(0.6, 0.0, 1.0f, 1.0f));
 	myScene->materials["pointLightRed"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-	// set emissive for spot
-	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-
-	// water needs high spec
-	myScene->materials["water"].set_shininess(10.0f);
-	myScene->materials["cylinder"].set_shininess(25.0f);
-
 	effect *terr_eff = myScene->createEffect(
 		"shader.vert",
 		"shader.frag",
 		"..\\resources\\shaders\\parts\\point.frag",
 		"..\\resources\\shaders\\parts\\weighted_texture.frag");
 
-	effect *eff = myScene->createEffect(
+	effect *phongEff = myScene->createEffect(
 		"..\\resources\\shaders\\phong.vert",
 		"..\\resources\\shaders\\phong.frag",
 		"..\\resources\\shaders\\parts\\point.frag", NULL);
@@ -204,10 +210,10 @@ bool load_content()
 	sphereText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
 	myScene->texList.push_back(sphereText);
 
-	vector<texture*> objTextList;
-	objTextList.push_back(new texture("..\\resources\\textures\\checked.gif"));
-
-	myScene->texList.push_back(objTextList);
+	vector<texture*> woodenTextures;
+	woodenTextures.push_back(new texture("..\\resources\\textures\\Vertical_redwood_pxr128.tif"));
+	woodenTextures.push_back(new texture("..\\resources\\textures\\Vertical_redwood_pxr128_normal.tif"));
+	myScene->texList.push_back(woodenTextures);
 
 
 	vector<texture*> glassText;
@@ -277,14 +283,13 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\point.frag",
 		NULL);
 
-
-	Obj *sphereG = new Obj(vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
-	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -2.0), vec3(1.0f, 0.0f, 0.0f), 0, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
-	//Obj *sphereP2 = new Obj(vec3(0.0, 0.0f, -2.0), vec3(0.0f, 0.0f, 0.0f),0, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, eff, object);
-
+	// create objects to show difference between gouraud and phong shading
+	Obj *sphereG = new Obj(vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -2.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, phongEff, object);
+	
 	// create objects for the "temple" - platform is the root of this
-	Obj *plat = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
-	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, eff, object);
+	Obj *platLower = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
+	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
 
 	// pillars underneath platform, 1 is root. each are children of eachother succesively.
 	Obj *pillar = new Obj(vec3(3.0f, -1.5f, -3.5f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -293,45 +298,41 @@ bool load_content()
 	Obj *pillar4 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
-	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
-	Obj *platWall = new Obj(vec3(-3.0, 1.5, 3.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, eff, object);
-	Obj *glassPane = new Obj(vec3(-1.0, 1.5, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, eff, glassOb);
+	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, transObject);
+	Obj *platWall = new Obj(vec3(-3.0, 1.5, 3.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, phongEff, object);
+	Obj *glassPane = new Obj(vec3(-1.0, 1.5, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
-
 	// loaded model
 	Obj *stoneModel = new Obj(vec3(3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["cylinder"], stoneModText, norm_eff, object);
 
-	geometry barGeom;
-	myScene->generator->generate_bar(barGeom);
-	myScene->meshes["bar"] = barGeom;
-
-	Obj *bar = new Obj(vec3(-1.0, 1.5, 2.0), vec3(0.0), 0.0f, vec3(0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
+	
+	Obj *bar = new Obj(vec3(-1.0, 1.5, 2.0), vec3(0.0), 0.0f, vec3(0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, phongEff, object);
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
-	Obj *box = new Obj(vec3(1,1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], displacementTextures, displacement, object);
+	Obj *box = new Obj(vec3(1, 1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], woodenTextures, phongEff, object);
 	
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
-
+	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], woodenTextures, phongEff, object);
+	 
 	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightYellow"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 2*pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightBlue"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 5.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightRed"], displacementTextures, displacement, pointLightObj);
 
 	
 	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, norm_eff, object);
-	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	
 	
-	Obj *spoot = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);
+	Obj *spoot = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], woodenTextures, phongEff, spotty);
 
 
 	// set up hierarchy  ( terrrain 1 2, 3 4 as looking at the platform)
 
 
 	terrain1->addChild(box, "box");	
-	terrain1->addChild(plat, "platform");
+	terrain1->addChild(platLower, "platformLower");
 
-	plat->addChild(platformUpper, "platformUpper");
+	platLower->addChild(platformUpper, "platformUpper");
 	platformUpper->addChild(platWall, "platWall");
 	platformUpper->addChild(platBox, "platBox");
 	platformUpper->addChild(pillarPlat, "pillarPlat");
@@ -339,16 +340,15 @@ bool load_content()
 	platformUpper->addChild(glassPane, "glassPlane");
 	platformUpper->addChild(stoneModel, "model");
 
+	// terrain block 3: contains the two spheres showing the difference between gouraud and phong shading
 	terrain3->addChild(sphereG, "gouraudSphere");
 	sphereG->addChild(sphereP, "phongSphere");
-	//sphereP->addChild(sphereP2, "phdongSphere");
-
-
 	
+
 	platBox->addChild(spoot, "spoot");
 	platBox->addChild(bar, "bar");
 
-	platformUpper->addChild(pillar, "pillar");
+	platLower->addChild(pillar, "pillar");
 
 	pillar->addChild(pillar2, "pillar2");
 
@@ -373,7 +373,7 @@ bool load_content()
 	myScene->list.push_back(pillar3);
 	myScene->list.push_back(pillar4);
 	myScene->list.push_back(pointLightParent);
-	myScene->list.push_back(plat);
+	myScene->list.push_back(platLower);
 	myScene->list.push_back(platformUpper);
 	myScene->list.push_back(platBox);
 	myScene->list.push_back(platWall);
@@ -506,17 +506,17 @@ bool update(float delta_time)
 		myScene->debug = true;
 	}
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_ADD))
-	{
-		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) + vec3(0.0, 0.0, 1.0)) * delta_time);
-	}
+	//if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_ADD))
+	//{
+	//	directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
+	//	myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) + vec3(0.0, 0.0, 1.0)) * delta_time);
+	//}
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_SUBTRACT))
-	{
-		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) * delta_time));
-	}
+	//if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_SUBTRACT))
+	//{
+	//	directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
+	//	myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) * delta_time));
+	//}
 		
 
 	if (freeCam)
@@ -580,11 +580,15 @@ bool update(float delta_time)
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
+	myScene->myTime += (2.0f * delta_time); // update myTime for water
+
     return true;
 }
 
 void generateFrustrumPlanes()
 {
+	// method to regenerate the frustrum geometry from the plane positions, called when culling is fixed.
+
 	vector<vec3> positions
 	{
 		//near plane
@@ -630,58 +634,6 @@ void generateFrustrumPlanes()
 
 bool render()
 {
-	//// render shadow map.
-	//renderer::set_render_target(myScene->shadow);
-
-	//// **********************
-	//// Clear depth buffer bit
-	//// **********************
-	//glClear(GL_DEPTH_BUFFER_BIT);
-
-	//// ****************************
-	//// Set render mode to cull face
-	//// ****************************
-	//glCullFace(GL_FRONT);
-
-	//// Bind shader
-	//renderer::bind(*myScene->shadow_eff);
-
-	//// Render meshes
-	//for (auto &e : myScene->list)
-	//{
-	//	//auto m = e->mworld;
-	//	// Create MVP matrix
-	//	if (e->myType != sky)
-	//	{
-	//		auto M = e->mworld;
-	//		// *********************************
-	//		// View matrix taken from shadow map
-	//		// *********************************
-	//		auto V = myScene->shadow.get_view();
-
-	//		auto P = myScene->cam->get_projection();
-	//		auto MVP = P * V * M;
-	//		// Set MVP matrix uniform
-	//		glUniformMatrix4fv(
-	//			myScene->shadow_eff->get_uniform_location("MVP"), // Location of uniform
-	//			1, // Number of values - 1 mat4
-	//			GL_FALSE, // Transpose the matrix?
-	//			value_ptr(MVP)); // Pointer to matrix data
-	//		// Render mesh
-	//		auto m = e->m;
-	//		renderer::render(*m);
-	//	}
-	//}
-
-	//// ************************************
-	//// Set render target back to the screen
-	//// ************************************
-	//renderer::set_render_target();
-
-	//// *********************
-	//// Set cull face to back
-	//// *********************
-	//glCullFace(GL_BACK);
 
 	if (myScene->debug)
 	{
@@ -744,36 +696,10 @@ bool render()
 
 			renderer::render(myScene->frustrumGeom);
 
-			vec3 midNear = (myScene->planePoints[ntl] + myScene->planePoints[ntr]) * vec3(0.5, 0.5, 0.5);
-			vec3 midLeftNear = (myScene->planePoints[ntl] + myScene->planePoints[nbl]) * vec3(0.5, 0.5, 0.5);
-
-
-			/*glBegin(GL_LINES);
-			glVertex3f(midNear.x, midNear.y, midNear.z);
-			glVertex3f(midNear.x + myScene->planeNormals[nearN].x*10.0f, midNear.y + myScene->planeNormals[nearN].y*10.0f, midNear.z + myScene->planeNormals[nearN].z*10.0f);
-			glEnd();
-			
-*/
-			glBegin(GL_LINES);
-			glVertex3f(midLeftNear.x, midLeftNear.y, midLeftNear.z);
-			glVertex3f(midLeftNear.x + myScene->planeNormals[leftN].x*10.0f, midLeftNear.y + myScene->planeNormals[leftN].y*10.0f, midLeftNear.z + myScene->planeNormals[leftN].z*10.0f);
-			glEnd();
-
-			vec3 start = vec3(0.5, 0.5, 0.5)* (myScene->planePoints[ftr] + myScene->planePoints[ntr] );
-
-			/*glBegin(GL_LINES);
-			glVertex3f(start.x, start.y, start.z);
-			glVertex3f(start.x + myScene->planeNormals[nearN].x*3.0f, start.y + myScene->planeNormals[nearN].y*3.0f, start.z + myScene->planeNormals[nearN].z*3.0f);
-			glEnd();
-*/
-
 			glLineWidth(1.0f);
 		}
 	
 	}
-
-
-
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 
