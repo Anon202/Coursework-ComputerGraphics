@@ -1,8 +1,5 @@
 #version 440
 
-// This shader requires direction.frag and normal_map.frag
-
-// Directional light structure
 #ifndef DIRECTIONAL_LIGHT
 #define DIRECTIONAL_LIGHT
 struct directional_light

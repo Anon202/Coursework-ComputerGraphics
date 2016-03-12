@@ -28,7 +28,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 }
 
-void SceneManager::Create()
+void SceneManager::createLights()
 {
 	directional_light *light = new directional_light;
 	light->set_ambient_intensity(vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -43,16 +43,17 @@ void SceneManager::Create()
 	
 	point_light *pointLight = new point_light;
 	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	pointLight->set_range(20);
+	pointLight->set_range(100);
 	pointLight->set_constant_attenuation(0.5f);
 	pointLight->set_linear_attenuation(0.2f);
 	pointLight->set_quadratic_attenuation(0.01f);
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
+	
 
 	point_light *pointLightChild = new point_light;
 	pointLightChild->set_light_colour(vec4(0.0f, 0.0f,1.0f, 1.0f));
-	pointLightChild->set_range(20);
+	pointLightChild->set_range(100);
 	pointLightChild->set_constant_attenuation(0.5f);
 	pointLightChild->set_linear_attenuation(0.2f);
 	pointLightChild->set_quadratic_attenuation(0.01f);

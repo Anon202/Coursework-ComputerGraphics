@@ -238,6 +238,9 @@ void Obj::addChild(Obj* child, string name)
 
 void Obj::renderGlass()
 {
+	if (!visible)  // if the glass is not visible return (don't render)
+		return;
+
 	extern SceneManager* myScene;
 
 	camera* cam = myScene->cam;			 // camera pointer 
@@ -283,6 +286,8 @@ void Obj::renderGlass()
 	// Bind Materials/lights/texture
 	renderer::bind(*mat, "mat");
 
+	vector<point_light> points(2);
+	int pointCount = 0;
 	// cast light to correct type to call render bind
 	for (auto &e : myScene->lightList)
 	{
@@ -296,7 +301,8 @@ void Obj::renderGlass()
 			point_light *pointLight = dynamic_cast<point_light*>(e);
 			if (pointLight != NULL)
 			{
-				renderer::bind(*pointLight, "point");
+				points.at(pointCount) = *pointLight;  // add multiple point lights
+				pointCount++;
 			}
 			else
 			{
@@ -309,6 +315,8 @@ void Obj::renderGlass()
 			}
 		}
 	}
+
+	renderer::bind(points, "point");  // bind point lights
 
 
 	for (uint i = 0; i < tex.size(); ++i)  // bind every texture from object's list
@@ -344,6 +352,8 @@ void Obj::render()
 		extern SceneManager* myScene;
 
 		camera* cam = myScene->cam;			 // camera pointer 
+
+		float transparencyValue = 1.0f;
 
 		// get matrices + eye postion from the camera
 		mat4 P = cam->get_projection();
@@ -402,17 +412,20 @@ void Obj::render()
 		//	value_ptr(lMVP));
 	
 
-		if (waterObj)  // water flag to assign uniform moving water!
+		if (myType == waterObj)  // water flag to assign uniform moving water!
 		{
 			static float dd = 0.0f;
 			dd += 0.002f;
 			glUniform1f(eff->get_uniform_location("myTime"), dd);
+
+			transparencyValue = 0.7f;
 		}
 
 		// Bind Materials/lights/texture
 		renderer::bind(*mat, "mat");
 
-
+		vector<point_light> points(2);
+		int pointCount = 0;
 		// cast light to correct type to call render bind
 		for (auto &e : myScene->lightList)
 		{
@@ -426,7 +439,9 @@ void Obj::render()
 				point_light *pointLight = dynamic_cast<point_light*>(e);
 				if (pointLight != NULL)
 				{
-					renderer::bind(*pointLight, "point[2]");
+					//renderer::bind(*pointLight, "point[2]");
+					points.at(pointCount) = *pointLight;
+					pointCount++;
 				}
 				else
 				{
@@ -441,7 +456,7 @@ void Obj::render()
 		}
 
 		//renderer::bind(myScene->shadow.buffer->get_depth(), 1);
-
+		renderer::bind(points, "point");
 
 		if (myType == sky)
 		{
@@ -473,7 +488,7 @@ void Obj::render()
 
 
 		// all objects in this loop are opaque objects therefore alpha is 1
-		glUniform1f(eff->get_uniform_location("alphaVal"), 1.0f); 
+		glUniform1f(eff->get_uniform_location("alphaVal"), transparencyValue); 
 
 
 

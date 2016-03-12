@@ -25,17 +25,13 @@ public:
 
 	GenerateBack* generator;
 
-	//directional_light* light;
-	//point_light* pointLight;
-	//spot_light* spot;
-
 	camera* cam;
 
 	vector<camera*> cameraList;
 	vector<Light*> lightList;
 	vector<vector<texture*>> texList;
 	
-	vector<effect*> effectList;
+	vector<effect*> effectList;  // list of all effect pointers for freeing
 
 	vector<Obj*> list;
 	vector<Obj*> transparentObjects;
@@ -54,8 +50,9 @@ public:
 	vec3 planeNormals[6]; // var for storing view frustrum plane normals.
 	vec3 planePoints[8];
 
+	geometry radiusGeom;		// geometry for scene debugging 
 	geometry frustrumGeom;
-
+	effect	 frustrumEffect;
 
 	bool debug;
 	bool fixCull;
@@ -65,15 +62,11 @@ public:
 	double current_x;			    // var for current mouse pos
 	double current_y;
 
-	bool firstMouse;
+	bool firstMouse;	
 
-	Obj* mySpot;
-	
-	geometry radiusGeom;
-
-	SceneManager(double initialMouseX, double initialMouseY);
-	~SceneManager();
-	void Create();
+	SceneManager(double initialMouseX, double initialMouseY);  // constructor takes in initial mouse positions for free camera setup
+	~SceneManager();										   // deconstructor frees lists
+	void createLights();
 	void calculateFrustrum();
 	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
 };

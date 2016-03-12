@@ -64,7 +64,7 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	}
 	else
 	{
-		folderName = "new";
+		folderName = "myClouds";
 		ext = "png";
 	}
 

@@ -66,6 +66,6 @@ vec4 calculate_point(in point_light point, in material mat, in vec3 position, in
 
 	vec4 colour = primary * tex_colour + specular;
 
-	colour.a = 1.0f;
+
 	return colour;
 }

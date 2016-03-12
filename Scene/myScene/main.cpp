@@ -2,9 +2,6 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
-effect frustrumEff;
-mesh m;
-
 bool initialise()
 {
 	double xpos = 0; // create initial vars for mouse position
@@ -59,7 +56,7 @@ bool initialise()
 	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
-	myScene->Create();  // run create method for scene man
+	myScene->createLights();  // sets up light objects
 
 	
 	return true;
@@ -71,8 +68,8 @@ bool load_content()
 	
 	// CREATE TERRAIN
 
-	vector<geometry> terrainBlocks;
-	vector<vec3> centres;
+	vector<geometry> terrainBlocks;	// geom to pass into function to create terrain blocks within
+	vector<vec3> centres;			// list of terrain centers calculated from the positons when generating terrain
 	
 	// Load height map
 	texture height_map("..\\resources\\textures\\heightmaps\\myHeightMapNEW.png");
@@ -80,8 +77,8 @@ bool load_content()
 	// Generate terrain
 	myScene->generator->generate_terrain(terrainBlocks, height_map, 20, 20, 10.0f, centres);
 
-	// create terrain object
-	// Use geometry to create terrain 
+	// creates terrain object
+	// Use geometry to create terrain meshes
 	myScene->meshes["terr"] = mesh(terrainBlocks.at(0));
 	myScene->meshes["terr2"] = mesh(terrainBlocks.at(1));
 	myScene->meshes["terr3"] = mesh(terrainBlocks.at(2));
@@ -92,9 +89,9 @@ bool load_content()
 	terrTextList.push_back( new texture("..\\resources\\textures\\Peetmoss_pxr128.tif"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\Jute_cocomat_pxr128.tif"));
 	terrTextList.push_back( new texture("..\\resources\\textures\\Slag_stone_pxr128.tif"));
-	myScene->texList.push_back(terrTextList);
+	myScene->texList.push_back(terrTextList);	// add to list of texture lists.
 
-	// Create plane mesh
+	// Create plane mesh for the water 
 	myScene->meshes["water"] = mesh(geometry_builder::create_plane(200, 200));
 
 	// Create scene
@@ -104,8 +101,8 @@ bool load_content()
 	
 	myScene->meshes["cylinder"] = mesh(geometry_builder::create_cylinder(20, 20, vec3(1.0f, 3.0f, 1.0f)));  // pillar
 
-	myScene->meshes["ball"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
-	myScene->materials["ball"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
+	myScene->meshes["pointLightParent"] = mesh(geometry_builder::create_sphere()); // creat ball to emit light
+	myScene->materials["pointLightParent"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
 
 	myScene->meshes["spoot"] = mesh(geometry_builder::create_sphere(20, 20, vec3(0.1f, 0.1f, 0.1f)));
 	myScene->materials["spoot"].set_diffuse(vec4(1.0, 1.0, 1.0f, 1.0f));
@@ -154,7 +151,7 @@ bool load_content()
 	myScene->materials["sphere"].set_shininess(50.0f);
 	
 	// set emissive for point
-	myScene->materials["ball"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	myScene->materials["pointLightParent"].set_emissive(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	// set emissive for spot
 	myScene->materials["spoot"].set_emissive(vec4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -169,11 +166,17 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\point.frag",
 		"..\\resources\\shaders\\parts\\weighted_texture.frag");
 
+	effect *eff = myScene->createEffect(
+		"..\\resources\\shaders\\phong.vert",
+		"..\\resources\\shaders\\phong.frag",
+		"..\\resources\\shaders\\parts\\point.frag", NULL);
+
+
 	// Terrain: 1 2
 	//			3 4
 	// looking at platform
 	Obj *terrain1 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr3"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
-	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);	
+	Obj *terrain2 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	Obj *terrain3 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr2"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	Obj *terrain4 = new Obj(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(50.0f, 50.0f, 50.0f), &myScene->meshes["terr4"], &myScene->materials["terr"], terrTextList, terr_eff, terrn);
 	
@@ -225,14 +228,11 @@ bool load_content()
 
 	effect *water_eff = myScene->createEffect(
 		"..\\resources\\shaders\\water.vert",
-		"..\\resources\\shaders\\water.frag",
+		"..\\resources\\shaders\\phong.frag",
 		"..\\resources\\shaders\\parts\\point.frag",
 		NULL);
 
-	effect *eff = myScene->createEffect(
-		"..\\resources\\shaders\\phong.vert",
-		"..\\resources\\shaders\\phong.frag",
-		NULL, NULL);
+	
 
 	effect *norm_eff = myScene->createEffect(
 		"normShader.vert",
@@ -278,14 +278,13 @@ bool load_content()
 	
 
 	// loaded model
-	Obj *stoneModel = new Obj(vec3(3, 0, 3), vec3(0), 0, vec3(0.05), &myScene->meshes["model"], &myScene->materials["cylinder"], stoneModText, norm_eff, object);
+	Obj *stoneModel = new Obj(vec3(3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["cylinder"], stoneModText, eff, object);
 
 	geometry barGeom;
 	myScene->generator->generate_bar(barGeom);
 	myScene->meshes["bar"] = barGeom;
 
-	Obj *bar = new Obj(vec3(-150.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
-
+	Obj *bar = new Obj(vec3(-1.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["bar"], &myScene->materials["platform"], platText, eff, object);
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
@@ -293,30 +292,36 @@ bool load_content()
 	
 	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], objTextList, eff, object);
 
-	Obj *ball = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
-	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["ball"], &myScene->materials["ball"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 1.0f, 0.0f), pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
+	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightParent"], objTextList, eff, pointLightObj);// point_eff, pointLight, pointLightObj);
 
 	
-	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
-	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, eff, object);
 	
 	
 	Obj *spoot = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], objTextList, eff, spotty);
 
-	terrain1->addChild(box, "box");
-	
+
+	// set up hierarchy  ( terrrain 1 2, 3 4 as looking at the platform)
+
+
+	terrain1->addChild(box, "box");	
 	terrain1->addChild(plat, "platform");
+
+	plat->addChild(platWall, "platWall");
+	plat->addChild(platBox, "platBox");
+	plat->addChild(pillarPlat, "pillarPlat");
+	plat->addChild(pillarPlat2, "pillarPlat2");
+	plat->addChild(glassPane, "glassPlane");
+	plat->addChild(stoneModel, "model");
 
 	terrain3->addChild(sphereG, "gouraudSphere");
 	sphereG->addChild(sphereP, "phongSphere");
 	//sphereP->addChild(sphereP2, "phdongSphere");
 
-	plat->addChild(platWall, "platWall");
-	plat->addChild(platBox, "platBox");
-	plat->addChild(pillarPlat, "pillarPlat");
-	spoot->addChild(pillarPlat2, "pillarPlat2");
-	plat->addChild(glassPane, "glassPlane");
-	plat->addChild(stoneModel, "model");
+
 	
 	platBox->addChild(spoot, "spoot");
 	//platBox->addChild(bar, "bar");
@@ -332,8 +337,9 @@ bool load_content()
 
 	box->addChild(pyra, "pyramid");
 
-	terrain4->addChild(ball, "ball");
-	ball->addChild(pointLightChildBall, "pointChild");
+	terrain4->addChild(pointLightParent, "pointLightParent");
+	pointLightParent->addChild(pointLightChildBall, "pointChild");
+	pointLightChildBall->addChild(pointLightChildBall2, "pointChild2");
 
 
 
@@ -344,7 +350,7 @@ bool load_content()
 	myScene->list.push_back(pillar2);
 	myScene->list.push_back(pillar3);
 	myScene->list.push_back(pillar4);
-	myScene->list.push_back(ball);
+	myScene->list.push_back(pointLightParent);
 	myScene->list.push_back(plat);
 	myScene->list.push_back(platBox);
 	myScene->list.push_back(platWall);
@@ -358,10 +364,11 @@ bool load_content()
 	myScene->list.push_back(stoneModel);
 	myScene->list.push_back(bar);
 	myScene->list.push_back(pointLightChildBall);
+	myScene->list.push_back(pointLightChildBall2);
 
 	myScene->transparentObjects.push_back(glassPane);
 
-	myScene->lightObjects.push_back(ball);
+	myScene->lightObjects.push_back(pointLightParent);
 	myScene->lightObjects.push_back(pointLightChildBall);
 	
 	myScene->lightObjects.push_back(spoot);
@@ -421,10 +428,10 @@ bool load_content()
 	myScene->effectList.push_back(rad_eff);
 
 
-	frustrumEff.add_shader("..\\resources\\shaders\\simple.vert", GL_VERTEX_SHADER);
-	frustrumEff.add_shader("..\\resources\\shaders\\simple.frag", GL_FRAGMENT_SHADER);
+	myScene->frustrumEffect.add_shader("..\\resources\\shaders\\simple.vert", GL_VERTEX_SHADER);
+	myScene->frustrumEffect.add_shader("..\\resources\\shaders\\simple.frag", GL_FRAGMENT_SHADER);
 	// Build effect
-	frustrumEff.build();
+	myScene->frustrumEffect.build();
 
 
     return true;
@@ -441,10 +448,8 @@ void updateLightPositions()
 
 bool update(float delta_time)
 {
-	//vec3 pos = vec3(0.0, 0.0, 0.0) - myScene->
 	updateLightPositions();
-	//myScene->lightList[2]->set_position(vec3(myScene->);
-	//->get_direction();  /// ???
+	
 	auto lpos = myScene->lightList[2]->get_position();
 	myScene->shadow.light_position = myScene->lightList[2]->get_position();
 	auto ldir = myScene->lightList[2]->get_direction();
@@ -480,13 +485,13 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_ADD))
 	{
 		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		myLight->rotate(vec3(1.0, 0.0, 0.0) * delta_time);
+		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) * delta_time));
 	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_KP_SUBTRACT))
 	{
 		directional_light *myLight = dynamic_cast<directional_light*>(myScene->lightList.at(0));
-		myLight->rotate(vec3(1.0, 0.0, 0.0) * delta_time);
+		myLight->rotate(normalize(vec3(1.0, 0.0, 0.0) * delta_time));
 	}
 		
 
@@ -551,11 +556,6 @@ bool update(float delta_time)
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
-	
-
-	//if (glfwGetKey(renderer::get_window(), GLFW_KEY_T))
-	//	cout << "Terrain 1 pos: " << myScene->list.at(myScene->list.size() - 3)->getWorldPos() << endl;
-
     return true;
 }
 
@@ -602,11 +602,7 @@ void generateFrustrumPlanes()
 
 	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 
-	m = mesh(myScene->frustrumGeom);
-
 }
-
-
 
 bool render()
 {
@@ -668,6 +664,8 @@ bool render()
 		// if debug mode draw radii of bounding spheres
 		vector<float> radii;
 		vector<vec3> positions;
+
+		// for each object, add it's radius and it's center position in world place to the vectors
 		for (auto c : myScene->list)
 		{
 			radii.push_back(c->getRadius());
@@ -676,46 +674,51 @@ bool render()
 
 		}
 
+		// add to buffers, dynamic_draw allows for overwriting the buffers.
 		myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
-		myScene->radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);
+		myScene->radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);		// use buffer index 1
 
-
+		// bind the effect
 		renderer::bind(*myScene->rad_eff);
-	
+
+		// Calculate ViewProjection matrix, - No model as center positon is already transformed by this
 
 		auto V = myScene->cam->get_view();
 		auto P = myScene->cam->get_projection();
 		auto VP = P * V;
 
+
+		// set uniform
 		glUniformMatrix4fv(
 			myScene->rad_eff->get_uniform_location("VP"),
 			1,
 			GL_FALSE,
 			value_ptr(VP));
 
-
+		// render the geometry
 		renderer::render(myScene->radiusGeom);
 		
 	
-
+		// if fixCull, then the frustrum plane is fixed and not updating, so draw if in debug mode
 		if (myScene->fixCull)
 		{
 
-			// show view frustrum
+			// generate the geometry from the plane points.
 			generateFrustrumPlanes();
 
+			// increase the line width so it's easier to see
 			glLineWidth(3.0f);
 
-			renderer::bind(frustrumEff);
+			renderer::bind(myScene->frustrumEffect);
 
-			auto MVP = VP;  // already in world position
+			// set uniform (use view/projection matrix calulated above)
 			glUniformMatrix4fv(
-				frustrumEff.get_uniform_location("MVP"),
+				myScene->frustrumEffect.get_uniform_location("VP"),
 				1,
 				GL_FALSE,
-				value_ptr(MVP));
+				value_ptr(VP));
 
-			renderer::render(m);
+			renderer::render(myScene->frustrumGeom);
 
 			vec3 midNear = (myScene->planePoints[ntl] + myScene->planePoints[ntr]) * vec3(0.5, 0.5, 0.5);
 			vec3 midLeftNear = (myScene->planePoints[ntl] + myScene->planePoints[nbl]) * vec3(0.5, 0.5, 0.5);
