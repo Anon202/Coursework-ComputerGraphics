@@ -23,22 +23,23 @@ bool initialise()
 
 	// static target camera at pos [0]
 	myScene->cam = new target_camera();
-	myScene->cameraList.push_back(myScene->cam);  // add to list so as to not loose the pointer to the camera
+	
 
-	// create target camera
-	myScene->cam->set_position(vec3(150.0f, 200.0f, -90.0f));
-	myScene->cam->set_target(vec3(-1.0f, -1.0f, -1.0f));
+	// create target camera camera at point lights
+	myScene->cam->set_position(vec3(240.0, 150.0, -200.0));
+	myScene->cam->set_target((vec3(240.0, 90.0, -310.0)));
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
+	myScene->cameraList.push_back(myScene->cam);  // add to list so as to not loose the pointer to the camera
 
 	// target camera 2
 	myScene->cam = new target_camera();
 	myScene->cameraList.push_back(myScene->cam); // add to list (so can be deleted at end)
 
 
-	// Set camera properties for free camera (default)
-	myScene->cam->set_position(vec3(-50.0f, 100.0f, 50.0f));
-	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
+	// Set camera properties for 2nd target camera
+	myScene->cam->set_position(vec3(-260.0f, 200.0f, 0.0f));
+	myScene->cam->set_target(vec3(-261.0f, 200.0f, 10.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
 
@@ -329,7 +330,7 @@ bool load_content()
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
 	// box and pyramid to show scale and hierarchy
-	Obj *box = new Obj(vec3(5.0, 1.0, -3.0), vec3(0.0f), 0.0f, vec3(1.0f), &myScene->meshes["box"], &myScene->materials["box"], woodenTextures, norm_eff, movingObject);
+	Obj *box = new Obj(vec3(1.0, 1.0, 2.0), vec3(0.0f), 0.0f, vec3(1.0f), &myScene->meshes["box"], &myScene->materials["box"], woodenTextures, norm_eff, movingObject);
 
 	// set scale factor, sets the factor the sinwave is multiplied by and is applied to the box
 	box->setScaleFactor(0.5f);
@@ -372,6 +373,7 @@ bool load_content()
 	terrain3->addChild(sphereG, "gouraudSphere");
 	sphereG->addChild(sphereP, "phongSphere");
 	
+	terrain3->addChild(box, "box");
 	box->addChild(pyra, "pyramid");
 
 	// terrain block 4: contains point light hierarchy
@@ -479,17 +481,6 @@ void updateLightPositions()
 bool update(float delta_time)
 {
 	updateLightPositions();
-	
-	auto lpos = myScene->lightList[2]->get_position();
-	myScene->shadow.light_position = myScene->lightList[2]->get_position();
-	auto ldir = myScene->lightList[2]->get_direction();
-	myScene->shadow.light_dir = myScene->lightList[2]->get_direction();
-
-	// Press s to save
-	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
-	{
-		myScene->shadow.buffer->save("test.png");
-	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -501,6 +492,7 @@ bool update(float delta_time)
 	free_camera* freeCam = NULL;
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
+	// enable/ disable polygon mode
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
