@@ -287,18 +287,21 @@ bool load_content()
 	 */
 
 	// create objects to show difference between gouraud and phong shading
-	Obj *sphereG = new Obj(vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, object);
+	Obj *sphereG = new Obj(vec3(5.0f, 3.0f, 5.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, gouraud_eff, movingObject);
 	Obj *sphereP = new Obj(vec3(0.0, 0.0f, -2.0), vec3(1.0f, 0.0f, 0.0f), 0.0f, vec3(1.0), &myScene->meshes["sphere"], &myScene->materials["sphere"], sphereText, phongEff, object);
 	
+	// translation transformation, takes in increment value (slower the lower) and max distance to move
+	sphereG->setTranslationParams(vec3(0.0f, 0.75f, -0.75f), vec3(0.0f, 1.5f, 1.5f));
+
 	// create objects for the "temple" - platform is the root of this
 	Obj *platLower = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
 	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
 
-	// pillars underneath platform, 1 is root. each are children of eachother succesively.
-	Obj *pillar = new Obj(vec3(3.0f, -1.5f, -3.5f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar2 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar3 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
-	Obj *pillar4 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	// pillars underneath platform 
+	Obj *pillar = new Obj(vec3(3.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar2 = new Obj(vec3(-1.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar3 = new Obj(vec3(1.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
+	Obj *pillar4 = new Obj(vec3(-3.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
 	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
@@ -365,12 +368,9 @@ bool load_content()
 	
 
 	platLower->addChild(pillar, "pillar");
-
-	pillar->addChild(pillar2, "pillar2");
-
-	pillar2->addChild(pillar3, "pillar3");
-
-	pillar3->addChild(pillar4, "pillar4");
+	platLower->addChild(pillar2, "pillar2");
+	platLower->addChild(pillar3, "pillar3");
+	platLower->addChild(pillar4, "pillar4");
 
 
 
@@ -378,12 +378,9 @@ bool load_content()
 	terrain3->addChild(sphereG, "gouraudSphere");
 	sphereG->addChild(sphereP, "phongSphere");
 	
-
-	
-
-
 	box->addChild(pyra, "pyramid");
 
+	// terrain block 4: contains point light hierarchy
 	terrain4->addChild(pointLightParent, "pointLightParent");
 	pointLightParent->addChild(pointLightChildBall, "pointChild");
 	pointLightChildBall->addChild(pointLightChildBall2, "pointChild2");
