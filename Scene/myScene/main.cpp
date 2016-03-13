@@ -121,7 +121,7 @@ bool load_content()
 	myScene->meshes["platWall"] = mesh(geometry_builder::create_box(vec3(0.5, 3.0, 5.0)));
 	myScene->materials["platWall"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
-	myScene->meshes["model"] = geometry("..\\resources\\stoneEnd.3ds");
+	myScene->meshes["model"] = geometry("..\\resources\\models\\stoneEnd.3ds");
 	myScene->materials["model"].set_diffuse(vec4(0.83, 0.71, 0.68, 1.0));
 
 	myScene->meshes["glass"] = mesh(geometry_builder::create_box(vec3(0.1, 2.0, 1.0)));// mesh(glassP);
@@ -176,8 +176,8 @@ bool load_content()
 	myScene->materials["pointLightRed"].set_specular(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	effect *terr_eff = myScene->createEffect(
-		"shader.vert",
-		"shader.frag",
+		"..\\resources\\shaders\\terrainShader.vert",
+		"..\\resources\\shaders\\terrainShader.frag",
 		"..\\resources\\shaders\\parts\\point.frag",
 		"..\\resources\\shaders\\parts\\weighted_texture.frag");
 
@@ -245,7 +245,7 @@ bool load_content()
 
 	vector<texture*> displacementTextures;
 	displacementTextures.push_back(new texture("..\\resources\\textures\\Iridescent_ribbon_pxr128.tif"));
-	displacementTextures.push_back(new texture("..\\resources\\textures\\Distortion2.jpg"));
+	displacementTextures.push_back(new texture("..\\resources\\textures\\dispTest.png"));
 	myScene->texList.push_back(displacementTextures);
 
 	effect *water_eff = myScene->createEffect(
@@ -255,8 +255,8 @@ bool load_content()
 		NULL);
 
 	effect *norm_eff = myScene->createEffect(
-		"normShader.vert",
-		"normShader.frag",
+		"..\\resources\\shaders\\normShader.vert",
+		"..\\resources\\shaders\\normShader.frag",
 		"..\\resources\\shaders\\parts\\direction.frag",
 		"..\\resources\\shaders\\parts\\normal_map.frag");
 	
@@ -265,14 +265,8 @@ bool load_content()
 		"..\\resources\\shaders\\gouraud.frag",
 		NULL, NULL);
 
-	effect *shadeff = myScene->createEffect(
-		"..\\resources\\shaders\\shadow.vert",
-		"shadowShader.frag",
-		"..\\resources\\shaders\\parts\\spotPart.frag",
-		"..\\resources\\shaders\\parts\\shadowPart.frag");
-
 	effect *blending = myScene->createEffect(
-		"normShader.vert",
+		"..\\resources\\shaders\\normShader.vert",
 		"..\\resources\\shaders\\blending.frag",
 		"..\\resources\\shaders\\parts\\normal_map.frag", NULL);
 

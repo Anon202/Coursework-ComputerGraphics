@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libENUgraphics", "libENUgraphics\libENUgraphics.vcxproj", "{A943724C-1DC0-4711-9539-B78A8D6ECEC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{96425147-A5FD-4D64-8E08-00A3BF701D94}"
-	ProjectSection(SolutionItems) = preProject
-		resources\textures\heightmaps\myHeightMap.png = resources\textures\heightmaps\myHeightMap.png
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194805E-ABC9-4D12-A0CD-98C0073AEC73}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,11 +19,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\normalGeom.geom = resources\shaders\normalGeom.geom
 		resources\shaders\normals.geom = resources\shaders\normals.geom
 		resources\shaders\normalVert.vert = resources\shaders\normalVert.vert
+		myScene\normShader.frag = myScene\normShader.frag
+		myScene\normShader.vert = myScene\normShader.vert
 		resources\shaders\phong.frag = resources\shaders\phong.frag
 		resources\shaders\phong.vert = resources\shaders\phong.vert
 		resources\shaders\point.frag = resources\shaders\point.frag
 		resources\shaders\point.vert = resources\shaders\point.vert
+		resources\shaders\radiusFrag.frag = resources\shaders\radiusFrag.frag
+		resources\shaders\radiusGeom.geom = resources\shaders\radiusGeom.geom
+		resources\shaders\radiusVert.vert = resources\shaders\radiusVert.vert
+		myScene\shader.frag = myScene\shader.frag
+		myScene\shader.vert = myScene\shader.vert
 		resources\shaders\shadow.vert = resources\shaders\shadow.vert
+		myScene\shadowShader.frag = myScene\shadowShader.frag
 		resources\shaders\simple.frag = resources\shaders\simple.frag
 		resources\shaders\simple.vert = resources\shaders\simple.vert
 		resources\shaders\skybox.frag = resources\shaders\skybox.frag
@@ -39,10 +44,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "textures", "textures", "{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}"
 	ProjectSection(SolutionItems) = preProject
-		resources\textures\blend_map.jpg = resources\textures\blend_map.jpg
+		resources\textures\Big_pebbles_pxr128.tif = resources\textures\Big_pebbles_pxr128.tif
+		resources\textures\blending_transparent_window.png = resources\textures\blending_transparent_window.png
+		resources\textures\brick.jpg = resources\textures\brick.jpg
+		resources\textures\brick_normalmap.jpg = resources\textures\brick_normalmap.jpg
+		resources\textures\Brown_dirt_pxr128.tif = resources\textures\Brown_dirt_pxr128.tif
+		resources\textures\dispTest.png = resources\textures\dispTest.png
 		resources\textures\dissolve.png = resources\textures\dissolve.png
+		resources\textures\Gray_swirl_marble_pxr128.tif = resources\textures\Gray_swirl_marble_pxr128.tif
+		resources\textures\Gray_swirl_marble_pxr128_normal.tif = resources\textures\Gray_swirl_marble_pxr128_normal.tif
+		resources\textures\Iridescent_ribbon_pxr128.tif = resources\textures\Iridescent_ribbon_pxr128.tif
+		resources\textures\Ivy_pxr128.tif = resources\textures\Ivy_pxr128.tif
+		resources\textures\Ivy_pxr128_normal.tif = resources\textures\Ivy_pxr128_normal.tif
+		resources\textures\Jute_cocomat_pxr128.tif = resources\textures\Jute_cocomat_pxr128.tif
 		resources\textures\LightCube.dds = resources\textures\LightCube.dds
-		resources\textures\Snow.dds = resources\textures\Snow.dds
+		resources\textures\Peetmoss_pxr128.tif = resources\textures\Peetmoss_pxr128.tif
+		resources\textures\Red_velvet_pxr128.tif = resources\textures\Red_velvet_pxr128.tif
+		resources\textures\Slag_stone_pxr128.tif = resources\textures\Slag_stone_pxr128.tif
+		resources\textures\stoneEnd_D.tga = resources\textures\stoneEnd_D.tga
+		resources\textures\stoneEnd_N.tga = resources\textures\stoneEnd_N.tga
+		resources\textures\Vertical_redwood_pxr128.tif = resources\textures\Vertical_redwood_pxr128.tif
+		resources\textures\Vertical_redwood_pxr128_normal.tif = resources\textures\Vertical_redwood_pxr128_normal.tif
+		resources\textures\water.jpg = resources\textures\water.jpg
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parts", "parts", "{1EF9CE7D-8512-4511-A142-B5BA598E413C}"
@@ -59,24 +82,39 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parts", "parts", "{1EF9CE7D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cubemaps", "cubemaps", "{4C6F7C7F-C253-48FE-A553-4410B949E275}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "alien", "alien", "{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6}"
-	ProjectSection(SolutionItems) = preProject
-		resources\textures\cubemaps\alien\negx.png = resources\textures\cubemaps\alien\negx.png
-		resources\textures\cubemaps\alien\negy.png = resources\textures\cubemaps\alien\negy.png
-		resources\textures\cubemaps\alien\negz.png = resources\textures\cubemaps\alien\negz.png
-		resources\textures\cubemaps\alien\posx.png = resources\textures\cubemaps\alien\posx.png
-		resources\textures\cubemaps\alien\posy.png = resources\textures\cubemaps\alien\posy.png
-		resources\textures\cubemaps\alien\posz.png = resources\textures\cubemaps\alien\posz.png
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "myScene", "myScene\myScene.vcxproj", "{16896182-19CD-4298-9651-345B7059E3A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "heightmaps", "heightmaps", "{34C149AA-6EA0-41F7-AFC2-18B569665C9F}"
 	ProjectSection(SolutionItems) = preProject
-		resources\textures\heightmaps\terrain.png = resources\textures\heightmaps\terrain.png
+		resources\textures\heightmaps\myHeightMapNEW.png = resources\textures\heightmaps\myHeightMapNEW.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A01A805-D302-49A1-81AE-08A6D7F771C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "myClouds", "myClouds", "{4339783B-9A48-4976-8738-4D0730598AB5}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\cubemaps\myClouds\negx.png = resources\textures\cubemaps\myClouds\negx.png
+		resources\textures\cubemaps\myClouds\negy.png = resources\textures\cubemaps\myClouds\negy.png
+		resources\textures\cubemaps\myClouds\negz.png = resources\textures\cubemaps\myClouds\negz.png
+		resources\textures\cubemaps\myClouds\posx.png = resources\textures\cubemaps\myClouds\posx.png
+		resources\textures\cubemaps\myClouds\posy.png = resources\textures\cubemaps\myClouds\posy.png
+		resources\textures\cubemaps\myClouds\posz.png = resources\textures\cubemaps\myClouds\posz.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "valley", "valley", "{ECA39CF8-76A8-42A2-92C5-3B218EA311BA}"
+	ProjectSection(SolutionItems) = preProject
+		resources\textures\cubemaps\valley\negx.tga = resources\textures\cubemaps\valley\negx.tga
+		resources\textures\cubemaps\valley\negy.tga = resources\textures\cubemaps\valley\negy.tga
+		resources\textures\cubemaps\valley\negz.tga = resources\textures\cubemaps\valley\negz.tga
+		resources\textures\cubemaps\valley\posx.tga = resources\textures\cubemaps\valley\posx.tga
+		resources\textures\cubemaps\valley\posy.tga = resources\textures\cubemaps\valley\posy.tga
+		resources\textures\cubemaps\valley\posz.tga = resources\textures\cubemaps\valley\posz.tga
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{80762A5B-94E0-482D-8953-630763E040B2}"
+	ProjectSection(SolutionItems) = preProject
+		resources\models\stoneEnd.3ds = resources\models\stoneEnd.3ds
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,10 +137,12 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2194805E-ABC9-4D12-A0CD-98C0073AEC73} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
+		{80762A5B-94E0-482D-8953-630763E040B2} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
 		{4C6F7C7F-C253-48FE-A553-4410B949E275} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
-		{0DA29F10-FFC3-4E37-968D-195E0D3F2AD6} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
+		{4339783B-9A48-4976-8738-4D0730598AB5} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
+		{ECA39CF8-76A8-42A2-92C5-3B218EA311BA} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
