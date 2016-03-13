@@ -61,9 +61,9 @@ void main()
 	// calculate specular
 	vec3 view_dir = normalize(eye_pos - position);
 	vec3 halfV = normalize(view_dir + light.light_dir);
-
-	dotTemp = dot(halfV, transformedN);
-	k = max(dotTemp, 0);
+	
+	//dotTemp =
+	k = max( dot(transformedN, halfV), 0);
 
 	vec4 specular = mat.specular_reflection * light.light_colour * pow(k, mat.shininess);
 

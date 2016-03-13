@@ -102,7 +102,7 @@ void SceneManager::calculateFrustrum()
 
 	//near plane
 	float fov = quarter_pi<float>();
-	float near = 2.414;
+	float near = 2.414f;
 	float far = 1000.f;
 	auto aspect = static_cast<float>(renderer::get_screen_width()) / static_cast<float>(renderer::get_screen_height());
 
@@ -160,24 +160,24 @@ void SceneManager::calculateFrustrum()
 SceneManager::~SceneManager()
 {
 
-	for (int i = 0; i < lightList.size(); ++i)
+	for (unsigned int i = 0; i < lightList.size(); ++i)
 		delete lightList[i];
 
 	lightList.clear();
 
-	for (int i = 0; i < effectList.size(); ++i)
+	for (unsigned int i = 0; i < effectList.size(); ++i)
 		delete effectList[i];
 
 	effectList.clear();
 
-	for (int i = 0; i < cameraList.size(); ++i)
+	for (unsigned int i = 0; i < cameraList.size(); ++i)
 		delete cameraList[i];
 
 	cameraList.clear();
 
-	for (int i = 0; i < texList.size(); ++i)			// texlist is a vector list of a vector list of texture pointers
+	for (unsigned int i = 0; i < texList.size(); ++i)			// texlist is a vector list of a vector list of texture pointers
 	{
-		for (int j = 0; j < texList[i].size(); ++j)     // for each element in texlist delete each element of list inside
+		for (unsigned int j = 0; j < texList[i].size(); ++j)     // for each element in texlist delete each element of list inside
 			delete texList[i][j]; 
 	}
 	texList.clear();

@@ -28,8 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\radiusFrag.frag = resources\shaders\radiusFrag.frag
 		resources\shaders\radiusGeom.geom = resources\shaders\radiusGeom.geom
 		resources\shaders\radiusVert.vert = resources\shaders\radiusVert.vert
-		myScene\shader.frag = myScene\shader.frag
-		myScene\shader.vert = myScene\shader.vert
 		resources\shaders\shadow.vert = resources\shaders\shadow.vert
 		myScene\shadowShader.frag = myScene\shadowShader.frag
 		resources\shaders\simple.frag = resources\shaders\simple.frag
@@ -38,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\skybox.vert = resources\shaders\skybox.vert
 		resources\shaders\spot.frag = resources\shaders\spot.frag
 		resources\shaders\spot.vert = resources\shaders\spot.vert
+		myScene\terrainShader.frag = myScene\terrainShader.frag
+		myScene\terrainShader.vert = myScene\terrainShader.vert
 		resources\shaders\water.frag = resources\shaders\water.frag
 		resources\shaders\water.vert = resources\shaders\water.vert
 	EndProjectSection
@@ -90,6 +90,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "heightmaps", "heightmaps", 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A01A805-D302-49A1-81AE-08A6D7F771C8}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+		Performance2.psess = Performance2.psess
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "myClouds", "myClouds", "{4339783B-9A48-4976-8738-4D0730598AB5}"
 	ProjectSection(SolutionItems) = preProject

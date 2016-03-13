@@ -34,7 +34,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	this->tex = texture;
 	this->theta = theta;
 	this->rotV = rot;
-	this->normalMatrix = mat3(R);  // normal matrix is top corner of model matrix (it's orentation)
+	this->normalMatrix = m->get_transform().get_normal_matrix(); // normal matrix is top corner of model matrix (it's orentation)
 
 	visible = true;
 	
@@ -515,7 +515,7 @@ void Obj::render()
 		}
 
 		// set eye position (from active camera)
-		glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
+		glUniform3fv(eff->get_uniform_location("eye_pos"), 1, value_ptr(cam->get_position()));
 
 
 		// all objects in this loop are opaque objects therefore alpha is 1

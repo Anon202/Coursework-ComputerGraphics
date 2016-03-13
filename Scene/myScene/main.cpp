@@ -55,7 +55,7 @@ bool initialise()
 
 	myScene->createLights();  // sets up light objects
 
-	
+
 	return true;
 }
 
