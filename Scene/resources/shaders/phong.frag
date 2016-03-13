@@ -200,8 +200,6 @@ void main()
 	
 	colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 
-	// check 
-	//colour = primary*tex_colour;
 	colour.a = alphaVal;
 
 }

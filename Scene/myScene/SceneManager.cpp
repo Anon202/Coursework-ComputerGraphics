@@ -67,10 +67,10 @@ void SceneManager::createLights()
 	lightList.push_back(ptrChildChild);
 
 	spot_light *spot = new spot_light;
-	spot->set_direction(normalize(vec3(-1, 0, 0)));
-	spot->set_light_colour(vec4(1.0, 1.0, 0.0, 1.0));
-	spot->set_range(100);
-	spot->set_power(0.01);
+	spot->set_direction(normalize(vec3(-1.0f, 0.0f, 0.0f)));
+	spot->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	spot->set_range(100.0f);
+	spot->set_power(0.01f);
 	Light* spotPtr = spot;
 	lightList.push_back(spotPtr);
 

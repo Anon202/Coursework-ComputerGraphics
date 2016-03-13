@@ -251,8 +251,8 @@ void Obj::intersection()
 
 void Obj::calculateSphere()
 {
-	// need to calculate bounding sphere for the object
-	
+	// method used to retrive position data and calculate the largest length of the object	
+	// bind array buffer and read subset of data into the vector data to retrieve the positions for the vertices used to calclulate the bounding spheres of the objects
 	vector<vec3> data;
 	int count = m->get_geometry().get_vertex_count();
 	data.resize(count);
@@ -262,9 +262,10 @@ void Obj::calculateSphere()
 	float largest = 0.0;
 	for (auto p : data)
 	{
-		float curLen = length(p);
-		if (curLen > largest)
+		float curLen = length(p);		// for every point, caluclate length. 
+		if (curLen > largest)			// if length is larger than the current largest length make that the new largest and store the point.
 		{
+			largest = curLen;
 			furthestPoint = p;
 		}
 	}
@@ -374,7 +375,7 @@ void Obj::renderGlass()
 	// set eye position (from active camera)
 	glUniform3f(eff->get_uniform_location("eye_pos"), eyeP.x, eyeP.y, eyeP.z);
 
-	float transparencyValue = 0.4f;
+	float transparencyValue = 0.3f;
 	glUniform1f(eff->get_uniform_location("alphaVal"), transparencyValue); // glass object so true
 
 	// render mesh

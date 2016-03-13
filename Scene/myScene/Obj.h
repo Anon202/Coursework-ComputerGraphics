@@ -22,26 +22,29 @@ class Obj
 	float				radius;
 	vec3				furthestPoint;
 
-	float theta;		   // angle to update by every frame
-	float angleIncrement;  // used to store angle increment over time
+	float		     	theta;		     // angle to update by every frame
+	float				angleIncrement;  // used to store angle increment over time
 
 	cubemap				myCubemap;
 	vector<texture*>	tex;
 	map<string, Obj*>   children;  // map of children object pointers
 
 	string				myName;
-	vec3 rotV;
+	vec3				rotV;
 	
-	vec3 centreT;
+	vec3				centreT;  // vector to hold centre point of terrain object
 
-	vec3 translationAdjustment;
-	vec3 initialTranslation;
-	vec3 totalTranslation;
-	vec3 maxTranslation;
-	float scaleFactor;
 
-	bool transUpdate = false;
-	bool scaleUpdate = false;
+	// variables for storing translation and scale information for updating over time/hierarchy
+	vec3				translationAdjustment;
+	vec3				initialTranslation;
+	vec3				totalTranslation;
+	vec3				maxTranslation;
+	float				scaleFactor;
+
+	// bools to determine whether to update the trans/scale matrices
+	bool				transUpdate = false;
+	bool				scaleUpdate = false;
 
 public:
 	vec3				cent;    // to create bounding spheres

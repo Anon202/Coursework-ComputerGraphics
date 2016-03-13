@@ -1,5 +1,10 @@
-#pragma once
+/*
+ *	GenerateBack.h - header file for generation of background, and other objects
+ *	Terrain, skybox, own geometry prism
+ *
+ */
 
+#pragma once
 
 #include <graphics_framework.h>
 #include <glm\glm.hpp>
@@ -12,7 +17,7 @@ using namespace glm;
 class GenerateBack
 {
 public:
-	GenerateBack();
+	
 	void generate_terrain(
 		vector<geometry> &geom,
 		const texture &height_map,

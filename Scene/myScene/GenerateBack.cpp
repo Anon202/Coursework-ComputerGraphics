@@ -1,15 +1,13 @@
 #include "GenerateBack.h"
 
-
-GenerateBack::GenerateBack()
-{
-	
-}
-
 void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, bool skyOuter)
 {
+	// method for generating skybox mesh + cubemap from array
+
 	geometry geom;
 	geom.set_type(GL_QUADS);
+
+	// render cube from inside out
 	vector<vec3> positions
 	{
 		// Face 4
@@ -112,13 +110,11 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	// Contains our index data
 	vector<unsigned int> indices;
 
-	//vector<vec3> centre;
 
 	geometry geomTemp[4];  // temporary geometry values
 
-	// ***************************************
+	
 	// Extract the texture data from the image
-	// ***************************************
 	glBindTexture(GL_TEXTURE_2D, height_map.get_id());
 	auto data = new vec4[height_map.get_width() * height_map.get_height()];
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, (void*)data);
@@ -134,18 +130,18 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	GLint halfWidth = height_map.get_width() / 2;
 	GLint halfHeight = height_map.get_height() / 2;
 	 
-	int start[4] =		 { 0,  halfWidth -1,     		  0, halfWidth -1 };
-	int startHeight[4] = { 0,	halfHeight -1 , 	 halfHeight -1,		    0 };
+	unsigned int start[4] =		 { 0,  halfWidth -1,     		  0, halfWidth -1 };
+	unsigned int startHeight[4] = { 0,	halfHeight -1 , 	 halfHeight -1,		    0 };
 
-	int end[4] =		{ halfWidth,  halfWidth * 2,	  halfWidth, halfWidth *2 };
-	int endHeight[4] = { halfHeight, (halfHeight * 2) -1,  (halfHeight *2) -1,   halfHeight};
+	unsigned int end[4] =		{ halfWidth,  halfWidth * 2,	  halfWidth, halfWidth *2 };
+	unsigned int endHeight[4] = { halfHeight, (halfHeight * 2) -1,  (halfHeight *2) -1,   halfHeight};
 
 	for (unsigned int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
 	{
 
 		// Part 1 - Iterate through each point, calculate vertex and add to vector
 		// use starting and ending values of terrain (0 -> halfwidth, halfwidth -> 2 etc.)
-		for (int x = start[j]; x < end[j]; ++x)
+		for (unsigned int x = start[j]; x < end[j]; ++x)
 		{
 
 			// Calculate x position of point
@@ -153,7 +149,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 			point.x = -w2 + (width_point * x);
 
 			// loop through heights
-			for (int z = startHeight[j]; z < endHeight[j]; ++z)
+			for (unsigned int z = startHeight[j]; z < endHeight[j]; ++z)
 			{
 				// Calculate z position of point
 				float d2 = depth / 2.0f;
@@ -169,9 +165,9 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 
 
 		// Add index data
-		for (unsigned int x = 0; x < halfWidth - 1; ++x)
+		for (unsigned int x = 0; x < (unsigned int)(halfWidth - 1); ++x)
 		{
-			for (unsigned int y = 0; y < halfHeight - 1; ++y)
+			for (unsigned int y = 0; y < (unsigned int)(halfHeight - 1); ++y)
 			{
 
 				// Get four corners of patch
@@ -244,9 +240,9 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 			incrementX++;
 		}
 		
-		for (unsigned int x = 0; x < halfWidth + incrementX; ++x)
+		for (unsigned int x = 0; x < (unsigned int)(halfWidth + incrementX); ++x)
 		{
-			for (unsigned int z = 0; z < halfHeight; ++z)
+			for (unsigned int z = 0; z < (unsigned int)halfHeight; ++z)
 			{
 				vec2 v;
 				v.x = width_point * x;
