@@ -43,7 +43,8 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 
 	this->translateMatrix = T;
 	this->scaleMatrix = S;
-	this->rotationMatrix = R; // mat4_cast(m->get_transform().orientation);
+	this->rotationMatrix = R; 
+	this->initialTranslation = pos;
 }
 
 
@@ -108,14 +109,18 @@ float Obj::getRadius()
 	return radius;
 }
 
-void Obj::translateObject(vec3 moveBy)
+void Obj::setTranslationParams(vec3 moveBy, vec3 max)
 {
-	this->translateMatrix = translate(mat4(1.0f), moveBy);
+	translationAdjustment = moveBy;
+	maxTranslation = max;
+
+	transUpdate = true;
 }
 
-void Obj::scaleObject(vec3 scaleBy)
+void Obj::setScaleFactor(float sf)
 {
-	this->scaleMatrix = scale(mat4(1.0f), scaleBy);
+	scaleFactor = sf;
+	scaleUpdate = true;
 }
 
 void Obj::update(Obj* parent, float delta_time)
@@ -136,14 +141,42 @@ void Obj::update(Obj* parent, float delta_time)
 
 		mworld = trans * rotation * mworld;
 	}
-	else if (theta != 0.0) // if theta is not zero, update the rotation + normal matrix
+	else if (myType == movingObject|| myType == pointLightObj) // if theta is not zero, update the rotation + normal matrix
 	{
-		rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
-		normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
+		if (theta != 0.0)
+		{
+			rotationMatrix = rotate(mat4(1.0f), angleIncrement, rotV);
+			normalMatrix = mat3(rotationMatrix);  // change the normal matrix if the local model matrix changes the rotation
 
+			angleIncrement += theta * delta_time;
+		}
+
+		if (transUpdate)		// if moveBy value has changed translation matrix needs updating
+		{
+			totalTranslation += translationAdjustment * delta_time * 0.5f;
+
+			if ((length2(totalTranslation) > length2(maxTranslation)) || length2(totalTranslation) < 0)
+				translationAdjustment = -translationAdjustment;
+
+			translateMatrix = translate(mat4(1.0f), initialTranslation + totalTranslation);
+		}
+
+		if (scaleUpdate)
+		{
+			// Update the scale - base on sin wave
+			float scaleChange = 1.0f + sinf(myScene->myTime);
+
+			// Multiply by object's scale factor
+			scaleChange *= scaleFactor;
+
+			vec3 scaleAdjustment = vec3(scaleChange);
+
+			// change object's scale matrix
+			scaleMatrix = scale(mat4(1.0f), scaleAdjustment);
+		}
+
+		// finally update local model matrix
 		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
-		
-		angleIncrement += theta * delta_time;
 
 	}
 

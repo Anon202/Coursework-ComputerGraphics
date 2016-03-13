@@ -298,7 +298,7 @@ bool load_content()
 	Obj *pillar4 = new Obj(vec3(-4.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
-	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, transObject);
+	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
 	Obj *platWall = new Obj(vec3(-3.0, 1.5, 3.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, phongEff, object);
 	Obj *glassPane = new Obj(vec3(-1.0, 1.5, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
@@ -310,18 +310,19 @@ bool load_content()
 
 	Obj *water = new Obj(vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(5.0f, 5.0f, 5.0f), &myScene->meshes["water"], &myScene->materials["water"], waterText, water_eff, waterObj);
 
-	Obj *box = new Obj(vec3(1, 1, 1), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["box"], &myScene->materials["box"], woodenTextures, phongEff, object);
-	
-	Obj *pyra = new Obj(vec3(0.0f, 15.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], woodenTextures, phongEff, object);
+	Obj *box = new Obj(vec3(5.0, 1.0, -3.0), vec3(0.0f), 0.0f, vec3(1.0f), &myScene->meshes["box"], &myScene->materials["box"], woodenTextures, norm_eff, movingObject);
+	box->setScaleFactor(0.5f);
+
+	Obj *pyra = new Obj(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pyramid"], &myScene->materials["pyramid"], woodenTextures, phongEff, object);
 	 
 	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightYellow"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 2*pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightBlue"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall2 = new Obj(vec3(5.0f, 5.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightRed"], displacementTextures, displacement, pointLightObj);
 
 	
-	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, norm_eff, object);
+	Obj *pillarPlat = new Obj(vec3(-1.0f, 1.0f, 2.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, norm_eff, movingObject);
 	Obj *pillarPlat2 = new Obj(vec3(-3.0f, 0.0f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 0.7f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
-	
+	pillarPlat->setTranslationParams(vec3(1.0, 0.0, 0.0), vec3(10.0, 0.0, 0.0));
 	
 	Obj *spoot = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spoot"], &myScene->materials["spoot"], woodenTextures, phongEff, spotty);
 
@@ -336,7 +337,7 @@ bool load_content()
 	platformUpper->addChild(platWall, "platWall");
 	platformUpper->addChild(platBox, "platBox");
 	platformUpper->addChild(pillarPlat, "pillarPlat");
-	platformUpper->addChild(pillarPlat2, "pillarPlat2");
+	pillarPlat->addChild(pillarPlat2, "pillarPlat2");
 	platformUpper->addChild(glassPane, "glassPlane");
 	platformUpper->addChild(stoneModel, "model");
 

@@ -24,7 +24,7 @@ public:
 	void generate_skybox(
 		mesh &skybox,
 		cubemap &cube_map,
-		float skyNum);
+		bool skyOuter);
 
 	void generate_bar(geometry &geom);
 };

@@ -33,6 +33,16 @@ class Obj
 	vec3 rotV;
 	
 	vec3 centreT;
+
+	vec3 translationAdjustment;
+	vec3 initialTranslation;
+	vec3 totalTranslation;
+	vec3 maxTranslation;
+	float scaleFactor;
+
+	bool transUpdate = false;
+	bool scaleUpdate = false;
+
 public:
 	vec3				cent;    // to create bounding spheres
 	mat4				mworld;
@@ -72,9 +82,9 @@ public:
 
 	void setCenterTerr(vec3 cent);
 
-	void translateObject(vec3 moveBy);
+	void setScaleFactor(float scaleFactor);
 
-	void scaleObject(vec3 scaleBy);
+	void setTranslationParams(vec3 move, vec3 max);
 
 	~Obj() { }
 

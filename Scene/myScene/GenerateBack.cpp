@@ -6,7 +6,7 @@ GenerateBack::GenerateBack()
 	
 }
 
-void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum)
+void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, bool skyOuter)
 {
 	geometry geom;
 	geom.set_type(GL_QUADS);
@@ -52,22 +52,26 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);  // add position to buffer
 	skybox = mesh(geom);
 
-	// ******************************************************
+
 	// Load the cubemap
 	// - create array of six filenames +x, -x, +y, -y, +z, -z
-	// ******************************************************
+
+
+	// two cubemaps sky inner and outer stored in different folders with different file extensions
 	string folderName, ext;
-	if (skyNum == 1)
+
+	if (skyOuter)					// use valley cubemap
 	{
 		folderName = "valley";
 		ext = "tga";
 	}
-	else
+	else							// use cloud cubemap
 	{
 		folderName = "myClouds";
 		ext = "png";
 	}
 
+	// add textures to array in correct order
 	array<string, 6> filenames =
 	{
 		"..\\resources\\textures\\cubemaps\\" + folderName + "\\posx." + ext,
@@ -78,15 +82,16 @@ void GenerateBack::generate_skybox(mesh &skybox, cubemap &cube_map, float skyNum
 		"..\\resources\\textures\\cubemaps\\" + folderName + "\\negz." + ext
 	};
 
-	// ***************
-	// Create cube_map
-	// ***************
+
+	// Create cube_map from array
 	cube_map = cubemap(filenames);
 
 }
 
 void addToBuffers(geometry &currentGeom, vector<vec3> &positions, vector<unsigned int> &indices, vector<vec3> &normals, vector<vec2> &tex_coords, vector<vec4> &tex_weights)
 {
+	// method for adding to buffers, for the terrain block data
+
 	currentGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	currentGeom.add_index_buffer(indices);
 	currentGeom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
@@ -126,8 +131,8 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	// Point to work on
 	vec3 point;
 
-	int halfWidth = height_map.get_width()/2;
-	int halfHeight = height_map.get_height()/2;
+	GLint halfWidth = height_map.get_width() / 2;
+	GLint halfHeight = height_map.get_height() / 2;
 	 
 	int start[4] =		 { 0,  halfWidth -1,     		  0, halfWidth -1 };
 	int startHeight[4] = { 0,	halfHeight -1 , 	 halfHeight -1,		    0 };
@@ -135,65 +140,52 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 	int end[4] =		{ halfWidth,  halfWidth * 2,	  halfWidth, halfWidth *2 };
 	int endHeight[4] = { halfHeight, (halfHeight * 2) -1,  (halfHeight *2) -1,   halfHeight};
 
-	for (int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
+	for (unsigned int j = 0; j < 4; ++j)  // loop for four quadrants of terrain
 	{
 
-		// ***********************************************************************
 		// Part 1 - Iterate through each point, calculate vertex and add to vector
-		// ***********************************************************************
+		// use starting and ending values of terrain (0 -> halfwidth, halfwidth -> 2 etc.)
 		for (int x = start[j]; x < end[j]; ++x)
 		{
-			// *****************************
+
 			// Calculate x position of point
-			// *****************************
-			float w2 = width / 2;
+			float w2 = width / 2.0f;
 			point.x = -w2 + (width_point * x);
 
+			// loop through heights
 			for (int z = startHeight[j]; z < endHeight[j]; ++z)
 			{
-				// *****************************
 				// Calculate z position of point
-				// *****************************
-				float d2 = depth / 2;
+				float d2 = depth / 2.0f;
 				point.z = -d2 + (depth_point*z);
 
-				// ****************************************************
 				// Y position based on red component of height map data
-				// ****************************************************
-
 				point.y = data[(z * height_map.get_height()) + x].y * height_scale;
-				// **************************
+
 				// Add point to position data
-				// **************************
 				positions.push_back(point);
 			}
 		}
 
-		// ***********************
-		// Part 1 - Add index data
-		// ***********************
-		for (unsigned int x = 0; x < halfWidth -1 ; ++x)
-		{
-			for (unsigned int y = 0; y < halfHeight -1 ; ++y)
-			{
-				// *************************
-				// Get four corners of patch
-				// *************************
-				int top_left = (y * halfWidth) + x;
-				int top_right = (y * halfWidth) + x + 1;
-				int bottom_left = ((y + 1)*halfWidth) + x;
-				int bottom_right = ((y + 1)*halfWidth) + x + 1;
 
-				// ********************************
+		// Add index data
+		for (unsigned int x = 0; x < halfWidth - 1; ++x)
+		{
+			for (unsigned int y = 0; y < halfHeight - 1; ++y)
+			{
+
+				// Get four corners of patch
+				unsigned int top_left = (y * halfWidth) + x;
+				unsigned int top_right = (y * halfWidth) + x + 1;
+				unsigned int bottom_left = ((y + 1)*halfWidth) + x;
+				unsigned int bottom_right = ((y + 1)*halfWidth) + x + 1;
+
 				// Push back indices for triangle 1
-				// ********************************
 				indices.push_back(top_left);
 				indices.push_back(bottom_right);
 				indices.push_back(bottom_left);
 
-				// ********************************
 				// Push back indices for triangle 2
-				// ********************************
 				indices.push_back(top_left);
 				indices.push_back(top_right);
 				indices.push_back(bottom_right);
@@ -202,65 +194,51 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		}
 
 
-		// Resize the normals buffer
+		// Resize the normals buffer according to the size of the positions
 		normals.resize(positions.size());
 		
-		// *********************************************
-		// Part 2 - Calculate normals for the height map
-		// *********************************************
+		// Calculate normals for the height map using the cross product of the corners 
+		// loop for indicies/3 as three for each triangle
 		for (unsigned int i = 0; i < indices.size() / 3; ++i)
 		{
-			// ****************************
 			// Get indices for the triangle
-			// ****************************
 			int idx1 = indices[i * 3];
 			int idx2 = indices[i * 3 + 1];
 			int idx3 = indices[i * 3 + 2];
 
-			// ***********************************
 			// Calculate two sides of the triangle
-			// ***********************************
 			vec3 side1 = positions[idx1] - positions[idx3];
 			vec3 side2 = positions[idx1] - positions[idx2];
 
-
-			// ******************************************
 			// Normal is cross product of these two sides
-			// ******************************************
 			vec3 n = cross(side2, side1);
 
-			// **********************************************************************
 			// Add to normals in the normal buffer using the indices for the triangle
-			// **********************************************************************
 			normals[idx1] += n;
 			normals[idx2] += n;
 			normals[idx3] += n;
 
 		}
 
-		// *************************
-		// Part 2 - Normalize all the normals
-		// *************************
+		// NORMALIZE THE NORMALS
 		for (auto &n : normals)
 		{
 			n = normalize(n);
 		}
 
-		// *********************************************
-		// Part 3 - Add texture coordinates for geometry
-		// *********************************************
+		/* Add texture coordinates for geometry
+		 *
+		 * increments used for keeping track of each segment within the whole loop.
+		 * if it's the first time around texture coordinates will be from zero to half the width of the map,
+		 * second time (j=1) the width is increased by one as it is from the middle of map to the end of the map 
+		 */
 		int incrementX = 0;
-		int incrementY = 0;
-
 
 		if (j == 1)
 		{
 			incrementX++;
 		}
-		else if (j == 2)
-		{
-	//		incrementY++;
-		}
+
 		else if (j == 3)
 		{
 			incrementX++;
@@ -268,7 +246,7 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 		
 		for (unsigned int x = 0; x < halfWidth + incrementX; ++x)
 		{
-			for (unsigned int z = 0; z < halfHeight + incrementY; ++z)
+			for (unsigned int z = 0; z < halfHeight; ++z)
 			{
 				vec2 v;
 				v.x = width_point * x;
@@ -277,59 +255,52 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 			}
 		}
 
-		// **************************************************
-		// Part 4 - Calculate texture weights for each vertex
-		// **************************************************
+
+		// Calculate texture weights for each vertex
 		for (unsigned int x = start[j]; x < end[j]; ++x)
 		{
 			for (unsigned int z = startHeight[j]; z < endHeight[j]; ++z)
 			{
-				// ********************
-				// Calculate tex weight
-				// ********************
-				vec4 w;
-				w.x = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.0) / 0.0625)), 0.0, 1.0);
-				w.y = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.05) / 0.125)), 0.0, 1.0);
-				w.z = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.08) / 0.5625)), 0.0, 1.0);
-				w.w = clamp((1.0 - (abs(data[height_map.get_width() * z + x].y - 0.8) / 0.25)), 0.0, 1.0);
 
-				// ********************************
+				// Calculate tex weight depending on percentages of the total height 
+				vec4 w;
+				w.x = clamp((1.0f - (abs(data[height_map.get_width() * z + x].y - 0.0f) / 0.0625f)), 0.0f, 1.0f);
+				w.y = clamp((1.0f - (abs(data[height_map.get_width() * z + x].y - 0.05f) / 0.125f)), 0.0f, 1.0f);
+				w.z = clamp((1.0f - (abs(data[height_map.get_width() * z + x].y - 0.08f) / 0.5625f)), 0.0f, 1.0f);
+				w.w = clamp((1.0f - (abs(data[height_map.get_width() * z + x].y - 0.8f) / 0.25f)), 0.0f, 1.0f);
+
+
 				// Sum the components of the vector
-				// ********************************
 				float total = w.x + w.y + w.z + w.w;
 
-				// ********************
 				// Divide weight by sum
-				// ********************
 				w = w / total;
 
-				// *************************
 				// Add tex weight to weights
-				// *************************
+
 				tex_weights.push_back(w);
 			}
 		}
 		
-		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);  // add buffers to geometry
+		// add buffers to geometry
+		addToBuffers(geomTemp[j], positions, indices, normals, tex_coords, tex_weights);  
 		
-
+		// calculate the centre point of the positions. (size of map 512x512) therefore half for splitting into 4.
 		vec3 tl = positions.at(0);
 		vec3 tr = positions.at(256);
 		vec3 bl = positions.at(positions.size() - 257);
 		vec3 br = positions.at(positions.size()-1);
 
+		// push back passed in centres vector.
 		centre.push_back((tl + tr + bl + br) * 0.25f);
 
-		// clear vectors for next pass
+		// clear vectors for next pass through
 		positions.clear();
 		normals.clear();
 		tex_coords.clear();
 		tex_weights.clear();
 		indices.clear();
-
-
 	}
-
 
 	// add geometry to list.
 	for (int i = 0; i < 4; ++i)
@@ -342,19 +313,21 @@ void GenerateBack::generate_terrain(vector<geometry> &geom, const texture &heigh
 
 void GenerateBack::generate_bar(geometry &geom)
 {
+	// method for generating long prisim bar geometery used.
+
 	geom.set_type(GL_TRIANGLES);
 
 	vector<vec3> positions
 	{
-		vec3(-3.0f, -0.5f, 1.0f),  // first side
+		vec3(-3.0f, -0.5f, 1.0f),  // first side tri 1
 		vec3(2.0f, -0.5f, 1.0f),
 		vec3(-2.0f, 0.5f, 0.0f),
 
-		vec3(-2.0f, 0.5f, 0.0f),
+		vec3(-2.0f, 0.5f, 0.0f),   // first side tri 2
 		vec3(2.0f, -0.5f, 1.0f),
 		vec3(2.0f, 0.5f, 0.0f),
 
-		vec3(2.0f, 0.5f, 0.0f),
+		vec3(2.0f, 0.5f, 0.0f),		// first side tri 3
 		vec3(2.0f, -0.5f, 1.0f),
 		vec3(3.0f, -0.5f, 1.0f),
 
@@ -364,15 +337,15 @@ void GenerateBack::generate_bar(geometry &geom)
 		vec3(3.0f, -0.5f, -1.0f),
 
 
-		vec3(-2.0f, 0.5f, 0.0f), // back side
+		vec3(-2.0f, 0.5f, 0.0f),	// back side tri 1
 		vec3(2.0f, -0.5f, -1.0f),
 		vec3(-3.0f, -0.5f, -1.0f),
 
-		vec3(2.0f, 0.5f, 0.0f),
+		vec3(2.0f, 0.5f, 0.0f),	 // back side tri 2
 		vec3(2.0f, -0.5f, -1.0f),
 		vec3(-2.0f, 0.5f, 0.0f),
 
-		vec3(3.0f, -0.5f, -1.0f),
+		vec3(3.0f, -0.5f, -1.0f), // back side tri 3
 		vec3(2.0f, -0.5f, -1.0f),
 		vec3(2.0f, 0.5f, 0.0f),
 
@@ -381,7 +354,7 @@ void GenerateBack::generate_bar(geometry &geom)
 		vec3(-3.0f, -0.5f, 1.0f),
 		vec3(-2.0f, 0.5f, 0.0f),
 
-		vec3(3.0, -0.5, 1.0),  			// bottom
+		vec3(3.0, -0.5, 1.0),  		// bottom
 		vec3(-3.0, -0.5, 1.0),
 		vec3(-3.0, -0.5, -1.0),
 		vec3(-3.0, -0.5, -1.0),
@@ -392,7 +365,7 @@ void GenerateBack::generate_bar(geometry &geom)
 
 	vector<vec2> tex_coords
 	{
-		vec2(0.0f, 0.0f),
+		vec2(0.0f, 0.0f),	// front face
 		vec2(5.0f, 0.0f),
 		vec2(1.0, 1.0f),
 
@@ -437,8 +410,9 @@ void GenerateBack::generate_bar(geometry &geom)
 	};
 
 	vector<vec3> normals;
-
-	for (unsigned int i = 0; i < 30; i += 3)
+	
+	// calculate normals
+	for (unsigned int i = 0; i < positions.size(); i += 3)
 	{
 		// Calculate normal from position data
 		auto v1 = positions[i + 1] - positions[i];
@@ -449,6 +423,7 @@ void GenerateBack::generate_bar(geometry &geom)
 			normals.push_back(norm);
 	}
 
+	// add to buffers
 	geom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
 	geom.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
 	geom.add_buffer(normals, BUFFER_INDEXES::NORMAL_BUFFER);
