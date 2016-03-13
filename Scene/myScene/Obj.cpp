@@ -40,7 +40,7 @@ Obj::Obj(vec3 pos, vec3 rot, float theta, vec3 scal,
 	
 	calculateSphere(); // calculate bounding sphere
 	
-
+	// vars for storing initial translation information
 	this->translateMatrix = T;
 	this->scaleMatrix = S;
 	this->rotationMatrix = R; 
@@ -79,14 +79,19 @@ void Obj::setName(string name)
 
 void Obj::setCenterTerr(vec3 cent)
 {
+	// set centre of terrain object from value
+
 	centreT = cent;
 
+	// furthest point used in bounding sphere calc.
 	furthestPoint = centreT;
 }
 
 
 vec4 Obj::getWorldPos()
 {
+	// method to return world positon of the object as a vector 4
+
 	vec4 pos = vec4(m->get_transform().position, 1.0);
 
 	if (myType == terrn)
@@ -94,7 +99,7 @@ vec4 Obj::getWorldPos()
 		pos = vec4(centreT, 1.0);
 	}
 	
-	pos = mworld * pos;
+	pos = mworld * pos; // multiply by model matrix
 	
 	return pos;
 
@@ -102,15 +107,19 @@ vec4 Obj::getWorldPos()
 
 float Obj::getRadius()
 {
+	// retrive scale information from model matrix.
 	vec3 scale = vec3(mworld[0].x, mworld[1].y, mworld[2].z);
 
+	// radius is the absolute length of the furthest point in geometry scaled by model matrix scale
 	radius = abs(length(scale*furthestPoint));
-	//radius *= 1.05; // add a little more room
+	
 	return radius;
 }
 
 void Obj::setTranslationParams(vec3 moveBy, vec3 max)
 {
+	// sets translation params, bool = true so update function knows to update the matrix otherwise it won't be recalculated.
+
 	translationAdjustment = moveBy;
 	maxTranslation = max;
 
@@ -119,6 +128,8 @@ void Obj::setTranslationParams(vec3 moveBy, vec3 max)
 
 void Obj::setScaleFactor(float sf)
 {
+	// flag set for updating scale matrix in update function, factor is how much to scale by
+
 	scaleFactor = sf;
 	scaleUpdate = true;
 }
@@ -153,8 +164,12 @@ void Obj::update(Obj* parent, float delta_time)
 
 		if (transUpdate)		// if moveBy value has changed translation matrix needs updating
 		{
+
+			// update translation
 			totalTranslation += translationAdjustment * delta_time * 0.5f;
 
+			// if the length squared is bigger than the max trans len2 OR smaller than zero, Swap sign (changes direction of translation)
+			// length squared is used as sqrt is expensive and not needed for this inequality
 			if ((length2(totalTranslation) > length2(maxTranslation)) || length2(totalTranslation) < 0)
 				translationAdjustment = -translationAdjustment;
 
@@ -180,15 +195,18 @@ void Obj::update(Obj* parent, float delta_time)
 
 	}
 
+	// if there is a parent.
 	if (parent){
-		if (parent->myType != sky && myType != sky)
+		if (parent->myType != sky && myType != sky)  // Don't want to transform skybox OR take transform from the skybox
 		{
+			// multiply by parent's model matrix
 			mworld = parent->mworld * mlocal;
 		}
 	}
 
-	intersection();
+	intersection();  // intersection testing for view frustrum
 
+	// recurse through all children
 	for (auto &e : children)
 	{
 		Obj* child = e.second;

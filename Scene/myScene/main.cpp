@@ -207,6 +207,8 @@ bool load_content()
 		myScene->list.at(i)->setCenterTerr(centres[i]);
 	}
 
+	// create texture lists for objects and add them to the scene manager's list
+
 	vector<texture*> sphereText;
 	sphereText.push_back(new texture("..\\resources\\textures\\Red_velvet_pxr128.tif"));
 	myScene->texList.push_back(sphereText);

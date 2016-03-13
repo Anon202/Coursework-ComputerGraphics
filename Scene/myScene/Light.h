@@ -1,3 +1,8 @@
+/*
+*	Light.h - Base class abstraction for light types.
+*	created for ease of storage (polymorphism)
+*/
+
 #pragma once
 
 #include "stdafx.h"

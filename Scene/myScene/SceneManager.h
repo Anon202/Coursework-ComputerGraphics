@@ -1,3 +1,9 @@
+/*
+ * Scene Manager header file for class, to store scene-wide lists of objects/light pointers, etc.
+ * Also calculates view frustrum.
+ */
+
+
 #pragma once
 
 #include <graphics_framework.h>
@@ -38,7 +44,6 @@ public:
 
 	vector<Obj*> lightObjects;
 
-	effect* shadow_eff;
 	effect* rad_eff;
 
 	map<string, mesh> meshes;

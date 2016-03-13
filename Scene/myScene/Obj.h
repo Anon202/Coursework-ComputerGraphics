@@ -1,12 +1,15 @@
+/*
+*	Obj.h - header file for main object class
+*	All items within the scene are instances of an object, including the skybox and terrain blocks
+*	Used for spacial partioning and creating a hierarchy of meshes.
+*/
+
 #pragma once
-
-
 #include "SceneManager.h"
-
-
 
 class Obj
 {
+	// vars for objects matrices
 	mat3				normalMatrix;
 	mat4				mlocal;
 
@@ -14,8 +17,8 @@ class Obj
 	mat4				scaleMatrix;
 	mat4				rotationMatrix;
 
-	material*			mat;
-	effect*				eff;
+	material*			mat;	// material of object
+	effect*				eff;	// which effect it uses for lighting
 
 	Obj*				parent;
 
@@ -54,14 +57,16 @@ public:
 	float			    myType;
 
 	Obj	();
-	Obj(vec3 pos,
-		vec3 rot, float theta,
-		vec3 scale,
-		mesh* me,
-		material* mate,
-		vector<texture*> texture,
-		effect* eff,
-		float myType);
+
+	// normal object constructor 
+	Obj(vec3 pos,						// position (translation coordinates from parent (origin if not parented)
+		vec3 rot, float theta,			// rotation axis and angle
+		vec3 scale,						// initial scale transformation 
+		mesh* mesh,						// mesh
+		material* material,				// material 
+		vector<texture*> texture,		// vector list of textures (many objects are associated with more than one texture for blend/norm map)
+		effect* eff,					// shader program
+		float myType);					// enum for setting flags 
 
 	Obj(vec3 rot, float theta, // skybox object constructor
 		vec3 scale,
@@ -69,27 +74,25 @@ public:
 		cubemap skybox,
 		effect* eff);
 
-	void calculateSphere();
-	void intersection();
+	void calculateSphere();  // calculates bounding sphere for object
+	void intersection();	 // intersection test for view frustrum
 
-	void update(Obj* parent, float time);
+	void update(Obj* parent, float time);  // update function, if no parent NULL is entered
 
-	void render();
-	void renderGlass();
+	void render();			// render function
+	void renderGlass();		// separate render function for glass object as needs to be rendered last after the opaque objects
 
 	void addChild(Obj* child, string name);
 
-	vec4  getWorldPos();
-	float getRadius();
+	vec4  getWorldPos();			// calculates the centre postion of object in worldspace for bounding sphere calculation + radii drawing
+	float getRadius();				// calculatees object's radius (longest length)
 	void  setName(string name);
 
-	void setCenterTerr(vec3 cent);
+	void setCenterTerr(vec3 cent);  // method to set terrain center as calculated differently from the sphere method
 
-	void setScaleFactor(float scaleFactor);
+	void setScaleFactor(float scaleFactor);  // used to scale the object over time from sin wave
 
-	void setTranslationParams(vec3 move, vec3 max);
-
-	~Obj() { }
+	void setTranslationParams(vec3 move, vec3 max);  // used to set moveby value and max distance moved for translating objects over time
 
 };
 

@@ -3,6 +3,8 @@
 
 SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 {
+	// constructor, initialising values.
+
 	cam = nullptr;
 	skybx = nullptr;
 	generator = nullptr;
@@ -22,9 +24,10 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 	debug = false;
 
+	// set type of geometry for radii to points.
 	radiusGeom.set_type(GL_POINTS);
 
-	fixCull = false;
+	fixCull = false; // bool used to turn on/off updating the view frustrum to show culling working
 
 }
 
@@ -41,6 +44,7 @@ void SceneManager::createLights()
 	Light *lightPtr = light;
 	lightList.push_back(lightPtr);
 	
+	// create pointlights
 	point_light *pointLight = new point_light;
 	pointLight->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
 	pointLight->set_constant_attenuation(0.01f);
@@ -49,7 +53,7 @@ void SceneManager::createLights()
 	Light* pointPtr = pointLight;
 	lightList.push_back(pointPtr);
 	
-
+	// blue point light
 	point_light *pointLightChild = new point_light;
 	pointLightChild->set_light_colour(vec4(0.0f, 0.0f, 1.0f, 1.0f));
 	pointLightChild->set_constant_attenuation(0.01f);
@@ -58,6 +62,7 @@ void SceneManager::createLights()
 	Light* pointPtrChild = pointLightChild;
 	lightList.push_back(pointPtrChild);
 
+	// red point light
 	point_light *pointLightChildChild = new point_light;
 	pointLightChildChild->set_light_colour(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	pointLightChildChild->set_constant_attenuation(0.01f);
@@ -66,6 +71,7 @@ void SceneManager::createLights()
 	Light* ptrChildChild = pointLightChildChild;
 	lightList.push_back(ptrChildChild);
 
+	// spot light
 	spot_light *spot = new spot_light;
 	spot->set_direction(normalize(vec3(-1.0f, 0.0f, 0.0f)));
 	spot->set_light_colour(vec4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -79,7 +85,9 @@ void SceneManager::createLights()
 
 effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[])
 {
-	effect* myEffect = new effect;								// takes in paths of shaders, builds the effect and adds to a list of pointers.
+	// takes in paths of shaders, builds the effect and adds to a list of pointers.
+
+	effect* myEffect = new effect;								
 	myEffect->add_shader(vertPath, GL_VERTEX_SHADER);
 	myEffect->add_shader(fragPath, GL_FRAGMENT_SHADER);
 
@@ -159,6 +167,9 @@ void SceneManager::calculateFrustrum()
 
 SceneManager::~SceneManager()
 {
+	// deconstructor
+
+	// free all memory for lists and clear the pointers
 
 	for (unsigned int i = 0; i < lightList.size(); ++i)
 		delete lightList[i];
