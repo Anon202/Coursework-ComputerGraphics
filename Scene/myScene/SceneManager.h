@@ -44,6 +44,7 @@ public:
 
 	vector<Obj*> lightObjects;
 
+	effect* shad_eff;
 	effect* rad_eff;
 
 	map<string, mesh> meshes;

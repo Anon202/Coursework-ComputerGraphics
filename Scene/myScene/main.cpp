@@ -279,6 +279,14 @@ bool load_content()
 		"..\\resources\\shaders\\parts\\point.frag",
 		NULL);
 
+
+	// add shadowEffect
+	effect *shadowEff = myScene->createEffect(
+		"..\\resources\\shaders\\shadow.vert",
+		"..\\resources\\shaders\\shadowShader.frag",
+		"..\\resources\\shaders\\parts\\spotPart.frag",
+		"..\\resources\\shaders\\parts\\shadowPart.frag");
+
 	/*	Create object pointers for scene, constructor parameters are translation, rotation axis, rotation angle, scale, mesh, material, texturelist, effect, and enum
 	 *	enum to store as the object's type used for conditional statements for example a "glassObject" which is treated differently to a normal "object"
 	 */
@@ -302,7 +310,7 @@ bool load_content()
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
 	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
-	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, phongEff, object);
+	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadowEff, object);
 	Obj *glassPane = new Obj(vec3(-1.0, 1.0, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
 	// loaded model
@@ -311,7 +319,7 @@ bool load_content()
 	// bar geom ontop of pillars
 	Obj *bar = new Obj(vec3(0.0, 2.5, 3.5), vec3(0.0), 0.0f, vec3(1.0, 0.5, 0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, phongEff, object);
 	
-	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
+	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
 	Obj *pillarPlat2 = new Obj(vec3(-1.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	Obj *pillarPlat3 = new Obj(vec3(-0.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	Obj *pillarPlat4 = new Obj(vec3(0.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
@@ -452,6 +460,8 @@ bool load_content()
 	skybx2->addChild(terrain4, "terrain4");
 	myScene->list.push_back(myScene->skybx);
 
+
+
 	// create radii effect with geometry shader
 	effect *rad_eff = new effect;
 	rad_eff->add_shader("..\\resources\\shaders\\radiusVert.vert", GL_VERTEX_SHADER);
@@ -466,6 +476,14 @@ bool load_content()
 	myScene->frustrumEffect.add_shader("..\\resources\\shaders\\simple.frag", GL_FRAGMENT_SHADER);
 	// Build effect
 	myScene->frustrumEffect.build();
+
+	// create a new shadow effect
+	effect *shadow_effect = new effect;
+	shadow_effect->add_shader("..\\resources\\shaders\\spot.vert", GL_VERTEX_SHADER);
+	shadow_effect->add_shader("..\\resources\\shaders\\spot.frag", GL_FRAGMENT_SHADER);
+	shadow_effect->build();
+	myScene->shad_eff = shadow_effect;
+	myScene->effectList.push_back(shadow_effect);
 
 
     return true;
@@ -483,6 +501,18 @@ void updateLightPositions()
 bool update(float delta_time)
 {
 	updateLightPositions();
+
+	// get shadow update
+	auto lpos = myScene->lightList[4]->get_position();
+	myScene->shadow.light_position = myScene->lightList[4]->get_position();
+	auto ldir = myScene->lightList[4]->get_direction();
+	myScene->shadow.light_dir = myScene->lightList[4]->get_direction();
+
+	// Press z to save
+	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
+	{
+		myScene->shadow.buffer->save("test.png");
+	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -621,6 +651,58 @@ void generateFrustrumPlanes()
 
 bool render()
 {
+	// render shadow map.
+	renderer::set_render_target(myScene->shadow);
+
+	// **********************
+	// Clear depth buffer bit
+	// **********************
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// ****************************
+	// Set render mode to cull face
+	// ****************************
+	glCullFace(GL_FRONT);
+
+	// Bind shader
+	renderer::bind(*myScene->shad_eff);
+
+	// Render meshes
+	for (auto &e : myScene->list)
+	{
+		//auto m = e->mworld;
+		// Create MVP matrix
+		if (e->myType != sky)
+		{
+			auto M = e->mworld;
+			// *********************************
+			// View matrix taken from shadow map
+			// *********************************
+			auto V = myScene->shadow.get_view();
+
+			auto P = myScene->cam->get_projection();
+			auto MVP = P * V * M;
+			// Set MVP matrix uniform
+			glUniformMatrix4fv(
+				myScene->shad_eff->get_uniform_location("MVP"), // Location of uniform
+				1, // Number of values - 1 mat4
+				GL_FALSE, // Transpose the matrix?
+				value_ptr(MVP)); // Pointer to matrix data
+			// Render mesh
+			auto m = e->m;
+			renderer::render(*m);
+		}
+	}
+
+	// ************************************
+	// Set render target back to the screen
+	// ************************************
+	renderer::set_render_target();
+
+	// *********************
+	// Set cull face to back
+	// *********************
+	glCullFace(GL_BACK);
 
 	if (myScene->debug)
 	{
