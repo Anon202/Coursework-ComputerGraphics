@@ -23,16 +23,19 @@ void main()
     // ************************************************
     // Update the position using standard velocity step
     // ************************************************
-    
+    position_out = position[0] + (velocity[0] * delta_time);
 
     // *****************************************
     // Ensure particle does not go out of bounds
     // - if y > 5 set y to 0
     // *****************************************
-    
+    if (position_out.y > 5)
+		position_out.y = 0;
+
 	// ***********
     // Output data
 	// ***********
+	velocity_out = velocity[0];
     
 
     // Emit vertex and end primitive

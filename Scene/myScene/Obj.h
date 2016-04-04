@@ -80,6 +80,7 @@ public:
 	void update(Obj* parent, float time);  // update function, if no parent NULL is entered
 
 	void render();			// render function
+
 	void renderGlass();		// separate render function for glass object as needs to be rendered last after the opaque objects
 
 	void addChild(Obj* child, string name);

@@ -77,5 +77,6 @@ public:
 	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
 
 	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
+
 };
 

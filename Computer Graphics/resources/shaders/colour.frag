@@ -16,5 +16,5 @@ void main()
 	// Set outgoing colour
 	// *******************
 	out_colour = colour + in_colour;
-	
+	out_colour = vec4(1.0f, 0.0, 0.0f, 1.0f);
 }

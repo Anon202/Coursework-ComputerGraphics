@@ -432,7 +432,6 @@ void Obj::render()
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
 		}
-	
 
 		// Bind the effect
 		renderer::bind(*eff);
@@ -503,8 +502,28 @@ void Obj::render()
 				}
 			}
 		}
+		
+		if (myType == forShade)
+		{
+			renderer::bind(myScene->shadow.buffer->get_depth(), 6);
+			glUniform1i(eff->get_uniform_location("shadow_map"), 6);
 
-		//renderer::bind(myScene->shadow.buffer->get_depth(), 1);
+			auto lV = myScene->shadow.get_view();
+
+			auto lMVP = P * lV * mworld;
+
+
+			glUniformMatrix4fv(
+				eff->get_uniform_location("lightMVP"),
+				1,
+				GL_FALSE,
+				value_ptr(lMVP));
+
+
+
+		}
+
+
 		renderer::bind(points, "point");
 
 		if (myType == sky)

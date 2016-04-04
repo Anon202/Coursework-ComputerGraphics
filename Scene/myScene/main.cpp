@@ -2,6 +2,9 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
+shadow_map globalShadow;
+spot_light globalSpot;
+
 bool initialise()
 {
 	double xpos = 0; // create initial vars for mouse position
@@ -62,7 +65,8 @@ bool initialise()
 
 bool load_content()
 {
-	
+
+	globalShadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 	// CREATE TERRAIN
 
 	vector<geometry> terrainBlocks;	// geom to pass into function to create terrain blocks within
@@ -310,7 +314,7 @@ bool load_content()
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
 	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
-	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadowEff, object);
+	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadowEff, forShade);
 	Obj *glassPane = new Obj(vec3(-1.0, 1.0, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
 	// loaded model
@@ -319,11 +323,11 @@ bool load_content()
 	// bar geom ontop of pillars
 	Obj *bar = new Obj(vec3(0.0, 2.5, 3.5), vec3(0.0), 0.0f, vec3(1.0, 0.5, 0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, phongEff, object);
 	
-	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
 	Obj *pillarPlat2 = new Obj(vec3(-1.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	Obj *pillarPlat3 = new Obj(vec3(-0.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	Obj *pillarPlat4 = new Obj(vec3(0.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
-	Obj *pillarPlat5 = new Obj(vec3(1.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
+	Obj *pillarPlat5 = new Obj(vec3(1.5f, -2.5f, -5.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 	Obj *pillarPlat6 = new Obj(vec3(2.5f, -2.5f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, phongEff, object);
 
 
@@ -503,15 +507,14 @@ bool update(float delta_time)
 	updateLightPositions();
 
 	// get shadow update
-	auto lpos = myScene->lightList[4]->get_position();
-	myScene->shadow.light_position = myScene->lightList[4]->get_position();
-	auto ldir = myScene->lightList[4]->get_direction();
-	myScene->shadow.light_dir = myScene->lightList[4]->get_direction();
+
+	globalShadow.light_position = vec3(myScene->lightObjects[3]->getWorldPos());
+	globalShadow.light_dir = myScene->lightList[4]->get_direction();
 
 	// Press z to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
 	{
-		myScene->shadow.buffer->save("test.png");
+		globalShadow.buffer->save("test.png");
 	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
@@ -649,10 +652,10 @@ void generateFrustrumPlanes()
 
 }
 
-bool render()
+void renderShad()
 {
 	// render shadow map.
-	renderer::set_render_target(myScene->shadow);
+	renderer::set_render_target(globalShadow);
 
 	// **********************
 	// Clear depth buffer bit
@@ -667,42 +670,39 @@ bool render()
 	// Bind shader
 	renderer::bind(*myScene->shad_eff);
 
-	// Render meshes
-	for (auto &e : myScene->list)
+	// Create MVP matrix
+	for (auto &o : myScene->list)
 	{
-		//auto m = e->mworld;
-		// Create MVP matrix
-		if (e->myType != sky)
+
+		if (o->myType != sky && o->myType != terrn)
 		{
-			auto M = e->mworld;
-			// *********************************
 			// View matrix taken from shadow map
-			// *********************************
-			auto V = myScene->shadow.get_view();
+			auto V = globalShadow.get_view();
 
 			auto P = myScene->cam->get_projection();
-			auto MVP = P * V * M;
+			auto MVP = P * V * o->mworld;
 			// Set MVP matrix uniform
 			glUniformMatrix4fv(
 				myScene->shad_eff->get_uniform_location("MVP"), // Location of uniform
 				1, // Number of values - 1 mat4
 				GL_FALSE, // Transpose the matrix?
 				value_ptr(MVP)); // Pointer to matrix data
-			// Render mesh
-			auto m = e->m;
-			renderer::render(*m);
+
+			renderer::render(*o->m);
 		}
 	}
 
-	// ************************************
+
 	// Set render target back to the screen
-	// ************************************
 	renderer::set_render_target();
 
-	// *********************
+
 	// Set cull face to back
-	// *********************
 	glCullFace(GL_BACK);
+
+}
+bool render()
+{
 
 	if (myScene->debug)
 	{
@@ -769,6 +769,8 @@ bool render()
 		}
 	
 	}
+
+	renderShad();
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

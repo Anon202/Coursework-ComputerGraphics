@@ -163,8 +163,6 @@ void SceneManager::calculateFrustrum()
 
 }
 
-
-
 SceneManager::~SceneManager()
 {
 	// deconstructor

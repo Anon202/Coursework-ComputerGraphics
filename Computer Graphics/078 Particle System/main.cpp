@@ -54,11 +54,12 @@ bool load_content()
     // ******************************************
     // Generate transform feedback buffers on GPU
     // ******************************************
-    
+	glGenTransformFeedbacks(2, transform_feedbacks);
 
     // ********************************
     // Generate particle buffers on GPU
     // ********************************
+	glGenBuffers(2, particle_buffers);
     
 
     // *******************
@@ -66,7 +67,9 @@ bool load_content()
     // *******************
     for (unsigned int i = 0; i < MAX_PARTICLES; ++i)
     {
-        
+		//particles[i] = new particle;
+		particles[i].position = vec3(0.0f, 0.0f, 0.0f);
+		particles[i].velocity = vec3(0.0f, 0.0001f, 0.0f);
     }
 
     // ************************
@@ -74,7 +77,10 @@ bool load_content()
     // ************************
     for (unsigned int i = 0; i < 2; ++i)
     {
-        
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_feedbacks[i]);
+		glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[i]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, particle_buffers[i]);
     }
 
     // Build effects
@@ -93,12 +99,20 @@ bool load_content()
     // **************************************
     // Tell OpenGL what the output looks like
     // **************************************
-    
+	const GLchar* attrib_names[2] =
+	{
+		"position_out",
+		"velocity_out"
+	};
+
+	glTransformFeedbackVaryings(particle_eff.get_program(), 2, attrib_names, GL_INTERLEAVED_ATTRIBS);
 
     // **************
     // Relink program
     // **************
-    
+	particle_eff.build();
+	//glLinkProgram(particle_eff.get_program());
+	
 
     // Set camera properties
     cam.set_position(vec3(0.0f, 00.0f, 10.0f));
@@ -110,54 +124,72 @@ bool load_content()
 
 bool update(float delta_time)
 {
-    static bool first_frame = true;
+	static bool first_frame = true;
 
-    // ********************
-    // Bind particle effect
-    // ********************
-    
+	// ********************
+	// Bind particle effect
+	// ********************
+//	renderer::bind(particle_eff);
+	glUseProgram(particle_eff.get_program());
+	
+	// **************************
+	// Set the delta_time uniform
+	// **************************
+	glUniform1f(particle_eff.get_uniform_location("delta_time"), delta_time);
 
-    // **************************
-    // Set the delta_time uniform
-    // **************************
-    
+	// *******************************
+	// Tell OpenGL we aren't rendering
+	// *******************************
+	glEnable(GL_RASTERIZER_DISCARD);
 
-    // *******************************
-    // Tell OpenGL we aren't rendering
-    // *******************************
-    
 
-    // *******************************
-    // Bind the buffers for use
-    // - buffer is front buf
-    // - transform feeback is back buf
-    // *******************************
-    
+	// *******************************
+	// Bind the buffers for use
+	// - buffer is front buf
+	// - transform feeback is back buf
+	// *******************************
+	glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[front_buf]);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_feedbacks[back_buf]);
+	
+	// ********************************************
+	// Define how our data looks like to the shader
+	// ********************************************
+	glEnableVertexAttribArray(0); // pos location
+	glEnableVertexAttribArray(1); // velocity location
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)1);
 
-    // ********************************************
-    // Define how our data looks like to the shader
-    // ********************************************
-    
+	// ******************************
+	// Perform the transform feedback
+	// ******************************
+	glBeginTransformFeedback(GL_POINTS);
 
-    // ******************************
-    // Perform the transform feedback
-    // ******************************
-    
+	if (first_frame)
+	{
+		glDrawArrays(GL_POINTS, 0, MAX_PARTICLES);
+		first_frame = false;
+	}
+	else
+	{
+		glDrawTransformFeedback(GL_POINTS, transform_feedbacks[back_buf]);
+	}
 
-    // **************************
-    // End the transform feedback
-    // **************************
-    
+	// **************************
+	// End the transform feedback
+	// **************************
+	glEndTransformFeedback();
+
 
     // ***********************************
     // Disable the vertex attribute arrays
     // ***********************************
-    
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
     // *************************
     // Switch on rendering again
     // *************************
-    
+	glDisable(GL_RASTERIZER_DISCARD);
 
     // The ratio of pixels to rotation - remember the fov
     static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
@@ -198,7 +230,9 @@ bool update(float delta_time)
 bool render()
 {
     // Bind the effect
-    renderer::bind(eff);
+    //renderer::bind(eff);
+
+	glUseProgram(eff.get_program());
     // Set the MVP matrix
     auto M = mat4(1.0f);
     auto V = cam.get_view();
@@ -215,28 +249,32 @@ bool render()
     // *******************************************
     // Bind the back particle buffer for rendering
     // *******************************************
-    
+	glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[back_buf]);
 
     // ******************************************************
     // Describe the data we are interested in (just position)
     // ******************************************************
-    
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
 
     // ****************************************************
     // Perform the render by drawing the transform feedback
     // ****************************************************
+	glDrawTransformFeedback(GL_POINTS, transform_feedbacks[back_buf]);
     
 
     // ******************************
     // Disable vertex attribute array
     // ******************************
-    
+	glDisableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // ***************************
     // Swap front and back buffers
     // ***************************
-    
-
+	front_buf = back_buf;
+	back_buf = (back_buf + 1) & 0x1;
+	
     return true;
 }
 
