@@ -7,6 +7,7 @@ spot_light globalSpot;
 
 bool initialise()
 {
+	glEnable(GL_BLEND);
 	double xpos = 0; // create initial vars for mouse position
 	double ypos = 0;
 
@@ -489,7 +490,7 @@ bool load_content()
 	myScene->shad_eff = shadow_effect;
 	myScene->effectList.push_back(shadow_effect);
 
-
+	initialiseParticles(1);
     return true;
 }
 
@@ -505,6 +506,7 @@ void updateLightPositions()
 bool update(float delta_time)
 {
 	updateLightPositions();
+	updateParticles(delta_time);
 
 	// get shadow update
 
@@ -701,9 +703,10 @@ void renderShad()
 	glCullFace(GL_BACK);
 
 }
+
 bool render()
 {
-
+	renderParticles();
 	if (myScene->debug)
 	{
 		// if debug mode draw radii of bounding spheres
@@ -770,7 +773,7 @@ bool render()
 	
 	}
 
-	renderShad();
+	//renderShad();
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

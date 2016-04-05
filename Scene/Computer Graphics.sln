@@ -21,6 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\normalVert.vert = resources\shaders\normalVert.vert
 		myScene\normShader.frag = myScene\normShader.frag
 		myScene\normShader.vert = myScene\normShader.vert
+		resources\shaders\particle.frag = resources\shaders\particle.frag
+		resources\shaders\particle.geom = resources\shaders\particle.geom
+		resources\shaders\particle.vert = resources\shaders\particle.vert
 		resources\shaders\phong.frag = resources\shaders\phong.frag
 		resources\shaders\phong.vert = resources\shaders\phong.vert
 		resources\shaders\point.frag = resources\shaders\point.frag
@@ -147,8 +150,5 @@ Global
 		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 		{4339783B-9A48-4976-8738-4D0730598AB5} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
 		{ECA39CF8-76A8-42A2-92C5-3B218EA311BA} = {4C6F7C7F-C253-48FE-A553-4410B949E275}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

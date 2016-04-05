@@ -6,13 +6,14 @@ using namespace glm;
 using namespace graphics_framework;
 
 // Maximum number of particles
-const unsigned int MAX_PARTICLES = 1000;
+const unsigned int MAX_PARTICLES = 100;
 
 // A particle
 struct particle
 {
-    vec3 position = vec3(0, 0, 0);
-    vec3 velocity = vec3(0, 0, 0);
+	vec3 position;// = vec3(0, 0, 0);
+	vec3 velocity; //= vec3(0, 0, 0);
+	vec2 lifetime;
 };
 
 // Particles in the system
@@ -67,9 +68,11 @@ bool load_content()
     // *******************
     for (unsigned int i = 0; i < MAX_PARTICLES; ++i)
     {
-		//particles[i] = new particle;
-		particles[i].position = vec3(0.0f, 0.0f, 0.0f);
-		particles[i].velocity = vec3(0.0f, 0.0001f, 0.0f);
+		float fi = (((float)i) / ((float)MAX_PARTICLES)) * 2.0f* pi<float>();
+		particles[i].velocity = vec3(0.0f, -2.0f, 0.0f);
+		particles[i].position = vec3((dist(rand)* 10.0f), 5.0f, 0.0f);
+		float life = (dist(rand)* 10.0f) + 2.0f;
+		particles[i].lifetime = vec2(0.0f, life);
     }
 
     // ************************
@@ -99,19 +102,20 @@ bool load_content()
     // **************************************
     // Tell OpenGL what the output looks like
     // **************************************
-	const GLchar* attrib_names[2] =
+	const GLchar* attrib_names[3] =
 	{
 		"position_out",
-		"velocity_out"
+		"velocity_out",
+		"lifetime_out"
 	};
 
-	glTransformFeedbackVaryings(particle_eff.get_program(), 2, attrib_names, GL_INTERLEAVED_ATTRIBS);
+	glTransformFeedbackVaryings(particle_eff.get_program(), 3, attrib_names, GL_INTERLEAVED_ATTRIBS);
 
     // **************
     // Relink program
     // **************
-	particle_eff.build();
-	//glLinkProgram(particle_eff.get_program());
+	//particle_eff.build();
+	glLinkProgram(particle_eff.get_program());
 	
 
     // Set camera properties
@@ -129,8 +133,8 @@ bool update(float delta_time)
 	// ********************
 	// Bind particle effect
 	// ********************
-//	renderer::bind(particle_eff);
-	glUseProgram(particle_eff.get_program());
+	renderer::bind(particle_eff);
+
 	
 	// **************************
 	// Set the delta_time uniform
@@ -156,9 +160,10 @@ bool update(float delta_time)
 	// ********************************************
 	glEnableVertexAttribArray(0); // pos location
 	glEnableVertexAttribArray(1); // velocity location
+	glEnableVertexAttribArray(2); // velocity location
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)1);
-
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)12);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)24);
 	// ******************************
 	// Perform the transform feedback
 	// ******************************
@@ -171,7 +176,7 @@ bool update(float delta_time)
 	}
 	else
 	{
-		glDrawTransformFeedback(GL_POINTS, transform_feedbacks[back_buf]);
+		glDrawTransformFeedback(GL_POINTS, transform_feedbacks[front_buf]);
 	}
 
 	// **************************
@@ -185,10 +190,13 @@ bool update(float delta_time)
     // ***********************************
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 
     // *************************
     // Switch on rendering again
     // *************************
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
 
     // The ratio of pixels to rotation - remember the fov
@@ -230,9 +238,9 @@ bool update(float delta_time)
 bool render()
 {
     // Bind the effect
-    //renderer::bind(eff);
+    renderer::bind(eff);
 
-	glUseProgram(eff.get_program());
+	//glUseProgram(eff.get_program());
     // Set the MVP matrix
     auto M = mat4(1.0f);
     auto V = cam.get_view();
@@ -255,8 +263,12 @@ bool render()
     // Describe the data we are interested in (just position)
     // ******************************************************
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), 0);
 
+
+
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     // ****************************************************
     // Perform the render by drawing the transform feedback
     // ****************************************************

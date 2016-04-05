@@ -34,9 +34,9 @@ void main()
     // Ensure particle does not go out of bounds
     // - if y > 5 set y to 0
     // *****************************************
-	if (life > lifetime[0].y || newPos.y > 5) {
+	if (life > lifetime[0].y) {
 		life = 0.0f;
-		newPos = vec3(0.0f);
+		newPos = vec3(100.0f);
 	}
 
 	// ***********

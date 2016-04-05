@@ -317,7 +317,7 @@ void Obj::renderGlass()
 	// calculate MVP from world
 	auto MVP = P * V * mworld;
 
-	glEnable(GL_BLEND);									 // enable blend for transparency
+									 // enable blend for transparency
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Bind the effect
