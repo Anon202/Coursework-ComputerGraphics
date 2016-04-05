@@ -106,8 +106,8 @@ bool load_content()
     // Direction (-1, -1, 0) normalized
     // 50 range
     // 10 power
-	spot.set_position(vec3(20, 30, 0));
-	spot.set_direction(normalize(vec3(-1, -1, 0)));
+	spot.set_position(vec3(20, 0, 0));
+	spot.set_direction(normalize(vec3(-1, 0, 0)));
 	spot.set_light_colour(vec4(1.0, 1.0, 1.0, 1.0));
 	spot.set_range(50);
 	spot.set_power(10);

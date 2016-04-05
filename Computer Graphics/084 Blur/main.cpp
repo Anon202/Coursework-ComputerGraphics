@@ -16,17 +16,29 @@ geometry screen_quad;
 
 bool load_content()
 {
-    // *************************************************
-    // Create frame buffer - use screen width and height
-    // *************************************************
-    
+	// Create frame buffer - use screen width and height
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
-    // ******************
-    // Create screen quad
-    // - positions
-    // - tex coords
-    // ******************
-    
+	// Create screen quad
+	// - positions
+	// - tex coords
+	vector<vec3> positions
+	{
+		vec3(1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, -1.0f, 0.0f),
+		vec3(1.0f, -1.0f, 0.0f)
+	};
+	vector<vec2> tex_coords
+	{
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f)
+	};
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_QUADS);
 
     // Create plane mesh
     meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -110,7 +122,7 @@ bool load_content()
     // Change the fragment shader to blur
     // **********************************
     tex_eff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
-    tex_eff.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
+    tex_eff.add_shader("..\\resources\\shaders\\blur.frag", GL_FRAGMENT_SHADER);
     // Build effects
     eff.build();
     tex_eff.build();
@@ -148,12 +160,12 @@ bool render()
     // *********************************
     // Set render target to frame buffer
     // *********************************
-    
+	renderer::set_render_target(frame);
 
     // ***********
     // Clear frame
     // ***********
-    
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render meshes
     for (auto &e : meshes)
@@ -210,6 +222,7 @@ bool render()
     // ************************************
     // Set render target back to the screen
     // ************************************
+	renderer::set_render_target();
     
 
     // Bind the texture effect
@@ -218,31 +231,34 @@ bool render()
     // ******************************
     // MVP is now the identity matrix
     // ******************************
+	auto MVP = mat4(1.0f);
+	// Set MVP matrix uniform
+	glUniformMatrix4fv(tex_eff.get_uniform_location("MVP"), 1, GL_FALSE, value_ptr(MVP));
+
     
 
     // ******************************
     // Bind texture from frame buffer
     // ******************************
-    
-
-    // ***************
-    // Set the uniform
-    // ***************
-    
+	renderer::bind(frame.get_frame(), 0);
+	// Set the uniform
+	glUniform1i(tex_eff.get_uniform_location("tex"), 0);
 
     // *****************
     // Set inverse width
     // *****************
-    
+	glUniform1f(tex_eff.get_uniform_location("inverse_width"), (1/renderer::get_screen_width()));
 
     // ******************
     // Set inverse height
     // ******************
-    
+	glUniform1f(tex_eff.get_uniform_location("inverse_height"), (1 / renderer::get_screen_height()));
+
 
     // **********************
     // Render the screen quad
     // **********************
+	renderer::render(screen_quad);
     
 
     return true;

@@ -113,6 +113,7 @@ bool load_content()
     // *****************
     // Load in alpha map
     // *****************
+	alpha_map = texture("..\\resources\\textures\\alpha_map.png");
     
 
     // Set lighting values
@@ -128,7 +129,7 @@ bool load_content()
     // Change the fragment shader to mask
     // **********************************
     tex_eff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
-    tex_eff.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
+    tex_eff.add_shader("..\\resources\\shaders\\mask.frag", GL_FRAGMENT_SHADER);
     // Build effects
     eff.build();
     tex_eff.build();
@@ -239,12 +240,14 @@ bool render()
     // *************
     // Set alpha map
     // *************
+	renderer::bind(alpha_map, 1);
+	glUniform1i(tex_eff.get_uniform_location("alpha_map"), 1);
     
 
     // **********************
     // Render the screen quad
     // **********************
-    
+	renderer::render(screen_quad);
 
     return true;
 }

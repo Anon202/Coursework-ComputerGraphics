@@ -7,7 +7,7 @@ spot_light globalSpot;
 
 bool initialise()
 {
-	glEnable(GL_BLEND);
+
 	double xpos = 0; // create initial vars for mouse position
 	double ypos = 0;
 
@@ -706,7 +706,7 @@ void renderShad()
 
 bool render()
 {
-	renderParticles();
+
 	if (myScene->debug)
 	{
 		// if debug mode draw radii of bounding spheres
@@ -779,6 +779,8 @@ bool render()
 
 	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 
+	renderParticles();
+	
     return true;
 }
 

@@ -20,6 +20,7 @@ bool load_content()
     // *************************************************
     // Create frame buffer - use screen width and height
     // *************************************************
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
     
 
     // Cube to render to
@@ -156,17 +157,18 @@ bool render()
     // *********************************
     // Set render target to frame buffer
     // *********************************
+	renderer::set_render_target(frame);
     
 
     // *************************
     // Set clear colour to white
     // *************************
-    
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     // ***********
     // Clear frame
     // ***********
-    
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render meshes
     for (auto &e : meshes)
@@ -223,12 +225,12 @@ bool render()
     // ***************************
     // Return clear colour to cyan
     // ***************************
-    
+	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
 
     // ************************************
     // Set render target back to the screen
     // ************************************
-    
+	renderer::set_render_target();
 
     // Render the render cube
     renderer::bind(tex_eff);
@@ -242,12 +244,13 @@ bool render()
     // ******************************
     // Bind texture from frame buffer
     // ******************************
-    
+	renderer::bind(frame.get_frame(), 0);
+
 
     // ***************
     // Set the uniform
     // ***************
-    
+	glUniform1i(tex_eff.get_uniform_location("tex"), 0);
 
     // Render the render cube
     renderer::render(render_cube);
