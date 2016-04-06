@@ -2,9 +2,6 @@
 
 SceneManager* myScene;  // pointer to a scene manager!
 
-shadow_map globalShadow;
-spot_light globalSpot;
-
 bool initialise()
 {
 
@@ -66,8 +63,7 @@ bool initialise()
 
 bool load_content()
 {
-
-	globalShadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
+	myScene->shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 	// CREATE TERRAIN
 
 	vector<geometry> terrainBlocks;	// geom to pass into function to create terrain blocks within
@@ -305,7 +301,7 @@ bool load_content()
 
 	// create objects for the "temple" - platform is the root of this
 	Obj *platLower = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
-	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, phongEff, object);
+	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadowEff, forShade);
 
 	// pillars underneath platform 
 	Obj *pillar = new Obj(vec3(3.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -333,9 +329,7 @@ bool load_content()
 
 
 	//pillarPlat->setTranslationParams(vec3(1.0, 0.0, 0.0), vec3(10.0, 0.0, 0.0));
-	Obj *spotlight = new Obj(vec3(-0.2, 0.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spotlight"], &myScene->materials["spotlight"], woodenTextures, phongEff, spotty);
-
-
+	Obj *spotlight = new Obj(vec3(-0.7, 0.0, 0.5), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spotlight"], &myScene->materials["spotlight"], woodenTextures, phongEff, spotty);
 	// point light rotating hierarchy.
 	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightYellow"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 2 * pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightBlue"], displacementTextures, displacement, pointLightObj);
@@ -509,14 +503,13 @@ bool update(float delta_time)
 	updateParticles(delta_time);
 
 	// get shadow update
-
-	globalShadow.light_position = vec3(myScene->lightObjects[3]->getWorldPos());
-	globalShadow.light_dir = myScene->lightList[4]->get_direction();
+	myScene->shadow.light_position = vec3(myScene->lightList[4]->get_position());
+	myScene->shadow.light_dir = myScene->lightList[4]->get_direction();
 
 	// Press z to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
 	{
-		globalShadow.buffer->save("test.png");
+		myScene->shadow.buffer->save("test.png");
 	}
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
@@ -657,12 +650,12 @@ void generateFrustrumPlanes()
 void renderShad()
 {
 	// render shadow map.
-	renderer::set_render_target(globalShadow);
+	renderer::set_render_target(myScene->shadow);
 
 	// **********************
 	// Clear depth buffer bit
 	// **********************
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// ****************************
 	// Set render mode to cull face
@@ -675,12 +668,11 @@ void renderShad()
 	// Create MVP matrix
 	for (auto &o : myScene->list)
 	{
-
-		if (o->myType != sky && o->myType != terrn)
+		
+		if (o->myType != sky && o->myType != terrn && o->getName() != "spotlight")
 		{
 			// View matrix taken from shadow map
-			auto V = globalShadow.get_view();
-
+			auto V = myScene->shadow.get_view();
 			auto P = myScene->cam->get_projection();
 			auto MVP = P * V * o->mworld;
 			// Set MVP matrix uniform
@@ -773,7 +765,7 @@ bool render()
 	
 	}
 
-	//renderShad();
+	renderShad();
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

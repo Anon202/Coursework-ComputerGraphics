@@ -26,7 +26,6 @@ class SceneManager
 {
 	
 public:
-	
 	Obj* skybx;
 
 	GenerateBack* generator;

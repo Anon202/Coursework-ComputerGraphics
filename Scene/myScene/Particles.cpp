@@ -115,8 +115,7 @@ void updateParticles(float delta_time)
 	// Tell OpenGL we aren't rendering
 	// *******************************
 	glEnable(GL_RASTERIZER_DISCARD);
-
-
+	
 	// *******************************
 	// Bind the buffers for use
 	// - buffer is front buf
@@ -131,9 +130,9 @@ void updateParticles(float delta_time)
 	glEnableVertexAttribArray(0); // pos location
 	glEnableVertexAttribArray(1); // velocity location
 	glEnableVertexAttribArray(2); // velocity location
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)12);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)24);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, position));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, velocity));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, lifetime));
 	// ******************************
 	// Perform the transform feedback
 	// ******************************
@@ -165,8 +164,8 @@ void updateParticles(float delta_time)
 	// *************************
 	// Switch on rendering again
 	// *************************
-	//glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
 }
 

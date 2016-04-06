@@ -90,6 +90,7 @@
     <ClCompile Include="GenerateBack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obj.cpp" />
+    <ClCompile Include="Particles.cpp" />
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Obj.h" />
+    <ClInclude Include="Particles.h" />
     <ClInclude Include="SceneManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

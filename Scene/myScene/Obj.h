@@ -94,6 +94,6 @@ public:
 	void setScaleFactor(float scaleFactor);  // used to scale the object over time from sin wave
 
 	void setTranslationParams(vec3 move, vec3 max);  // used to set moveby value and max distance moved for translating objects over time
-
+	string getName() { return myName; };
 };
 
