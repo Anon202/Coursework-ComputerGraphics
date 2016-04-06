@@ -160,7 +160,7 @@ bool update(float delta_time)
 	// ********************************************
 	glEnableVertexAttribArray(0); // pos location
 	glEnableVertexAttribArray(1); // velocity location
-	glEnableVertexAttribArray(2); // velocity location
+	glEnableVertexAttribArray(2); // lifetime location
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)12);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)24);
@@ -195,8 +195,6 @@ bool update(float delta_time)
     // *************************
     // Switch on rendering again
     // *************************
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
 
     // The ratio of pixels to rotation - remember the fov

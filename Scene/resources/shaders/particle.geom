@@ -20,7 +20,7 @@ layout (location = 0) out vec3 position_out;
 // Outgoing velocity
 layout (location = 1) out vec3 velocity_out;
 
-layout (location = 2) out vec2 lifetime_out;
+layout (location = 3) out vec2 lifetime_out;
 
 void main()
 {
@@ -44,7 +44,7 @@ void main()
 	// ***********
 	position_out = newPos;
 	velocity_out = velocity[0];
-	 lifetime_out = vec2(life,lifetime[0].y);
+	lifetime_out = vec2(life,lifetime[0].y);
     
 
     // Emit vertex and end primitive

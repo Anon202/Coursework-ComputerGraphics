@@ -699,6 +699,7 @@ void renderShad()
 bool render()
 {
 
+
 	if (myScene->debug)
 	{
 		// if debug mode draw radii of bounding spheres

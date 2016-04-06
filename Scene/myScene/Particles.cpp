@@ -127,12 +127,12 @@ void updateParticles(float delta_time)
 	// ********************************************
 	// Define how our data looks like to the shader
 	// ********************************************
-	glEnableVertexAttribArray(0); // pos location
-	glEnableVertexAttribArray(1); // velocity location
-	glEnableVertexAttribArray(2); // velocity location
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, position));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, velocity));
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, lifetime));
+	glEnableVertexAttribArray(5); // pos location
+	glEnableVertexAttribArray(6); // velocity location
+	glEnableVertexAttribArray(7); // lifetime location
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, position));
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, velocity));
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, lifetime));
 	// ******************************
 	// Perform the transform feedback
 	// ******************************
@@ -157,9 +157,9 @@ void updateParticles(float delta_time)
 	// ***********************************
 	// Disable the vertex attribute arrays
 	// ***********************************
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(5);
+	glDisableVertexAttribArray(6);
+	glDisableVertexAttribArray(7);
 
 	// *************************
 	// Switch on rendering again
@@ -198,8 +198,8 @@ void renderParticles()
 	// ******************************************************
 	// Describe the data we are interested in (just position)
 	// ******************************************************
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(particle), 0);
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(particle), 0);
 
 	/// ****************************************************
 	// Perform the render by drawing the transform feedback
@@ -210,7 +210,7 @@ void renderParticles()
 	// ******************************
 	// Disable vertex attribute array
 	// ******************************
-	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(5);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	// ***************************

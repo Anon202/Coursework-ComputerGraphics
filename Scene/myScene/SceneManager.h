@@ -24,8 +24,8 @@ enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
 enum planePoints {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
 class SceneManager
 {
-	
 public:
+
 	Obj* skybx;
 
 	GenerateBack* generator;
@@ -69,13 +69,21 @@ public:
 
 	bool firstMouse;	
 
-	SceneManager(double initialMouseX, double initialMouseY);  // constructor takes in initial mouse positions for free camera setup
-	~SceneManager();										   // deconstructor frees lists
+
 	void createLights();
 	void calculateFrustrum();
-	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
+
 
 	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
 
+	bool getDebugBool(){ return debug; }
+	void setDebugBool(bool value){ debug = value; }
+
+	bool getFixCullBool(){ return fixCull; }
+	void setFixCullBool(bool value){ fixCull = value; }
+
+	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
+	SceneManager(double initialMouseX, double initialMouseY);  // constructor takes in initial mouse positions for free camera setup
+	~SceneManager();										   // deconstructor frees lists
 };
 
