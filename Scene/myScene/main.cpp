@@ -766,7 +766,7 @@ bool render()
 	
 	}
 
-	//renderShad();
+	renderShad();
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

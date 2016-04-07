@@ -47,8 +47,8 @@ void initialiseParticles(int numofParticles)
 	for (unsigned int i = 0; i < MAX_PARTICLES; ++i)
 	{
 		float fi = (((float)i) / ((float)MAX_PARTICLES)) * 2.0f* pi<float>();
-		particles[i].velocity = vec3(0.0f, -2.0f, 0.0f);
-		particles[i].position = vec3(0.0f, -1000000.0f, 0.0f);
+		particles[i].velocity = vec3(dist(rand)*fi, 2.0f, 0.0f);
+		particles[i].position = vec3(-350.0f, 0.0f, 0.0f);
 		float life = (dist(rand)* 10.0f) + 2.0f;
 		particles[i].lifetime = vec2(0.0f, life);
 	}
@@ -58,27 +58,24 @@ void initialiseParticles(int numofParticles)
 	// ************************
 	for (unsigned int i = 0; i < 2; ++i)
 	{
+		// if the vao has not been generated
 		if (m_vao[i] == 0)
 		{
+			// generate and check for errors
 			glGenVertexArrays(1, &m_vao[i]);
-			if (CHECK_GL_ERROR)
-			{
-				// Display error
-				std::cerr << "ERROR - creating geometry" << std::endl;
-				std::cerr << "Could not generate vertex array object" << std::endl;
-				// Set vertex array object to 0
-				m_vao[i] = 0;
-				// Throw exception
-				throw std::runtime_error("Error creating vertex array object with OpenGL");
-			}
-
+			assert(!CHECK_GL_ERROR && "Couldn't create VAO.");
 		}
+
+		// bind vao
 		glBindVertexArray(m_vao[i]);
 	
+		// bind vbo for particle's movement
 		glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[i]);
+
+		// bind data to buffer (particles)
 		glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
 		
-		
+		// set incoming value expectations
 		glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, position));
 		glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, velocity));
 		glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, lifetime));
@@ -86,13 +83,10 @@ void initialiseParticles(int numofParticles)
 		glEnableVertexAttribArray(6); // velocity location
 		glEnableVertexAttribArray(7); // lifetime location
 		
-		if (CHECK_GL_ERROR)
-		{
-			std::cerr << "ERROR - adding buffer to geometry object" << std::endl;
-			std::cerr << "Could not create buffer with OpenGL" << std::endl;
-			throw std::runtime_error("Error creating Buffer");
-		}
+		// check if buffer was created
+		assert(!CHECK_GL_ERROR && "Error creating Buffer with OpenGL");
 
+		// bind transformfeedback buffer
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_feedbacks[i]);
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, particle_buffers[i]);
 		glBindVertexArray(0);
@@ -122,13 +116,16 @@ void initialiseParticles(int numofParticles)
 		"lifetime_out"
 	};
 
+	// set varying attributes (outgoing)
 	glTransformFeedbackVaryings(particle_eff.get_program(), 3, attrib_names, GL_INTERLEAVED_ATTRIBS);
 
 	// **************
 	// Relink program
 	// **************
-	//particle_eff.build();
 	glLinkProgram(particle_eff.get_program());
+	// check if buffer was created
+	assert(!CHECK_GL_ERROR && "Error creating Buffer with OpenGL");
+
 }
 
 
@@ -161,18 +158,6 @@ void updateParticles(float delta_time)
 	glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[front_buf]);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_feedbacks[back_buf]);
 
-	// ********************************************
-	// Define how our data looks like to the shader
-	// ********************************************
-	//glEnableVertexAttribArray(5); // pos location
-	//glEnableVertexAttribArray(6); // velocity location
-	//glEnableVertexAttribArray(7); // lifetime location
-	//glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, position));
-	//glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, velocity));
-	//glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, sizeof(particle), (const GLvoid*)offsetof(particle, lifetime));
-	// ******************************
-	// Perform the transform feedback
-	// ******************************
 	glBeginTransformFeedback(GL_POINTS);
 
 	if (first_frame)
@@ -190,26 +175,13 @@ void updateParticles(float delta_time)
 	// **************************
 	glEndTransformFeedback();
 
-
-	// ***********************************
-	// Disable the vertex attribute arrays
-	// ***********************************
-	//glDisableVertexAttribArray(5);
-	//glDisableVertexAttribArray(6);
-	//glDisableVertexAttribArray(7);
-
-	// *************************
-	// Switch on rendering again
-	// *************************
-	//glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
 }
 
 
 void renderParticles()
 {
-	glPointSize(50.0f);
+	glPointSize(20.0f);
 	// Bind the effect
 	renderer::bind(eff);
 

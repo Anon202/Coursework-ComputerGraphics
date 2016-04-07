@@ -28,7 +28,7 @@ void main()
     // Update the position using standard velocity step
     // ************************************************
 	float life = lifetime[0].x + delta_time;
-    vec3 newPos = position[0] + (velocity[0] * delta_time);
+    vec3 newPos = position[0] + (velocity[0] * delta_time * 100);
 
     // *****************************************
     // Ensure particle does not go out of bounds
@@ -36,7 +36,7 @@ void main()
     // *****************************************
 	if (life > lifetime[0].y) {
 		life = 0.0f;
-		newPos = vec3(100.0f);
+		newPos = vec3(-350.0f, 320.0f, -400.0f);
 	}
 
 	// ***********
