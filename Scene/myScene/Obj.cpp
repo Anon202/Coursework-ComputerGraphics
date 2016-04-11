@@ -179,7 +179,7 @@ void Obj::update(Obj* parent, float delta_time)
 		if (scaleUpdate)
 		{
 			// Update the scale - base on sin wave
-			float scaleChange = 1.0f + sinf(myScene->myTime);
+			float scaleChange = 1.0f + sinf(myScene->getMyTime());
 
 			// Multiply by object's scale factor
 			scaleChange *= scaleFactor;
@@ -465,7 +465,7 @@ void Obj::render()
 
 		// uniform for float - used by water and point light to displace vertexes
 		//incremented in update function
-		glUniform1f(eff->get_uniform_location("myTime"), myScene->myTime);
+		glUniform1f(eff->get_uniform_location("myTime"), myScene->getMyTime());
 	
 		if (myType == waterObj)  // water flag to assign uniform moving water!
 		{

@@ -29,6 +29,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 
 	fixCull = false; // bool used to turn on/off updating the view frustrum to show culling working
 
+	createLights();
 }
 
 void SceneManager::createLights()
@@ -160,6 +161,58 @@ void SceneManager::calculateFrustrum()
 	{
 		planeNormals[i] = normalize(planeNormals[i]);
 	}
+
+}
+
+void SceneManager::generateFrustrumPlanes()
+{
+	// method to regenerate the frustrum geometry from the plane positions, called when culling is fixed.
+
+	vector<vec3> positions
+	{
+		//near plane
+		planePoints[ntl],
+		planePoints[nbl],
+		planePoints[nbr],
+		planePoints[ntr],
+
+		// far plane
+		planePoints[ftl],
+		planePoints[ftr],
+		planePoints[fbr],
+		planePoints[fbl],
+
+		// left plane
+		planePoints[ftl],
+		planePoints[fbl],
+		planePoints[nbl],
+		planePoints[ntl],
+
+		// right plane 
+		planePoints[ntr],
+		planePoints[nbr],
+		planePoints[fbr],
+		planePoints[ftr],
+
+		// top plane
+		planePoints[ftl],
+		planePoints[ntl],
+		planePoints[ntr],
+		planePoints[ftr],
+
+		// bottom plane
+		planePoints[nbl],
+		planePoints[fbl],
+		planePoints[fbr],
+		planePoints[nbr],
+	};
+
+	frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+
+}
+
+void SceneManager::initQuad()
+{
 
 }
 

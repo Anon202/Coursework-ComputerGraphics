@@ -4,7 +4,7 @@
 #include "Obj.h"
 #include "SceneManager.h"
 #include "Particles.h"
-
+#include "Shadowing.h"
 
 using namespace std;
 using namespace graphics_framework;

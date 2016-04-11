@@ -36,7 +36,7 @@ void main()
     // *****************************************
 	if (life > lifetime[0].y) {
 		life = 0.0f;
-		newPos = vec3(100.0f);
+		newPos = vec3(0.0f);
 	}
 
 	// ***********

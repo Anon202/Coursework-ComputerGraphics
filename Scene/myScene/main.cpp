@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Shadowing.h"
 
 SceneManager* myScene;  // pointer to a scene manager!
 
@@ -53,9 +54,6 @@ bool initialise()
 	myScene->cam->set_position(vec3(-50.0f, 100.0f, 50.0f));
 	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
-
-	myScene->createLights();  // sets up light objects
-
 
 	return true;
 }
@@ -503,14 +501,7 @@ bool update(float delta_time)
 	updateParticles(delta_time);
 
 	// get shadow update
-	myScene->shadow.light_position = vec3(myScene->lightList[4]->get_position());
-	myScene->shadow.light_dir = myScene->lightList[4]->get_direction();
-
-	// Press z to save
-	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
-	{
-		myScene->shadow.buffer->save("test.png");
-	}
+	updateShadows();
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -526,12 +517,12 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		myScene->debug = false;
+		myScene->setDebugBool(false);
 	}
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_9))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		myScene->debug = true;
+		myScene->setDebugBool(true);
 	}
 		
 	if (freeCam)
@@ -548,15 +539,15 @@ bool update(float delta_time)
 
 		glfwGetCursorPos(window, &new_x, &new_y);	// Get the current cursor position
 
-		if (myScene->firstMouse)							 // if first mouse take cursor positons from initalised vars
+		if (myScene->getfirstMouse())							 // if first mouse take cursor positons from initalised vars
 		{
-			myScene->current_x = myScene->initialX;
-			myScene->current_y = myScene->initialY;
-			myScene->firstMouse = false;
+			myScene->setCurrX(myScene->getInitialX());
+			myScene->setCurrY(myScene->getInitialY());
+			myScene->setfirstMouse(false);
 		}
 
-		double delta_x = new_x - myScene->current_x;		 // Calculate delta of cursor positions from last frame
-		double delta_y = new_y - myScene->current_y;
+		double delta_x = new_x - myScene->getCurrX();		 // Calculate delta of cursor positions from last frame
+		double delta_y = new_y - myScene->getCurrY();
 
 		delta_x *= ratio_width;								 // Multiply deltas by ratios - gets actual change in orientation
 		delta_y *= -ratio_height;
@@ -574,133 +565,39 @@ bool update(float delta_time)
 		if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
 			freeCam->move(vec3(0.0f, 0.0f, -1.0f)*delta_time*200.0f);
 
-
-		glfwGetCursorPos(window, &myScene->current_x, &myScene->current_y);  // update cursor pos
+		
+		glfwGetCursorPos(window, &new_x, &new_y);  // update cursor pos
+		myScene->setCurrX(new_x);
+		myScene->setCurrY(new_y);
 	}
 
 	myScene->cam->update(delta_time);  // update the camera
 	
 	// FRUSTRUM UPDATE
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
-		myScene->fixCull = false;
+		myScene->setFixCullBool(false);
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_X))
-		myScene->fixCull = true;
+		myScene->setFixCullBool(true);
 
 
-	if (!myScene->fixCull)
+	if (!myScene->getFixCullBool())
 	{
 		myScene->calculateFrustrum();	   // update frustrum
 	}
 	
 	myScene->skybx->update(NULL, delta_time); // null as no parent
 
-	myScene->myTime += (2.0f * delta_time); // update myTime for water
+	myScene->incrementMyTime(2.0f * delta_time); // update myTime for water
 
     return true;
 }
 
-void generateFrustrumPlanes()
-{
-	// method to regenerate the frustrum geometry from the plane positions, called when culling is fixed.
 
-	vector<vec3> positions
-	{
-		//near plane
-		myScene->planePoints[ntl],
-		myScene->planePoints[nbl],
-		myScene->planePoints[nbr],
-		myScene->planePoints[ntr],
-
-		// far plane
-		myScene->planePoints[ftl],
-		myScene->planePoints[ftr],
-		myScene->planePoints[fbr],
-		myScene->planePoints[fbl],
-
-		// left plane
-		myScene->planePoints[ftl],
-		myScene->planePoints[fbl],
-		myScene->planePoints[nbl],
-		myScene->planePoints[ntl],
-
-		// right plane 
-		myScene->planePoints[ntr],
-		myScene->planePoints[nbr],
-		myScene->planePoints[fbr],
-		myScene->planePoints[ftr],
-
-		// top plane
-		myScene->planePoints[ftl],
-		myScene->planePoints[ntl],
-		myScene->planePoints[ntr],
-		myScene->planePoints[ftr],
-
-		// bottom plane
-		myScene->planePoints[nbl],
-		myScene->planePoints[fbl],
-		myScene->planePoints[fbr],
-		myScene->planePoints[nbr],
-	};
-
-	myScene->frustrumGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
-
-}
-
-void renderShad()
-{
-	// render shadow map.
-	renderer::set_render_target(myScene->shadow);
-
-	// **********************
-	// Clear depth buffer bit
-	// **********************
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// ****************************
-	// Set render mode to cull face
-	// ****************************
-	glCullFace(GL_FRONT);
-
-	// Bind shader
-	renderer::bind(*myScene->shad_eff);
-
-	// Create MVP matrix
-	for (auto &o : myScene->list)
-	{
-		
-		if (o->myType != sky && o->myType != terrn && o->getName() != "spotlight")
-		{
-			// View matrix taken from shadow map
-			auto V = myScene->shadow.get_view();
-			auto P = myScene->cam->get_projection();
-			auto MVP = P * V * o->mworld;
-			// Set MVP matrix uniform
-			glUniformMatrix4fv(
-				myScene->shad_eff->get_uniform_location("MVP"), // Location of uniform
-				1, // Number of values - 1 mat4
-				GL_FALSE, // Transpose the matrix?
-				value_ptr(MVP)); // Pointer to matrix data
-
-			renderer::render(*o->m);
-		}
-	}
-
-
-	// Set render target back to the screen
-	renderer::set_render_target();
-
-
-	// Set cull face to back
-	glCullFace(GL_BACK);
-
-}
 
 bool render()
 {
-
-
-	if (myScene->debug)
+	if (myScene->getDebugBool())
 	{
 		// if debug mode draw radii of bounding spheres
 		vector<float> radii;
@@ -741,11 +638,11 @@ bool render()
 		
 	
 		// if fixCull, then the frustrum plane is fixed and not updating, so draw if in debug mode
-		if (myScene->fixCull)
+		if (myScene->getFixCullBool())
 		{
 
 			// generate the geometry from the plane points.
-			generateFrustrumPlanes();
+			myScene->generateFrustrumPlanes();
 
 			// increase the line width so it's easier to see
 			glLineWidth(3.0f);
@@ -766,7 +663,7 @@ bool render()
 	
 	}
 
-	renderShad();
+	renderShadows();
 
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 

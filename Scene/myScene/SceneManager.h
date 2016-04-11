@@ -21,9 +21,28 @@ class Obj;				// forward declaration of object
 
 enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty, glassOb, movingObject }; //  enum
 enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
-enum planePoints {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
+enum planePointNames {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
 class SceneManager
 {
+private:
+
+	void createLights();
+
+	bool debug;			 // flag for turning on polygon mode to render outlines
+	bool fixCull;		 // flag for fixing view culling
+	bool firstMouse;	 // flag for first mouse (for free camera)
+
+	double initialX;				// vars for mouse positions initial
+	double initialY;
+	double current_x;			    // var for current mouse pos
+	double current_y;
+
+	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
+
+
+
+	void initQuad();
+
 public:
 
 	Obj* skybx;
@@ -52,38 +71,43 @@ public:
 
 	shadow_map shadow;
 
-	vec3 planeNormals[6];		// var for storing view frustrum plane normals.
-	vec3 planePoints[8];
-
 	geometry radiusGeom;		// geometry for scene debugging 
 	geometry frustrumGeom;
 	effect	 frustrumEffect;
 
-	bool debug;
-	bool fixCull;
+	vec3 planeNormals[6];		// var for storing view frustrum plane normals.
+	vec3 planePoints[8];
 
-	double initialX;				// vars for mouse positions initial
-	double initialY;	
-	double current_x;			    // var for current mouse pos
-	double current_y;
-
-	bool firstMouse;	
-
-
-	void createLights();
-	void calculateFrustrum();
-
-
-	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
-
-	bool getDebugBool(){ return debug; }
-	void setDebugBool(bool value){ debug = value; }
-
-	bool getFixCullBool(){ return fixCull; }
-	void setFixCullBool(bool value){ fixCull = value; }
 
 	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
 	SceneManager(double initialMouseX, double initialMouseY);  // constructor takes in initial mouse positions for free camera setup
-	~SceneManager();										   // deconstructor frees lists
+	~SceneManager();// deconstructor frees lists
+
+	// recalculates view frustrum from current camera positions
+	void calculateFrustrum();
+	void generateFrustrumPlanes();
+
+	// getters/setters for values	
+	bool getDebugBool(){ return debug; }
+	void setDebugBool(const bool &value){ debug = value; }
+
+	bool getFixCullBool(){ return fixCull; }
+	void setFixCullBool(const bool &value){ fixCull = value; }
+
+	bool getfirstMouse(){ return firstMouse; }
+	void setfirstMouse(const bool &value){ firstMouse = value; }
+
+	double getInitialX(){ return initialX; }
+	double getInitialY(){ return initialY; }
+
+	void setCurrX(const double &value) { current_x = value; }
+	double getCurrX() { return current_x; }
+
+	void setCurrY(const double &value) { current_y = value; }
+	double getCurrY() { return current_y; }
+
+	void incrementMyTime(const float &value){ myTime += value;	}
+	float getMyTime(){ return myTime; }
+
 };
 

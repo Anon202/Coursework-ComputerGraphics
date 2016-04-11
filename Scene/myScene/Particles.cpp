@@ -15,6 +15,8 @@ static GLuint particle_buffers[2];
 effect eff;
 effect particle_eff;
 
+texture tex;
+
 // Current buffer to perform the physics update to
 static unsigned int front_buf = 0;
 // Buffer to render to
@@ -93,8 +95,9 @@ void initialiseParticles(int numofParticles)
 	}
 
 	// Build effects
-	eff.add_shader("..\\resources\\shaders\\colour.vert", GL_VERTEX_SHADER);
-	eff.add_shader("..\\resources\\shaders\\colour.frag", GL_FRAGMENT_SHADER);
+	eff.add_shader("..\\resources\\shaders\\smoke.vert", GL_VERTEX_SHADER);
+	eff.add_shader("..\\resources\\shaders\\smoke.geom", GL_GEOMETRY_SHADER);
+	eff.add_shader("..\\resources\\shaders\\smoke.frag", GL_FRAGMENT_SHADER);
 	eff.build();
 	
 
@@ -102,6 +105,8 @@ void initialiseParticles(int numofParticles)
 	particle_eff.add_shader("..\\resources\\shaders\\particle.geom", GL_GEOMETRY_SHADER);
 	particle_eff.add_shader("..\\resources\\shaders\\particle.frag", GL_FRAGMENT_SHADER);
 	particle_eff.build();
+
+	tex = texture("..\\resources\\textures\\smoke.png");
 
 	// Use the particle effect
 	renderer::bind(particle_eff);
@@ -152,8 +157,7 @@ void updateParticles(float delta_time)
 	// *******************************
 	// Bind the buffers for use
 	// - buffer is front buf
-	// - transform feeback is back buf
-	// *******************************
+	// - transform feeback is back buf  
 	glBindVertexArray(m_vao[front_buf]);
 	glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[front_buf]);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_feedbacks[back_buf]);
@@ -170,9 +174,7 @@ void updateParticles(float delta_time)
 		glDrawTransformFeedback(GL_POINTS, transform_feedbacks[front_buf]);
 	}
 
-	// **************************
 	// End the transform feedback
-	// **************************
 	glEndTransformFeedback();
 
 	glDisable(GL_RASTERIZER_DISCARD);
@@ -181,51 +183,53 @@ void updateParticles(float delta_time)
 
 void renderParticles()
 {
-	glPointSize(20.0f);
 	// Bind the effect
 	renderer::bind(eff);
 
-	//glUseProgram(eff.get_program());
 	// Set the MVP matrix
 	auto M = mat4(1.0f);
 	auto V = myScene->cam->get_view();
 	auto P = myScene->cam->get_projection();
-	auto MVP = P * V * M;
+	auto MV = V * M;
 	glUniformMatrix4fv(
-		eff.get_uniform_location("MVP"),
+		eff.get_uniform_location("MV"),
 		1,
 		GL_FALSE,
-		value_ptr(MVP));
-	// Set the colour uniform
-	glUniform4fv(eff.get_uniform_location("colour"), 1, value_ptr(vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+		value_ptr(MV));
+	glUniformMatrix4fv(
+		eff.get_uniform_location("P"),
+		1,
+		GL_FALSE,
+		value_ptr(P));
 
-	// *******************************************
+	// Set particle size
+	glUniform1f(eff.get_uniform_location("point_size"), 10.0f);
+
+	// bind texture and set uniform
+	renderer::bind(tex, 0);
+	glUniform1i(eff.get_uniform_location("tex"), 0);
+
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Bind the back particle buffer for rendering
-	// *******************************************
-
 	glBindVertexArray(m_vao[back_buf]);
 	glBindBuffer(GL_ARRAY_BUFFER, particle_buffers[back_buf]);
 
-	// ******************************************************
-	// Describe the data we are interested in (just position)
-	// ******************************************************
+	// Describe the data we are interested in (just position) ** don't need to do this as using vao
 
-
-	/// ****************************************************
 	// Perform the render by drawing the transform feedback
-	// ****************************************************
 	glDrawTransformFeedback(GL_POINTS, transform_feedbacks[back_buf]);
 
 
-	// ******************************
 	// Disable vertex attribute array
-	// ******************************
-	//glDisableVertexAttribArray(5);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// ***************************
+	glDepthMask(GL_TRUE);
+	//glDisable(GL_BLEND);
+
 	// Swap front and back buffers
-	// ***************************
 	front_buf = back_buf;
 	back_buf = (back_buf + 1) & 0x1;
 	glPointSize(1.0f);
