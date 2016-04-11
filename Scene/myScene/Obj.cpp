@@ -406,16 +406,21 @@ void Obj::renderGlass()
 
 void Obj::render()
 {
+	extern SceneManager* myScene;
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
+
+
+
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//glEnable(GL_BLEND);
 	if (visible && myType != glassOb)
 	{
-		extern SceneManager* myScene;
+
 
 		camera* cam = myScene->cam;			 // camera pointer 
 
@@ -435,6 +440,10 @@ void Obj::render()
 		{
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
+		}
+		else
+		{
+
 		}
 
 		// Bind the effect
@@ -522,9 +531,6 @@ void Obj::render()
 				1,
 				GL_FALSE,
 				value_ptr(lMVP));
-
-
-
 		}
 
 

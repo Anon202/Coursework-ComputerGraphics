@@ -14,5 +14,5 @@ layout (location = 0) out vec4 colour_out;
 void main()
 {
 	// Sample texture and multiply by incoming colour
-    colour_out = texture(tex, tex_coord) * vec4(1.0, 1.0, 1.0, colour);
+    colour_out = texture(tex, tex_coord) * vec4(1.0, 1.0, 1.0, 0.4);
 }

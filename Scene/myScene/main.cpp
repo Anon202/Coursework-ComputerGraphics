@@ -483,6 +483,7 @@ bool load_content()
 	myScene->effectList.push_back(shadow_effect);
 
 	initialiseParticles(1);
+	myScene->initQuad();
     return true;
 }
 
@@ -574,10 +575,10 @@ bool update(float delta_time)
 	myScene->cam->update(delta_time);  // update the camera
 	
 	// FRUSTRUM UPDATE
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_V))
 		myScene->setFixCullBool(false);
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_X))
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
 		myScene->setFixCullBool(true);
 
 
@@ -590,86 +591,206 @@ bool update(float delta_time)
 
 	myScene->incrementMyTime(2.0f * delta_time); // update myTime for water
 
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_G))
+		myScene->setGreyBool(true);
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
+		myScene->setGreyBool(false);
+
     return true;
 }
 
 
-
-bool render()
+void renderGreyScale()
 {
-	if (myScene->getDebugBool())
+	// render to frame buffer
+	renderer::set_render_target(myScene->getFrame());
+
+	// Clear frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	myScene->skybx->render();  // is sky true (enable/disable depth)
+	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+
+	renderParticles();
+
+	renderer::set_render_target();
+
+	// Bind texture shader
+	renderer::bind(myScene->getGreyEffect());
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		myScene->getGreyEffect().get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(myScene->getFrame().get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(myScene->getGreyEffect().get_uniform_location("tex"), 0);
+
+	// Render the screen quad
+
+	renderer::render(myScene->getScreenQuad());
+
+}
+
+GLuint m_kernelLocation;
+const static uint KERNEL_SIZE = 64;
+
+void renderFrame()
+{
+	// render to frame buffer
+	renderer::set_render_target(myScene->getFrame());
+
+	// Clear frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	myScene->skybx->render();  // is sky true (enable/disable depth)
+	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+
+	renderParticles();
+
+	renderer::set_render_target();
+
+	// Bind texture shader
+	renderer::bind(myScene->getSimpleTexEffect());
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// projection matrix
+	glUniformMatrix4fv(
+		myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(myScene->getFrame().get_frame(), 0);
+
+	vec3 kernel[KERNEL_SIZE];
+
+	for (uint i = 0; i < KERNEL_SIZE; i++) {
+		float scale = (float)i / (float)(KERNEL_SIZE);
+		vec3 v;
+		v.x = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		v.y = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		v.z = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		// Use an acceleration function so more points are
+		// located closer to the origin
+		v *= (0.1f + 0.9f * scale * scale);
+
+		kernel[i] = v;
+	}
+
+	glUniform3fv(m_kernelLocation, KERNEL_SIZE, (const GLfloat*)&kernel[0].xyz);
+
+	// Set the uniform
+	glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
+
+	// Render the screen quad
+	renderer::render(myScene->getScreenQuad());
+}
+
+void renderRadii()
+{
+	if (!myScene->getDebugBool())
+		return;
+
+	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+
+	// if debug mode draw radii of bounding spheres
+	vector<float> radii;
+	vector<vec3> positions;
+
+	// for each object, add it's radius and it's center position in world place to the vectors
+	for (auto c : myScene->list)
 	{
-		// if debug mode draw radii of bounding spheres
-		vector<float> radii;
-		vector<vec3> positions;
+		radii.push_back(c->getRadius());
+		vec3 centre = vec3(c->getWorldPos());
+		positions.push_back(centre);  // get centre positions
+	}
 
-		// for each object, add it's radius and it's center position in world place to the vectors
-		for (auto c : myScene->list)
-		{
-			radii.push_back(c->getRadius());
-			vec3 centre = vec3(c->getWorldPos());
-			positions.push_back(centre);  // get centre positions
+	// add to buffers, dynamic_draw allows for overwriting the buffers.
+	myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
+	myScene->radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);		// use buffer index 1
 
-		}
+	// bind the effect
+	renderer::bind(*myScene->rad_eff);
 
-		// add to buffers, dynamic_draw allows for overwriting the buffers.
-		myScene->radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
-		myScene->radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);		// use buffer index 1
+	// Calculate ViewProjection matrix, - No model as center positon is already transformed by this
 
-		// bind the effect
-		renderer::bind(*myScene->rad_eff);
-
-		// Calculate ViewProjection matrix, - No model as center positon is already transformed by this
-
-		auto V = myScene->cam->get_view();
-		auto P = myScene->cam->get_projection();
-		auto VP = P * V;
+	auto V = myScene->cam->get_view();
+	auto P = myScene->cam->get_projection();
+	auto VP = P * V;
 
 
-		// set uniform
+	// set uniform
+	glUniformMatrix4fv(
+		myScene->getRadEff()->get_uniform_location("VP"),
+		1,
+		GL_FALSE,
+		value_ptr(VP));
+
+	// render the geometry
+	renderer::render(myScene->radiusGeom);
+
+
+	// if fixCull, then the frustrum plane is fixed and not updating, so draw if in debug mode
+	if (myScene->getFixCullBool())
+	{
+
+		// generate the geometry from the plane points.
+		myScene->generateFrustrumPlanes();
+
+		// increase the line width so it's easier to see
+		glLineWidth(3.0f);
+
+		renderer::bind(myScene->frustrumEffect);
+
+		// set uniform (use view/projection matrix calulated above)
 		glUniformMatrix4fv(
-			myScene->rad_eff->get_uniform_location("VP"),
+			myScene->frustrumEffect.get_uniform_location("VP"),
 			1,
 			GL_FALSE,
 			value_ptr(VP));
 
-		// render the geometry
-		renderer::render(myScene->radiusGeom);
-		
-	
-		// if fixCull, then the frustrum plane is fixed and not updating, so draw if in debug mode
-		if (myScene->getFixCullBool())
-		{
+		renderer::render(myScene->getFrustrumGeom());
 
-			// generate the geometry from the plane points.
-			myScene->generateFrustrumPlanes();
-
-			// increase the line width so it's easier to see
-			glLineWidth(3.0f);
-
-			renderer::bind(myScene->frustrumEffect);
-
-			// set uniform (use view/projection matrix calulated above)
-			glUniformMatrix4fv(
-				myScene->frustrumEffect.get_uniform_location("VP"),
-				1,
-				GL_FALSE,
-				value_ptr(VP));
-
-			renderer::render(myScene->frustrumGeom);
-
-			glLineWidth(1.0f);
-		}
-	
+		glLineWidth(1.0f);
 	}
 
-	renderShadows();
+}
 
-	myScene->skybx->render();  // is sky true (enable/disable depth)
+bool render()
+{
+	renderRadii(); // render radius of bounding spheres + view frustrum
 
-	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+	renderShadows(); // render shadows
+	
+	if (myScene->getGreyBool())
+	{
+		renderGreyScale();	// if greyscale render screenquad else render objects normally
+	}
+	else
+	{
+		//myScene->skybx->render();  // is sky true (enable/disable depth)
+		//myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 
-	renderParticles();
+		//renderParticles();
+
+		renderFrame();
+	}
 	
     return true;
 }

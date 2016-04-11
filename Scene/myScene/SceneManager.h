@@ -31,6 +31,7 @@ private:
 	bool debug;			 // flag for turning on polygon mode to render outlines
 	bool fixCull;		 // flag for fixing view culling
 	bool firstMouse;	 // flag for first mouse (for free camera)
+	bool grey;
 
 	double initialX;				// vars for mouse positions initial
 	double initialY;
@@ -39,12 +40,15 @@ private:
 
 	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
 
+	geometry screen_quad;
+	frame_buffer frame;
+	effect greyEff;
+	effect simpleTex;
 
-
-	void initQuad();
+	geometry frustrumGeom;
 
 public:
-
+	void initQuad();
 	Obj* skybx;
 
 	GenerateBack* generator;
@@ -71,8 +75,9 @@ public:
 
 	shadow_map shadow;
 
-	geometry radiusGeom;		// geometry for scene debugging 
-	geometry frustrumGeom;
+	geometry radiusGeom;
+
+
 	effect	 frustrumEffect;
 
 	vec3 planeNormals[6];		// var for storing view frustrum plane normals.
@@ -109,5 +114,19 @@ public:
 	void incrementMyTime(const float &value){ myTime += value;	}
 	float getMyTime(){ return myTime; }
 
+	bool getGreyBool() { return grey; }
+	void setGreyBool(const bool &value) { grey = value; }
+
+	geometry getRadiGeom() { return radiusGeom; }
+	
+	frame_buffer getFrame(){ return frame; }
+	effect getGreyEffect() { return greyEff; }
+	geometry getScreenQuad() { return screen_quad; }
+
+	geometry getFrustrumGeom() { return frustrumGeom; }
+
+	effect* getRadEff() { return rad_eff; }
+
+	effect getSimpleTexEffect() { return simpleTex; }
 };
 

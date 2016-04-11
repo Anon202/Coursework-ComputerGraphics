@@ -213,8 +213,36 @@ void SceneManager::generateFrustrumPlanes()
 
 void SceneManager::initQuad()
 {
+	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
+	vector<vec3> positions
+	{
+		vec3(1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, -1.0f, 0.0f),
+		vec3(1.0f, -1.0f, 0.0f)
+	};
+	vector<vec2> tex_coords
+	{
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f)
+	};
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_QUADS);
+
+	greyEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	greyEff.add_shader("..\\resources\\shaders\\greyscale.frag", GL_FRAGMENT_SHADER);
+	greyEff.build();
+
+	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
+	simpleTex.build();
 }
+
+
 
 SceneManager::~SceneManager()
 {
