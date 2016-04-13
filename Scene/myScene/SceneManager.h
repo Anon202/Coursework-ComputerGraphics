@@ -42,6 +42,9 @@ private:
 
 	geometry screen_quad;
 	frame_buffer frame;
+
+	frame_buffer ssaoframe;
+
 	effect greyEff;
 	effect simpleTex;
 
@@ -119,7 +122,7 @@ public:
 
 	geometry getRadiGeom() { return radiusGeom; }
 	
-	frame_buffer getFrame(){ return frame; }
+	frame_buffer* getFrame(){ return &frame; }
 	effect getGreyEffect() { return greyEff; }
 	geometry getScreenQuad() { return screen_quad; }
 
@@ -128,5 +131,7 @@ public:
 	effect* getRadEff() { return rad_eff; }
 
 	effect getSimpleTexEffect() { return simpleTex; }
+
+	frame_buffer* getSSAOFrame() { return &ssaoframe; }
 };
 

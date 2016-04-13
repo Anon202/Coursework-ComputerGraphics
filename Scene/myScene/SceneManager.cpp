@@ -35,7 +35,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 void SceneManager::createLights()
 {
 	directional_light *light = new directional_light;
-	light->set_ambient_intensity(vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	light->set_ambient_intensity(vec4(0.5f, 0.5f, 0.5f, 1.0f));
 
 	// Light colour white
 	light->set_light_colour(vec4(0.9f, 0.79f, 0.55f, 1.0f));
@@ -214,6 +214,7 @@ void SceneManager::generateFrustrumPlanes()
 void SceneManager::initQuad()
 {
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	ssaoframe = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
 	vector<vec3> positions
 	{

@@ -64,6 +64,9 @@ uniform sampler2D tex;
 // incoming alphaVal for output pixel.
 uniform float alphaVal;
 
+uniform sampler2D ssao;
+
+
 // Incoming position
 layout (location = 0) in vec3 position;
 // Incoming normal
@@ -130,6 +133,10 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 	return colour;
 }
 
+vec2 screenCoord()
+{
+	return vec2(gl_FragCoord);
+}
 
 void main()
 {
@@ -176,6 +183,8 @@ void main()
 	// **********************************
 	// Calculate primary colour component
 	// **********************************
+	ambient *= texture(ssao, screenCoord()).r;
+
 	vec4 primary = mat.emissive + ambient + diffuse;
 
 	// **********************
@@ -198,8 +207,9 @@ void main()
 		colour += calculate_point(point[i], mat, position, normal, view_dir, tex_colour);
 	}
 	
-	colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
+	colour = ambient;//+= calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 
 	colour.a = alphaVal;
 
 }
+

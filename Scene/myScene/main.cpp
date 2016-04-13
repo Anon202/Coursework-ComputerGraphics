@@ -504,6 +504,19 @@ bool update(float delta_time)
 	// get shadow update
 	updateShadows();
 
+	if (glfwGetKey(renderer::get_window(), 'P') == GLFW_PRESS)
+	{
+		myScene->getSSAOFrame()->save("ssao.png");
+	}
+
+	if (glfwGetKey(renderer::get_window(), 'U') == GLFW_PRESS)
+	{
+		myScene->getFrame()->save("ssaodepth.png");
+	}
+
+
+	
+
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_2))
@@ -605,7 +618,7 @@ bool update(float delta_time)
 void renderGreyScale()
 {
 	// render to frame buffer
-	renderer::set_render_target(myScene->getFrame());
+	renderer::set_render_target(*myScene->getFrame());
 
 	// Clear frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -628,7 +641,7 @@ void renderGreyScale()
 		value_ptr(mat4(1.0f))); // Pointer to matrix data
 
 	// Bind texture from frame buffer
-	renderer::bind(myScene->getFrame().get_frame(), 0);
+	renderer::bind(myScene->getFrame()->get_frame(), 0);
 
 	// Set the uniform
 	glUniform1i(myScene->getGreyEffect().get_uniform_location("tex"), 0);
@@ -645,7 +658,7 @@ const static uint KERNEL_SIZE = 64;
 void renderFrame()
 {
 	// render to frame buffer
-	renderer::set_render_target(myScene->getFrame());
+	renderer::set_render_target(*myScene->getFrame());
 
 	// Clear frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -654,9 +667,9 @@ void renderFrame()
 	myScene->skybx->render();  // is sky true (enable/disable depth)
 	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 
-	renderParticles();
-
-	renderer::set_render_target();
+	renderer::set_render_target(*myScene->getSSAOFrame());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Bind texture shader
 	renderer::bind(myScene->getSimpleTexEffect());
@@ -676,7 +689,7 @@ void renderFrame()
 		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
 
 	// Bind texture from frame buffer
-	renderer::bind(myScene->getFrame().get_frame(), 0);
+	renderer::bind(myScene->getFrame()->get_depth(), 0);
 
 	vec3 kernel[KERNEL_SIZE];
 
@@ -693,13 +706,15 @@ void renderFrame()
 		kernel[i] = v;
 	}
 
-	glUniform3fv(m_kernelLocation, KERNEL_SIZE, (const GLfloat*)&kernel[0].xyz);
+	glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
 
 	// Set the uniform
 	glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
 
 	// Render the screen quad
+	
 	renderer::render(myScene->getScreenQuad());
+	renderer::set_render_target();
 }
 
 void renderRadii()
@@ -784,14 +799,61 @@ bool render()
 	}
 	else
 	{
-		//myScene->skybx->render();  // is sky true (enable/disable depth)
-		//myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
-
-		//renderParticles();
-
 		renderFrame();
+
+		myScene->skybx->render();  // is sky true (enable/disable depth)
+		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+		renderParticles();
 	}
-	
+
+	renderer::set_render_target();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Bind texture shader
+	renderer::bind(myScene->getSimpleTexEffect());
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// projection matrix
+	glUniformMatrix4fv(
+		myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(myScene->getSSAOFrame()->get_frame(), 0);
+
+	vec3 kernel[KERNEL_SIZE];
+
+	for (uint i = 0; i < KERNEL_SIZE; i++) {
+		float scale = (float)i / (float)(KERNEL_SIZE);
+		vec3 v;
+		v.x = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		v.y = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		v.z = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+		// Use an acceleration function so more points are
+		// located closer to the origin
+		v *= (0.1f + 0.9f * scale * scale);
+
+		kernel[i] = v;
+	}
+
+	glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
+
+	// Set the uniform
+	glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
+
+	// Render the screen quad
+
+	renderer::render(myScene->getScreenQuad());
+
     return true;
 }
 

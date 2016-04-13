@@ -8,17 +8,6 @@ layout (location = 0) in vec2 tex_coord;
 // Outgoing colour
 layout (location = 0) out vec4 out_colour;
 
-//void main()
-//{
-//	// sample texture
-//	vec4 colour = texture2D(tex, tex_coord);
-
-//	// Set out colour to sampled texture colour
-//	out_colour = colour;
-//}
-
-
-//uniform float gSampleRad;
 uniform mat4 P;
 
 const int MAX_KERNEL_SIZE = 128;
