@@ -29,12 +29,12 @@ void main()
 
         float sampleDepth = texture(tex, offset.xy).b;
 
-        if (abs(Pos.z - sampleDepth) < 0.1) {
+        if (abs(Pos.z - sampleDepth) < 0.5) {
             AO += step(sampleDepth,samplePos.z);
         }
     }
 
     AO = 1.0 - AO/128.0;
 
-    out_colour = vec4(pow(AO, 2.0));
+    out_colour = vec4(AO, AO, AO, 1);//vec4(pow(AO, 2.0));
 }

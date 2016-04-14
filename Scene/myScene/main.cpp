@@ -313,7 +313,7 @@ bool load_content()
 	Obj *glassPane = new Obj(vec3(-1.0, 1.0, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
 	// loaded model
-	Obj *stoneModel = new Obj(vec3(-3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["model"], stoneModText, norm_eff, object);
+	Obj *stoneModel = new Obj(vec3(-3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["model"], stoneModText, phongEff, object);
 
 	// bar geom ontop of pillars
 	Obj *bar = new Obj(vec3(0.0, 2.5, 3.5), vec3(0.0), 0.0f, vec3(1.0, 0.5, 0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, phongEff, object);
@@ -692,8 +692,9 @@ void renderFrame()
 		renderer::render(*currObj->m); // render mesh
 	}
 
-	//**SSAO PASS**//
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//**SSAO PASS**//
 
 	// bind frame buffer for writing
 	renderer::set_render_target(*myScene->getSSAOFrame());
@@ -702,7 +703,6 @@ void renderFrame()
 	glBindBuffer(GL_ARRAY_BUFFER, myScene->getFrame()->get_buffer());
 	
 	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Bind texture shader
 	renderer::bind(*myScene->getSimpleTexEffect());
@@ -839,28 +839,31 @@ bool render()
 	{
 		renderFrame();
 
-		myScene->skybx->render();  // is sky true (enable/disable depth)
-		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+		//myScene->skybx->render();  // is sky true (enable/disable depth)
+		//myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 		//renderParticles();
 	}
 
 	//renderer::set_render_target();
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, myScene->getFrame()->get_buffer());
+
+	//glClear(GL_COLOR_BUFFER_BIT);
 	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//// Bind texture shader
-	//renderer::bind(myScene->getSimpleTexEffect());
+	//renderer::bind(*myScene->getSimpleTexEffect());
 
 	//// MVP is now the identity matrix
 	//glUniformMatrix4fv(
-	//	myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
+	//	myScene->getSimpleTexEffect()->get_uniform_location("MVP"), // Location of uniform
 	//	1, // Number of values - 1 mat4
 	//	GL_FALSE, // Transpose the matrix?
 	//	value_ptr(mat4(1.0f))); // Pointer to matrix data
 
 	//// projection matrix
 	//glUniformMatrix4fv(
-	//	myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
+	//	myScene->getSimpleTexEffect()->get_uniform_location("P"), // Location of uniform
 	//	1, // Number of values - 1 mat4
 	//	GL_FALSE, // Transpose the matrix?
 	//	value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
@@ -883,10 +886,10 @@ bool render()
 	//	kernel[i] = v;
 	//}
 
-	//glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
+	//glUniform3fv(myScene->getSimpleTexEffect()->get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
 
 	//// Set the uniform
-	//glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
+	//glUniform1i(myScene->getSimpleTexEffect()->get_uniform_location("tex"), 0);
 
 	//// Render the screen quad
 

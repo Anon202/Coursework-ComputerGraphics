@@ -11,6 +11,7 @@ layout (location = 0) in vec3 position;
 
 layout (location = 0) out vec3 position_out;
 
+
 // Main vertex shader function
 void main()
 {
@@ -19,4 +20,5 @@ void main()
 	
 	// pass view space postion to fragment shader
 	position_out = (MV * vec4(position, 1.0)).xyz;
+
 }
