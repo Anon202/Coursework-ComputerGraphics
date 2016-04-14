@@ -19,15 +19,17 @@ void main()
     // ***********************
     // Sample the two textures
     // ***********************
-    
+    vec4 col1 = texture(tex, tex_coord);
+	vec4 col2 = texture(previous_frame, tex_coord);
+
 
     // *****************************
     // Mix between these two colours
     // *****************************
-    
+    colour = mix(col1, col2, blend_factor);
 
     // *******************
     // Ensure alpha is 1.0
     // *******************
-    
+    colour.a= 1.0;
 }

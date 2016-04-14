@@ -29,7 +29,7 @@ void main()
 
         float sampleDepth = texture(tex, offset.xy).b;
 
-        if (abs(Pos.z - sampleDepth) < 0.5) {
+        if (abs(Pos.z - sampleDepth) < 0.1) {
             AO += step(sampleDepth,samplePos.z);
         }
     }

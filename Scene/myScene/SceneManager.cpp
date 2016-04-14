@@ -8,7 +8,6 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	cam = nullptr;
 	skybx = nullptr;
 	generator = nullptr;
-
 	
 	// copy vars
 	initialX = initialMouseX;
@@ -241,6 +240,10 @@ void SceneManager::initQuad()
 	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
 	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
 	simpleTex.build();
+
+	ssao_Position.add_shader("..\\resources\\shaders\\ssaoGeomPass.vert", GL_VERTEX_SHADER);
+	ssao_Position.add_shader("..\\resources\\shaders\\ssaoGeomPass.frag", GL_FRAGMENT_SHADER);
+	ssao_Position.build();
 }
 
 

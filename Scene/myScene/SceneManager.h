@@ -47,6 +47,7 @@ private:
 
 	effect greyEff;
 	effect simpleTex;
+	effect ssao_Position;
 
 	geometry frustrumGeom;
 
@@ -123,15 +124,16 @@ public:
 	geometry getRadiGeom() { return radiusGeom; }
 	
 	frame_buffer* getFrame(){ return &frame; }
-	effect getGreyEffect() { return greyEff; }
+	effect* getGreyEffect() { return &greyEff; }
 	geometry getScreenQuad() { return screen_quad; }
 
 	geometry getFrustrumGeom() { return frustrumGeom; }
 
 	effect* getRadEff() { return rad_eff; }
 
-	effect getSimpleTexEffect() { return simpleTex; }
+	effect* getSimpleTexEffect() { return &simpleTex; }
 
 	frame_buffer* getSSAOFrame() { return &ssaoframe; }
+	effect* getSSAOPosEffect() { return &ssao_Position; }
 };
 

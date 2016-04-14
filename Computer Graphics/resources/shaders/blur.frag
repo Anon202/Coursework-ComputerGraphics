@@ -45,7 +45,7 @@ void main()
         // Sample the texture and scale appropriately
         // - scale factor stored in w component
         // ******************************************
-		uv /= samples[i].w;
+		uv /= 4;//samples[i].w;
 		colour += texture(tex, uv);
     }
 

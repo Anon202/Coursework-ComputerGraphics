@@ -499,7 +499,7 @@ void updateLightPositions()
 bool update(float delta_time)
 {
 	updateLightPositions();
-	updateParticles(delta_time);
+//	updateParticles(delta_time);
 
 	// get shadow update
 	updateShadows();
@@ -631,11 +631,11 @@ void renderGreyScale()
 	renderer::set_render_target();
 
 	// Bind texture shader
-	renderer::bind(myScene->getGreyEffect());
+	renderer::bind(*myScene->getGreyEffect());
 
 	// MVP is now the identity matrix
 	glUniformMatrix4fv(
-		myScene->getGreyEffect().get_uniform_location("MVP"), // Location of uniform
+		myScene->getGreyEffect()->get_uniform_location("MVP"), // Location of uniform
 		1, // Number of values - 1 mat4
 		GL_FALSE, // Transpose the matrix?
 		value_ptr(mat4(1.0f))); // Pointer to matrix data
@@ -644,7 +644,7 @@ void renderGreyScale()
 	renderer::bind(myScene->getFrame()->get_frame(), 0);
 
 	// Set the uniform
-	glUniform1i(myScene->getGreyEffect().get_uniform_location("tex"), 0);
+	glUniform1i(myScene->getGreyEffect()->get_uniform_location("tex"), 0);
 
 	// Render the screen quad
 
@@ -660,30 +660,63 @@ void renderFrame()
 	// render to frame buffer
 	renderer::set_render_target(*myScene->getFrame());
 
+	//**GEOMETRY PASS**//
+
 	// Clear frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	myScene->skybx->render();  // is sky true (enable/disable depth)
-	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+	renderer::bind(*myScene->getSSAOPosEffect());
 
+	for (auto currObj : myScene->list)
+	{
+		if (currObj->myType == sky)
+			continue;
+
+		auto M = currObj->mworld;		// use object's own model matrix
+		mat4 V = myScene->cam->get_view();
+		mat4 P = myScene->cam->get_projection();
+		mat4 MVP = P * V * M;
+		mat4 MV = V * M;
+		glUniformMatrix4fv(
+			myScene->getSSAOPosEffect()->get_uniform_location("MVP"), // Location of uniform
+			1, // Number of values - 1 mat4
+			GL_FALSE, // Transpose the matrix?
+			value_ptr(MVP)); // Pointer to matrix data
+		glUniformMatrix4fv(
+			myScene->getSSAOPosEffect()->get_uniform_location("MV"), // Location of uniform
+			1, // Number of values - 1 mat4
+			GL_FALSE, // Transpose the matrix?
+			value_ptr(MV)); // Pointer to matrix data
+
+		renderer::render(*currObj->m); // render mesh
+	}
+
+	//**SSAO PASS**//
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// bind frame buffer for writing
 	renderer::set_render_target(*myScene->getSSAOFrame());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// bind position
+	glBindBuffer(GL_ARRAY_BUFFER, myScene->getFrame()->get_buffer());
+	
+	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Bind texture shader
-	renderer::bind(myScene->getSimpleTexEffect());
+	renderer::bind(*myScene->getSimpleTexEffect());
 
 	// MVP is now the identity matrix
 	glUniformMatrix4fv(
-		myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
+		myScene->getSimpleTexEffect()->get_uniform_location("MVP"), // Location of uniform
 		1, // Number of values - 1 mat4
 		GL_FALSE, // Transpose the matrix?
 		value_ptr(mat4(1.0f))); // Pointer to matrix data
 
 	// projection matrix
 	glUniformMatrix4fv(
-		myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
+		myScene->getSimpleTexEffect()->get_uniform_location("P"), // Location of uniform
 		1, // Number of values - 1 mat4
 		GL_FALSE, // Transpose the matrix?
 		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
@@ -706,15 +739,20 @@ void renderFrame()
 		kernel[i] = v;
 	}
 
-	glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
+	glUniform3fv(myScene->getSimpleTexEffect()->get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
 
 	// Set the uniform
-	glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
+	glUniform1i(myScene->getSimpleTexEffect()->get_uniform_location("tex"), 0);
 
 	// Render the screen quad
+
 	
 	renderer::render(myScene->getScreenQuad());
-	renderer::set_render_target();
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//renderer::set_render_target();
 }
 
 void renderRadii()
@@ -791,7 +829,7 @@ bool render()
 {
 	renderRadii(); // render radius of bounding spheres + view frustrum
 
-	renderShadows(); // render shadows
+	//renderShadows(); // render shadows
 	
 	if (myScene->getGreyBool())
 	{
@@ -803,56 +841,56 @@ bool render()
 
 		myScene->skybx->render();  // is sky true (enable/disable depth)
 		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
-		renderParticles();
+		//renderParticles();
 	}
 
-	renderer::set_render_target();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	//renderer::set_render_target();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// Bind texture shader
-	renderer::bind(myScene->getSimpleTexEffect());
+	//// Bind texture shader
+	//renderer::bind(myScene->getSimpleTexEffect());
 
-	// MVP is now the identity matrix
-	glUniformMatrix4fv(
-		myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
-		1, // Number of values - 1 mat4
-		GL_FALSE, // Transpose the matrix?
-		value_ptr(mat4(1.0f))); // Pointer to matrix data
+	//// MVP is now the identity matrix
+	//glUniformMatrix4fv(
+	//	myScene->getSimpleTexEffect().get_uniform_location("MVP"), // Location of uniform
+	//	1, // Number of values - 1 mat4
+	//	GL_FALSE, // Transpose the matrix?
+	//	value_ptr(mat4(1.0f))); // Pointer to matrix data
 
-	// projection matrix
-	glUniformMatrix4fv(
-		myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
-		1, // Number of values - 1 mat4
-		GL_FALSE, // Transpose the matrix?
-		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
+	//// projection matrix
+	//glUniformMatrix4fv(
+	//	myScene->getSimpleTexEffect().get_uniform_location("P"), // Location of uniform
+	//	1, // Number of values - 1 mat4
+	//	GL_FALSE, // Transpose the matrix?
+	//	value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
 
-	// Bind texture from frame buffer
-	renderer::bind(myScene->getSSAOFrame()->get_frame(), 0);
+	//// Bind texture from frame buffer
+	//renderer::bind(myScene->getSSAOFrame()->get_frame(), 0);
 
-	vec3 kernel[KERNEL_SIZE];
+	//vec3 kernel[KERNEL_SIZE];
 
-	for (uint i = 0; i < KERNEL_SIZE; i++) {
-		float scale = (float)i / (float)(KERNEL_SIZE);
-		vec3 v;
-		v.x = 2.0f * (float)rand() / RAND_MAX - 1.0f;
-		v.y = 2.0f * (float)rand() / RAND_MAX - 1.0f;
-		v.z = 2.0f * (float)rand() / RAND_MAX - 1.0f;
-		// Use an acceleration function so more points are
-		// located closer to the origin
-		v *= (0.1f + 0.9f * scale * scale);
+	//for (uint i = 0; i < KERNEL_SIZE; i++) {
+	//	float scale = (float)i / (float)(KERNEL_SIZE);
+	//	vec3 v;
+	//	v.x = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+	//	v.y = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+	//	v.z = 2.0f * (float)rand() / RAND_MAX - 1.0f;
+	//	// Use an acceleration function so more points are
+	//	// located closer to the origin
+	//	v *= (0.1f + 0.9f * scale * scale);
 
-		kernel[i] = v;
-	}
+	//	kernel[i] = v;
+	//}
 
-	glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
+	//glUniform3fv(myScene->getSimpleTexEffect().get_uniform_location("gKernel[]"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
 
-	// Set the uniform
-	glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
+	//// Set the uniform
+	//glUniform1i(myScene->getSimpleTexEffect().get_uniform_location("tex"), 0);
 
-	// Render the screen quad
+	//// Render the screen quad
 
-	renderer::render(myScene->getScreenQuad());
+	//renderer::render(myScene->getScreenQuad());
 
     return true;
 }

@@ -31,18 +31,33 @@ bool initialise()
 }
 
 bool load_content()
-{
-    // **************************************************
-    // Create frame buffers - use screen width and height
-    // **************************************************
-    
+{	// Create frame buffer - use screen width and height
+	frames[0] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	frames[1] = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
-    // ******************
-    // Create screen quad
-    // - positions
-    // - tex coords
-    // ******************
-    
+	// Create screen quad
+	// - positions
+	// - tex coords
+	vector<vec3> positions
+	{
+		vec3(1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, 1.0f, 0.0f),
+		vec3(-1.0f, -1.0f, 0.0f),
+		vec3(1.0f, -1.0f, 0.0f)
+	};
+	vector<vec2> tex_coords
+	{
+		vec2(1.0f, 1.0f),
+		vec2(0.0f, 1.0f),
+		vec2(0.0f, 0.0f),
+		vec2(1.0f, 0.0f)
+	};
+
+	screen_quad = geometry();
+	screen_quad.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER);
+	screen_quad.add_buffer(tex_coords, BUFFER_INDEXES::TEXTURE_COORDS_0);
+	screen_quad.set_type(GL_QUADS);
+
 
     // Create plane mesh
     meshes["plane"] = mesh(geometry_builder::create_plane());
@@ -129,7 +144,10 @@ bool load_content()
     // **************************
     // Load in motion blur effect
     // **************************
-    
+	motion_blur.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	motion_blur.add_shader("..\\resources\\shaders\\motion_blur.frag", GL_FRAGMENT_SHADER);
+
+
 
     tex_eff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
     tex_eff.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);
@@ -140,6 +158,7 @@ bool load_content()
     // ************************
     // Build motion blur effect
     // ************************
+	motion_blur.build();
 
     // Set camera properties
     cam.set_pos_offset(vec3(0.0f, 2.0f, 10.0f));
@@ -156,7 +175,8 @@ bool update(float delta_time)
     // **********
     // Flip frame
     // **********
-    
+	temp_frame = frames[current_frame];
+	current_frame = (current_frame + 1) & 0x1;
 
     // The target object
     static mesh &target_mesh = meshes["chaser"];
@@ -182,7 +202,7 @@ bool update(float delta_time)
     // x - delta_y
     // y - delta_x
     // z - 0
-    cam.rotate(vec3(delta_y, delta_x, 0.0f));
+    cam.rotate(vec3(delta_y, -delta_x, 0.0f));
 
     // Use keyboard to rotate target_mesh
     // - QE rotate on y-axis
@@ -213,7 +233,7 @@ bool update(float delta_time)
     cursor_y = current_y;
 
     // Rotate the sphere
-    meshes["sphere"].get_transform().rotate(vec3(0.0f, half_pi<float>(), 0.0f) * delta_time);
+	meshes["sphere"].get_transform().rotate(vec3(0.0f, 0.0f, half_pi<float>()) * delta_time * 10.0f);
 
     return true;
 }
@@ -225,12 +245,13 @@ bool render()
     // *******************************
     // Set render target to temp frame
     // *******************************
-    
+	renderer::set_render_target(temp_frame);
 
     // ***********
     // Clear frame
     // ***********
-    
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
     // Render meshes
     for (auto &e : meshes)
@@ -289,44 +310,68 @@ bool render()
     // **********************************
     // Set render target to current frame
     // **********************************
-    
+	renderer::set_render_target(frames[current_frame]);
 
     // ***********
     // Clear frame
     // ***********
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
     
 
     // ***********************
     // Bind motion blur effect
     // ***********************
+	renderer::bind(motion_blur);
     
 
     // ******************************
     // MVP is now the identity matrix
     // ******************************
+	glUniformMatrix4fv(
+		motion_blur.get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
     
 
     // ***********
     // Bind frames
     // ***********
+	//for (int i = 0; i < 2; i++)
+	//{
+	//	renderer::bind(frames[i].get_frame(), i);
+	//}
+
+
+	renderer::bind(frames[current_frame].get_frame(), 0);
+
+	renderer::bind(temp_frame.get_frame(), 1);
+
+	glUniform1i(motion_blur.get_uniform_location("tex"), 0);
+	glUniform1i(motion_blur.get_uniform_location("previous_frame"), 1);
+
     
 
     // ****************
     // Set blend factor
     // ****************
-    
+	glUniform1f(motion_blur.get_uniform_location("blend_factor"), 0.5f);
+	    
 
     // ******************
     // Render screen quad
     // ******************
-    
+	renderer::render(screen_quad);
 
     // !!!!!!!!!!!!!!! SCREEN PASS !!!!!!!!!!!!!!!!
 
     // ************************************
     // Set render target back to the screen
     // ************************************
-    
+	renderer::set_render_target();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0, 1, 1, 1);
 
     // Use texturing effect
     renderer::bind(tex_eff);
@@ -334,21 +379,28 @@ bool render()
     // **********************
     // Set MVP matrix uniform
     // **********************
+	glUniformMatrix4fv(
+		tex_eff.get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
     
 
     // ******************************
     // Bind texture from frame buffer
     // ******************************
-    
+	renderer::bind(frames[current_frame].get_frame(), 0);
+
 
     // ***************
     // Set the uniform
     // ***************
-    
+	glUniform1i(tex_eff.get_uniform_location("tex"), 0);
 
     // **********************
     // Render the screen quad
     // **********************
+	renderer::render(screen_quad);
     
 
     return true;
