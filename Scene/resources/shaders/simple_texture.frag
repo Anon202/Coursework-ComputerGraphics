@@ -27,14 +27,14 @@ void main()
         offset.xy /= offset.w; // perform perspective divide
         offset.xy = offset.xy * 0.5 + vec2(0.5); // transform to (0,1) range
 
-        float sampleDepth = texture(tex, offset.xy).b;
+        float sampleDepth = texture(tex, offset.xy).z;
 
-        if (abs(Pos.z - sampleDepth) < 0.5) {
+        if (abs(Pos.z - sampleDepth) < 10.5) {
             AO += step(sampleDepth,samplePos.z);
         }
     }
 
     AO = 1.0 - AO/128.0;
 
-    out_colour = vec4(AO, AO, AO, 1);//vec4(pow(AO, 2.0));
+    out_colour = vec4(pow(AO, 2.0));
 }

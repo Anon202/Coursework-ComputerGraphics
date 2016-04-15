@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 	ProjectSection(SolutionItems) = preProject
 		resources\shaders\blending.frag = resources\shaders\blending.frag
 		resources\shaders\blending.vert = resources\shaders\blending.vert
+		resources\shaders\blur.frag = resources\shaders\blur.frag
 		resources\shaders\colour.frag = resources\shaders\colour.frag
 		resources\shaders\colour.vert = resources\shaders\colour.vert
 		resources\shaders\displacement.frag = resources\shaders\displacement.frag
@@ -133,6 +134,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "models", "models", "{80762A
 		resources\models\stoneEnd.3ds = resources\models\stoneEnd.3ds
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bloom", "bloom", "{A71E594C-C8A0-42BE-A431-B358C338D710}"
+	ProjectSection(SolutionItems) = preProject
+		resources\shaders\bloom\bloom.frag = resources\shaders\bloom\bloom.frag
+		resources\shaders\bloom\bloom.vert = resources\shaders\bloom\bloom.vert
+		resources\shaders\bloom\bloomFinal.frag = resources\shaders\bloom\bloomFinal.frag
+		resources\shaders\bloom\bloomFinal.vert = resources\shaders\bloom\bloomFinal.vert
+		resources\shaders\bloom\blurBloom.frag = resources\shaders\bloom\blurBloom.frag
+		resources\shaders\bloom\blurBloom.vert = resources\shaders\bloom\blurBloom.vert
+		resources\shaders\bloom\light.frag = resources\shaders\bloom\light.frag
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -156,6 +168,7 @@ Global
 		{CFBA0286-F119-4C28-B1EE-F2F1B076D8DA} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{80762A5B-94E0-482D-8953-630763E040B2} = {96425147-A5FD-4D64-8E08-00A3BF701D94}
 		{1EF9CE7D-8512-4511-A142-B5BA598E413C} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
+		{A71E594C-C8A0-42BE-A431-B358C338D710} = {2194805E-ABC9-4D12-A0CD-98C0073AEC73}
 		{4C6F7C7F-C253-48FE-A553-4410B949E275} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 		{34C149AA-6EA0-41F7-AFC2-18B569665C9F} = {CFBA0286-F119-4C28-B1EE-F2F1B076D8DA}
 		{4339783B-9A48-4976-8738-4D0730598AB5} = {4C6F7C7F-C253-48FE-A553-4410B949E275}

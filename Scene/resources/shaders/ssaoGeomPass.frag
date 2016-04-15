@@ -17,5 +17,5 @@ void main()
 {
     // set outgoing
 	position_out.xyz = view_pos;
-	position_out.a = LinearizeDepth(gl_FragCoord.z);
+	//position_out.a = LinearizeDepth(gl_FragCoord.z);
 }

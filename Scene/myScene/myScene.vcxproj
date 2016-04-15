@@ -87,6 +87,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bloom.cpp" />
     <ClCompile Include="GenerateBack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obj.cpp" />

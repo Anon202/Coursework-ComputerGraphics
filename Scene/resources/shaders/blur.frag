@@ -8,12 +8,20 @@ uniform float inverse_width;
 // 1.0f / screen height
 uniform float inverse_height;
 
-// Surrounding pixels to sample and their scale
+// Incoming texture coordinate
+layout (location = 0) in vec2 tex_coord;
+
+// Outgoing colour
+layout (location = 0) out vec4 colour;
+
+const float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+
+//Surrounding pixels to sample and their scale
 const vec4 samples[4] = vec4[4]
 (
     vec4(-1.0, 0.0, 0.0, 0.25),
     vec4(1.0, 0.0, 0.0, 0.25),
-    vec4(0.0, 1.0, 0.0, 0.25),
+    vec4(0.0, -1.0, 0.0, 0.25),
     vec4(0.0, -1.0, 0.0, 0.25)
 );
 

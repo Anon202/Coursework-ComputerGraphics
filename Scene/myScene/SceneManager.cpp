@@ -22,6 +22,8 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	shadow = shadow_map(renderer::get_screen_width(), renderer::get_screen_height());
 
 	debug = false;
+	ssao = false;
+	blur = false;
 
 	// set type of geometry for radii to points.
 	radiusGeom.set_type(GL_POINTS);
@@ -236,6 +238,10 @@ void SceneManager::initQuad()
 	greyEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
 	greyEff.add_shader("..\\resources\\shaders\\greyscale.frag", GL_FRAGMENT_SHADER);
 	greyEff.build();
+
+	blurEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	blurEff.add_shader("..\\resources\\shaders\\blur.frag", GL_FRAGMENT_SHADER);
+	blurEff.build();
 
 	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
 	simpleTex.add_shader("..\\resources\\shaders\\simple_texture.frag", GL_FRAGMENT_SHADER);

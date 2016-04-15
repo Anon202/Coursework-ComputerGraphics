@@ -22,6 +22,7 @@ class Obj;				// forward declaration of object
 enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty, glassOb, movingObject }; //  enum
 enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
 enum planePointNames {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
+
 class SceneManager
 {
 private:
@@ -32,6 +33,8 @@ private:
 	bool fixCull;		 // flag for fixing view culling
 	bool firstMouse;	 // flag for first mouse (for free camera)
 	bool grey;
+	bool blur;
+	bool ssao;
 
 	double initialX;				// vars for mouse positions initial
 	double initialY;
@@ -48,6 +51,7 @@ private:
 	effect greyEff;
 	effect simpleTex;
 	effect ssao_Position;
+	effect blurEff;
 
 	geometry frustrumGeom;
 
@@ -121,10 +125,18 @@ public:
 	bool getGreyBool() { return grey; }
 	void setGreyBool(const bool &value) { grey = value; }
 
+	bool getBlurBool() { return blur; }
+	void setBlurBool(const bool &value) { blur = value; }
+
+
+	bool getSSAO() { return ssao; }
+	void setSSAO(const bool &value) { ssao = value; }
+
 	geometry getRadiGeom() { return radiusGeom; }
 	
 	frame_buffer* getFrame(){ return &frame; }
 	effect* getGreyEffect() { return &greyEff; }
+	effect* getBlurEffect() { return &blurEff; }
 	geometry getScreenQuad() { return screen_quad; }
 
 	geometry getFrustrumGeom() { return frustrumGeom; }

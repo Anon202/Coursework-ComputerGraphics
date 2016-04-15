@@ -21,6 +21,8 @@ layout (location = 1) out vec3 transformed_normal;
 // Outgoing texture coordinate
 layout (location = 2) out vec2 tex_coord_out;
 
+layout (location =3) out vec4 vertex_postion2; 
+
 void main()
 {
 	// Set position
@@ -28,6 +30,8 @@ void main()
 	// **************************************
 	// Output other values to fragment shader
 	// **************************************
+
+	vertex_postion2 = gl_Position/gl_Position.w;
 	
 	vertex_position = vec3(M * vec4(position, 1.0f));
 
