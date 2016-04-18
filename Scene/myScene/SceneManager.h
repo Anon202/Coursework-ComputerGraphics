@@ -48,6 +48,9 @@ private:
 	frame_buffer vigFrame;
 	frame_buffer ssaoframe;
 
+	frame_buffer blurTargetA;
+	frame_buffer blurTargetB;
+
 	effect greyEff;
 	effect simpleTex;
 	effect ssao_Position;
@@ -129,21 +132,25 @@ public:
 	bool getBlurBool() { return blur; }
 	void setBlurBool(const bool &value) { blur = value; }
 
-
 	bool getSSAO() { return ssao; }
 	void setSSAO(const bool &value) { ssao = value; }
 
 	geometry getRadiGeom() { return radiusGeom; }
-	
-	frame_buffer* getFrame(){ return &frame; }
-	effect* getGreyEffect() { return &greyEff; }
-	effect* getBlurEffect() { return &blurEff; }
-	geometry getScreenQuad() { return screen_quad; }
-
-	geometry getFrustrumGeom() { return frustrumGeom; }
-
 	effect* getRadEff() { return rad_eff; }
 
+	geometry getFrustrumGeom() { return frustrumGeom; }
+	
+	// post- processing getters
+
+	geometry getScreenQuad() { return screen_quad; }
+
+	frame_buffer* getFrame(){ return &frame; }
+	effect* getGreyEffect() { return &greyEff; }
+
+	frame_buffer* getBlurA() { return &blurTargetA; }
+	frame_buffer* getBlurB() { return &blurTargetB; }
+	effect* getBlurEffect() { return &blurEff; }
+	
 	effect* getSimpleTexEffect() { return &simpleTex; }
 
 	frame_buffer* getSSAOFrame() { return &ssaoframe; }

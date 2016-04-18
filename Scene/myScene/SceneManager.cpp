@@ -217,6 +217,9 @@ void SceneManager::initQuad()
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	ssaoframe = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	vigFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	blurTargetA = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	blurTargetB = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+
 
 	vector<vec3> positions
 	{

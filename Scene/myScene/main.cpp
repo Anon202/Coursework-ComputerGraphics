@@ -719,19 +719,27 @@ void renderVignette()
 
 void renderBlur()
 {
+
+	double mouseX;
+	double mouseY;
+	glfwGetCursorPos(renderer::get_window(), &mouseX, &mouseY);
+
+
 	// render to frame buffer
-	renderer::set_render_target(*myScene->getFrame());
+	renderer::set_render_target(*myScene->getBlurA());
 
 	// Clear frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	// render scene to frame buffer
 	myScene->skybx->render();  
 	myScene->transparentObjects.at(0)->renderGlass(); 
-
 	renderParticles();
 
-	renderer::set_render_target();
+	renderer::set_render_target(*myScene->getBlurB());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	// Bind texture shader
 	renderer::bind(*myScene->getBlurEffect());
@@ -744,13 +752,49 @@ void renderBlur()
 		value_ptr(mat4(1.0f))); // Pointer to matrix data
 
 	// Bind texture from frame buffer
-	renderer::bind(myScene->getFrame()->get_frame(), 0);
+	renderer::bind(myScene->getBlurA()->get_frame(), 0);
 
 	// Set the uniform
 	glUniform1i(myScene->getBlurEffect()->get_uniform_location("tex"), 0);
 
-	// Render the screen quad
+	float mouseXRatio = (float)mouseX / renderer::get_screen_width();
 
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseXRatio * 300.0f);
+
+	// horizontal blur
+	glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 1.0f, 0.0f);
+
+	// Render the screen quad
+	renderer::render(myScene->getScreenQuad());
+
+	// render to screen
+	renderer::set_render_target();
+
+
+	// Bind texture shader
+	renderer::bind(*myScene->getBlurEffect());
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		myScene->getBlurEffect()->get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(myScene->getBlurB()->get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(myScene->getBlurEffect()->get_uniform_location("tex"), 0);
+
+	float mouseYRatio = (renderer::get_screen_height() - (float)mouseY - 1.0f) / renderer::get_screen_height();
+
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseYRatio * 300.0f);
+
+	// horizontal blur
+	glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 0.0f, 1.0f);
+
+	// Render the screen quad
 	renderer::render(myScene->getScreenQuad());
 
 }
@@ -931,9 +975,9 @@ bool render()
 	}
 	else if (myScene->getBlurBool())
 	{
-		//renderBlur();
+		renderBlur();
 
-		renderVignette();
+		//renderVignette();
 	}
 	else
 	{
