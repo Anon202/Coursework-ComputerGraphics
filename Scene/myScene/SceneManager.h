@@ -45,13 +45,14 @@ private:
 
 	geometry screen_quad;
 	frame_buffer frame;
-
+	frame_buffer vigFrame;
 	frame_buffer ssaoframe;
 
 	effect greyEff;
 	effect simpleTex;
 	effect ssao_Position;
 	effect blurEff;
+	effect vignetteEff;
 
 	geometry frustrumGeom;
 
@@ -147,5 +148,8 @@ public:
 
 	frame_buffer* getSSAOFrame() { return &ssaoframe; }
 	effect* getSSAOPosEffect() { return &ssao_Position; }
+
+	frame_buffer* getVigFrame() { return &vigFrame; }
+	effect* getVignetteEffect() { return &vignetteEff; }
 };
 

@@ -216,6 +216,7 @@ void SceneManager::initQuad()
 {
 	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	ssaoframe = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	vigFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
 	vector<vec3> positions
 	{
@@ -250,6 +251,11 @@ void SceneManager::initQuad()
 	ssao_Position.add_shader("..\\resources\\shaders\\ssaoGeomPass.vert", GL_VERTEX_SHADER);
 	ssao_Position.add_shader("..\\resources\\shaders\\ssaoGeomPass.frag", GL_FRAGMENT_SHADER);
 	ssao_Position.build();
+
+	vignetteEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	vignetteEff.add_shader("..\\resources\\shaders\\vignette.frag", GL_FRAGMENT_SHADER);
+	vignetteEff.build();
+
 }
 
 

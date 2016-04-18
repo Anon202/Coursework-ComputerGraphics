@@ -52,6 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\ssaoGeomPass.vert = resources\shaders\ssaoGeomPass.vert
 		myScene\terrainShader.frag = myScene\terrainShader.frag
 		myScene\terrainShader.vert = myScene\terrainShader.vert
+		resources\shaders\vignette.frag = resources\shaders\vignette.frag
 		resources\shaders\water.frag = resources\shaders\water.frag
 		resources\shaders\water.vert = resources\shaders\water.vert
 	EndProjectSection

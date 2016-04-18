@@ -6,6 +6,8 @@ GLuint m_kernelLocation;
 const static uint KERNEL_SIZE = 64;
 SceneManager* myScene;  // pointer to a scene manager!
 vec3 kernel[KERNEL_SIZE];
+
+
 bool initialise()
 {
 
@@ -684,6 +686,37 @@ void renderGreyScale()
 
 }
 
+void renderVignette()
+{
+	renderer::set_render_target(*myScene->getVigFrame());
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// render scene to frame buffer
+	myScene->skybx->render();
+	myScene->transparentObjects.at(0)->renderGlass();
+	renderParticles();
+
+	// set target back to screen
+	renderer::set_render_target();
+
+	renderer::bind(*myScene->getVignetteEffect());
+
+	glUniformMatrix4fv(
+		myScene->getVignetteEffect()->get_uniform_location("MVP"),
+		1,
+		GL_FALSE,
+		value_ptr(mat4(1.0f)));
+
+	renderer::bind(myScene->getVigFrame()->get_frame(), 0);
+	glUniform1i(myScene->getVignetteEffect()->get_uniform_location("tex"), 0);
+
+	vec2 res = vec2(renderer::get_screen_width(), renderer::get_screen_height());
+	glUniform2f(myScene->getVignetteEffect()->get_uniform_location("resolution"), res.x, res.y);
+
+	renderer::render(myScene->getScreenQuad());
+}
+
 void renderBlur()
 {
 	// render to frame buffer
@@ -692,8 +725,9 @@ void renderBlur()
 	// Clear frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	myScene->skybx->render();  // is sky true (enable/disable depth)
-	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+	// render scene to frame buffer
+	myScene->skybx->render();  
+	myScene->transparentObjects.at(0)->renderGlass(); 
 
 	renderParticles();
 
@@ -897,13 +931,17 @@ bool render()
 	}
 	else if (myScene->getBlurBool())
 	{
-		renderBlur();
+		//renderBlur();
+
+		renderVignette();
 	}
 	else
 	{
 		myScene->skybx->render();  // is sky true (enable/disable depth)
 		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 		renderParticles();
+
+		
 	}
 
     return true;
