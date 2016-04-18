@@ -1,5 +1,6 @@
 #include <graphics_framework.h>
 #include <glm/glm.hpp>
+#include "gui.h"
 
 using namespace std;
 using namespace graphics_framework;
@@ -26,6 +27,8 @@ double new_y = 0;
 
 bool firstMouse = true;
 
+bool showGUI;
+
 bool initialise()
 {
 	// ********************************
@@ -39,6 +42,8 @@ bool initialise()
 	// Capture initial mouse position
 	// ******************************
 	glfwGetCursorPos(window, &xpos, &ypos);
+	showGUI = true;
+	initUI(window);
 
 	return true;
 }
@@ -224,6 +229,16 @@ bool update(float delta_time)
     // Set skybox position to camera position (camera in centre of skybox)
     // *******************************************************************
 	skybox.get_transform().position = (cam.get_position());
+	static int keystate;
+	int newkeystate = glfwGetKey(renderer::get_window(), 'N');
+	if (newkeystate && newkeystate != keystate) {
+		showGUI = !showGUI;
+	}
+	keystate = newkeystate;
+
+	if (showGUI) {
+		UpdateUI();
+	}
 
     return true;
 }
@@ -286,7 +301,16 @@ bool render()
     // Render mesh
     renderer::render(sphere);
 
+	
+	if (showGUI) {
+		//glUseProgram(0);
+		DrawUI();
+	}
+
+
+
     return true;
+
 }
 
 void main()
