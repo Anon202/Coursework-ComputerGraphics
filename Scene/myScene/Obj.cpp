@@ -134,6 +134,11 @@ void Obj::setScaleFactor(float sf)
 	scaleUpdate = true;
 }
 
+void Obj::move(vec3 moveBy)
+{
+	m->get_transform().translate(moveBy);
+}
+
 void Obj::update(Obj* parent, float delta_time)
 {
 	// used to recurse through children and concatenate transforms
@@ -191,6 +196,11 @@ void Obj::update(Obj* parent, float delta_time)
 		}
 
 		// finally update local model matrix
+		if (myType == spot)
+		{
+			translateMatrix * m->get_transform().get_transform_matrix();
+		}
+
 		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
 
 	}

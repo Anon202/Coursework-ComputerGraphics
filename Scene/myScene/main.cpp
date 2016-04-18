@@ -534,10 +534,7 @@ bool update(float delta_time)
 	if (glfwGetKey(renderer::get_window(), 'U') == GLFW_PRESS)
 	{
 		myScene->getFrame()->save("ssaodepth.png");
-	}
-
-
-	
+	}	
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		myScene->cam = myScene->cameraList[0];
@@ -644,6 +641,17 @@ bool update(float delta_time)
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_PERIOD))
 		myScene->setBlurBool(false);
+
+	// MOVE SPOTLIGHT
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+		myScene->lightObjects[spot - 1]->move(vec3(0.0f, 0.1f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+		myScene->lightObjects[spot - 1]->move(vec3(0.0f, -0.1f, 0.0f));
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
+		myScene->lightObjects[spot - 1]->move(vec3(0.0f, 0.0f, 0.1f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
+		myScene->lightObjects[spot - 1]->move(vec3(-0.0f, 0.0f, -0.1f));
 
     return true;
 }
@@ -960,7 +968,7 @@ bool render()
 {
 	renderRadii(); // render radius of bounding spheres + view frustrum
 
-	//renderShadows(); // render shadows
+	renderShadows(); // render shadows
 	
 	if (myScene->getGreyBool())
 	{

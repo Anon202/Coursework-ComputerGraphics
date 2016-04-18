@@ -4,8 +4,8 @@ extern SceneManager *myScene;
 void updateShadows()
 {
 
-	myScene->shadow.light_position = vec3(myScene->lightList[4]->get_position());
-	myScene->shadow.light_dir = myScene->lightList[4]->get_direction();
+	myScene->shadow.light_position = vec3(myScene->lightList[spot]->get_position());
+	myScene->shadow.light_dir = myScene->lightList[spot]->get_direction();
 
 	// Press z to save
 	if (glfwGetKey(renderer::get_window(), 'Z') == GLFW_PRESS)
