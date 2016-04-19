@@ -1,5 +1,6 @@
 #include "main.h"
 #include "Shadowing.h"
+#include "bloom.h"
 
 
 GLuint m_kernelLocation;
@@ -62,6 +63,8 @@ bool initialise()
 
 	//initialise gui
 	initialiseGUI(window);
+
+	initialiseBloom();
 
 	return true;
 }
@@ -817,12 +820,101 @@ void renderBlur()
 	// horizontal blur
 	glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 0.0f, 1.0f);
 
-	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_width"), (1.0f/screenWidth));
-	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_height"), (1.0f/screenHeight));
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_width"), (1.0f /screenWidth));
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_height"), (1.0f /screenHeight));
 
 	// Render the screen quad
 	renderer::render(myScene->getScreenQuad());
 
+}
+
+void renderMyBloom()
+{
+
+	float screenHeight = renderer::get_screen_height();
+	float screenWidth = renderer::get_screen_width();
+
+
+	double mouseX;
+	double mouseY;
+	glfwGetCursorPos(renderer::get_window(), &mouseX, &mouseY);
+
+
+	// render to frame buffer
+	renderer::set_render_target(*myScene->getFrame());
+
+	// Clear frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// render scene to frame buffer
+	myScene->skybx->render();
+	myScene->transparentObjects.at(0)->renderGlass();
+	renderParticles();
+
+	renderer::set_render_target();
+	//renderer::set_render_target(*myScene->getBlurB());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// Bind texture shader
+	renderer::bind(*myScene->getBloomEffect());
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		myScene->getBloomEffect()->get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(myScene->getFrame()->get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(myScene->getBloomEffect()->get_uniform_location("tex"), 0);
+
+	//float mouseXRatio = (float)mouseX / screenWidth;
+
+	//glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseXRatio * 300.0f);
+
+	// horizontal blur
+	//glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 1.0f, 0.0f);
+
+	// Render the screen quad
+	renderer::render(myScene->getScreenQuad());
+
+	// render to screen
+	//renderer::set_render_target();
+
+
+	//// Bind texture shader
+	//renderer::bind(*myScene->getBlurEffect());
+
+	//// MVP is now the identity matrix
+	//glUniformMatrix4fv(
+	//	myScene->getBlurEffect()->get_uniform_location("MVP"), // Location of  uniform
+	//	1, // Number of values - 1 mat4
+	//	GL_FALSE, // Transpose the matrix?
+	//	value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	//// Bind texture from frame buffer
+	//renderer::bind(myScene->getBlurB()->get_frame(), 0);
+
+	//// Set the uniform
+	//glUniform1i(myScene->getBlurEffect()->get_uniform_location("tex"), 0);
+
+	//float mouseYRatio = (screenHeight - (float)mouseY - 1.0f) / screenHeight;
+
+	//glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseYRatio * 300.0f);
+
+	//// horizontal blur
+	//glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 0.0f, 1.0f);
+
+	//glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_width"), (1.0f / screenWidth));
+	//glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_height"), (1.0f / screenHeight));
+
+	//// Render the screen quad
+	//renderer::render(myScene->getScreenQuad());
 }
 
 void renderFrame()
@@ -984,41 +1076,44 @@ void renderRadii()
 
 bool render()
 {
-	renderRadii(); // render radius of bounding spheres + view frustrum
+	//renderBloom();
+	renderMyBloom();
 
-	renderShadows(); // render shadows
-	
-	if (myScene->getGreyBool())
-	{
-		renderGreyScale();	// if greyscale render screenquad else render objects normally
-	}
-	else if (myScene->getSSAO())
-	{
-		renderFrame();
+	//renderRadii(); // render radius of bounding spheres + view frustrum
 
-		//myScene->skybx->render();  // is sky true (enable/disable depth)
-		//myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
-	}
-	else if (myScene->getBlurBool())
-	{
-		renderBlur();
-	}
-	else if (myScene->getVigBool())
-	{
-		renderVignette();
-	}
-	else
-	{
-		myScene->skybx->render();  // is sky true (enable/disable depth)
-		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
-		renderParticles();
-	}
-	
-	if (myScene->getGUIBool())
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		renderGUI();
-	}
+	//renderShadows(); // render shadows
+	//
+	//if (myScene->getGreyBool())
+	//{
+	//	renderGreyScale();	// if greyscale render screenquad else render objects normally
+	//}
+	//else if (myScene->getSSAO())
+	//{
+	//	renderFrame();
+
+	//	//myScene->skybx->render();  // is sky true (enable/disable depth)
+	//	//myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+	//}
+	//else if (myScene->getBlurBool())
+	//{
+	//	renderBlur();
+	//}
+	//else if (myScene->getVigBool())
+	//{
+	//	renderMyBloom();//renderVignette();
+	//}
+	//else
+	//{
+	//	myScene->skybx->render();  // is sky true (enable/disable depth)
+	//	myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
+	//	renderParticles();
+	//}
+	//
+	//if (myScene->getGUIBool())
+	//{
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//	renderGUI();
+	//}
 
     return true;
 }

@@ -95,4 +95,5 @@ void main()
    // colour = texture(tex, tex_coord);
 
 	colour = sum;
+	colour.a = 1.0f;
 }

@@ -1,19 +1,27 @@
 #version 440
 
-// ********************************************
-// Define the output colour for the shader here
-// ********************************************
-uniform vec4 colour;
-
-layout (location = 0) in vec4 in_colour;
+layout (location = 0) in vec2 TexCoords;
 
 // Outgoing colour for the shader
-layout (location = 0) out vec4 out_colour;
+layout (location = 0) out vec4 FragColor;
+
+uniform sampler2D scene;
+uniform sampler2D bloomBlur;
+//uniform bool bloom;
+//uniform float exposure;
 
 void main()
-{
-    // *******************
-	// Set outgoing colour
-	// *******************
-	out_colour = colour + in_colour;
+{             
+    const float gamma = 2.2;
+    vec3 hdrColor = texture(scene, TexCoords).rgb;      
+    vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
+
+      hdrColor += bloomColor; // additive blending
+    // tone mapping
+    vec3 result = vec3(1.0) - exp(-hdrColor * 1.0);
+    // also gamma correct while we're at it       
+    result = pow(result, vec3(1.0 / gamma));
+    
+	
+	FragColor = texture(bloomBlur, TexCoords);//vec4(result, 1.0f);
 }

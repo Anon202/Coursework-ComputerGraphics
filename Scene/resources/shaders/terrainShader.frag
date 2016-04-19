@@ -61,7 +61,7 @@ layout(location = 3) in vec4 tex_weight;
 
 // Outgoing colour
 layout(location = 0) out vec4 colour;
-
+layout (location = 1) out vec4 BrightColor;
 
 
 void main()
@@ -90,8 +90,21 @@ void main()
 	
 	for(unsigned int i = 0; i < 3; ++i)
 	{
-		colour += calculate_point(point[i], mat, position, normal, view_dir, tex_colour);
+		colour += calculate_point(point[i], mat, position, normal, view_dir, tex_colour) *2.0f;
 	}
+
+	float brightness = dot(colour.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if(brightness > 1.0)
+	{
+        BrightColor = vec4(colour.rgb, 1.0);
+		//colour = vec4(colour.rgb, 0.0f);
+	   // colour = vec4(0, 0 , 0, 1.0f);
+    }
+	else
+	{
+		colour = vec4(colour.rgb, 1.0f);
+	}
+	
 
 	colour.a = 1.0f;
 }

@@ -261,6 +261,9 @@ void SceneManager::initQuad()
 	vignetteEff.add_shader("..\\resources\\shaders\\vignette.frag", GL_FRAGMENT_SHADER);
 	vignetteEff.build();
 
+	bloomEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	bloomEff.add_shader("..\\resources\\shaders\\bloom.frag", GL_FRAGMENT_SHADER);
+	bloomEff.build();
 }
 
 

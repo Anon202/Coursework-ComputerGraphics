@@ -59,6 +59,7 @@ private:
 	effect ssao_Position;
 	effect blurEff;
 	effect vignetteEff;
+	effect bloomEff;
 
 	geometry frustrumGeom;
 
@@ -167,5 +168,8 @@ public:
 
 	frame_buffer* getVigFrame() { return &vigFrame; }
 	effect* getVignetteEffect() { return &vignetteEff; }
+
+	//frame_buffer* getVigFrame() { return &vigFrame; }
+	effect* getBloomEffect() { return &bloomEff; }
 };
 

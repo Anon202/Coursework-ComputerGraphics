@@ -308,7 +308,7 @@ void Obj::addChild(Obj* child, string name)
 	this->children[name] = child;
 }
 
-void Obj::renderGlass()
+void Obj::renderGlass()  
 {
 	if (!visible)  // if the glass is not visible return (don't render)
 		return;
