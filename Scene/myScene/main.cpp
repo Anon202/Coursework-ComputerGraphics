@@ -60,6 +60,9 @@ bool initialise()
 	myScene->cam->set_target(vec3(0.0f, 0.0f, 1.0f));
 	myScene->cam->set_projection(quarter_pi<float>(), aspect, 2.414f, 1000.0f);
 
+	//initialise gui
+	initialiseGUI(window);
+
 	return true;
 }
 
@@ -547,7 +550,12 @@ bool update(float delta_time)
 	freeCam = dynamic_cast<free_camera*>(myScene->cam);
 
 	// enable/ disable polygon mode
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
+	if (myScene->getDebugBool())
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	/*if (glfwGetKey(renderer::get_window(), GLFW_KEY_0))
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		myScene->setDebugBool(false);
@@ -556,7 +564,7 @@ bool update(float delta_time)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		myScene->setDebugBool(true);
-	}
+	}*/
 		
 	if (freeCam)
 	{
@@ -624,23 +632,12 @@ bool update(float delta_time)
 	myScene->incrementMyTime(2.0f * delta_time); // update myTime for water
 
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_G))
-		myScene->setGreyBool(true);
-
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
-		myScene->setGreyBool(false);
-
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_TAB))
 		myScene->setSSAO(false);
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_Q))
 		myScene->setSSAO(true);
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_B))
-		myScene->setBlurBool(true);
-
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_PERIOD))
-		myScene->setBlurBool(false);
 
 	// MOVE SPOTLIGHT
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
@@ -652,6 +649,21 @@ bool update(float delta_time)
 		myScene->lightObjects[spot - 1]->move(vec3(0.0f, 0.0f, 0.1f));
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
 		myScene->lightObjects[spot - 1]->move(vec3(-0.0f, 0.0f, -0.1f));
+
+
+	static int keystate;
+	int newkeystate = glfwGetKey(renderer::get_window(), 'N');
+
+	if (newkeystate && newkeystate != keystate)
+	{
+		myScene->setGUIBool(!myScene->getGUIBool());
+	}
+	keystate = newkeystate;
+
+	if (myScene->getGUIBool())
+	{
+		updateGUI();
+	}
 
     return true;
 }
@@ -727,6 +739,9 @@ void renderVignette()
 
 void renderBlur()
 {
+	float screenHeight = renderer::get_screen_height();
+	float screenWidth = renderer::get_screen_width();
+
 
 	double mouseX;
 	double mouseY;
@@ -765,7 +780,7 @@ void renderBlur()
 	// Set the uniform
 	glUniform1i(myScene->getBlurEffect()->get_uniform_location("tex"), 0);
 
-	float mouseXRatio = (float)mouseX / renderer::get_screen_width();
+	float mouseXRatio = (float)mouseX / screenWidth;
 
 	glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseXRatio * 300.0f);
 
@@ -795,12 +810,15 @@ void renderBlur()
 	// Set the uniform
 	glUniform1i(myScene->getBlurEffect()->get_uniform_location("tex"), 0);
 
-	float mouseYRatio = (renderer::get_screen_height() - (float)mouseY - 1.0f) / renderer::get_screen_height();
+	float mouseYRatio = (screenHeight - (float)mouseY - 1.0f) / screenHeight;
 
 	glUniform1f(myScene->getBlurEffect()->get_uniform_location("radius"), mouseYRatio * 300.0f);
 
 	// horizontal blur
 	glUniform2f(myScene->getBlurEffect()->get_uniform_location("dir"), 0.0f, 1.0f);
+
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_width"), (1.0f/screenWidth));
+	glUniform1f(myScene->getBlurEffect()->get_uniform_location("inverse_height"), (1.0f/screenHeight));
 
 	// Render the screen quad
 	renderer::render(myScene->getScreenQuad());
@@ -984,16 +1002,22 @@ bool render()
 	else if (myScene->getBlurBool())
 	{
 		renderBlur();
-
-		//renderVignette();
+	}
+	else if (myScene->getVigBool())
+	{
+		renderVignette();
 	}
 	else
 	{
 		myScene->skybx->render();  // is sky true (enable/disable depth)
 		myScene->transparentObjects.at(0)->renderGlass();  // render transparent objects last
 		renderParticles();
-
-		
+	}
+	
+	if (myScene->getGUIBool())
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		renderGUI();
 	}
 
     return true;

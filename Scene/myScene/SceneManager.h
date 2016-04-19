@@ -36,6 +36,8 @@ private:
 	bool grey;
 	bool blur;
 	bool ssao;
+	bool gui;
+	bool vig;
 
 	double initialX;				// vars for mouse positions initial
 	double initialY;
@@ -97,7 +99,7 @@ public:
 	vec3 planePoints[8];
 
 
-	effect* createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[]);
+	effect* createEffect(const char vertPath[], const char fragPath[], const char partPath1[], const char partPath2[]);
 	SceneManager(double initialMouseX, double initialMouseY);  // constructor takes in initial mouse positions for free camera setup
 	~SceneManager();// deconstructor frees lists
 
@@ -132,6 +134,12 @@ public:
 
 	bool getBlurBool() { return blur; }
 	void setBlurBool(const bool &value) { blur = value; }
+
+	bool getVigBool() { return vig; }
+	void setVigBool(const bool &value) { vig = value; }
+
+	bool getGUIBool() { return gui; }
+	void setGUIBool(const bool &value) { gui = value; }
 
 	bool getSSAO() { return ssao; }
 	void setSSAO(const bool &value) { ssao = value; }

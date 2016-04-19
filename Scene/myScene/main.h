@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "Particles.h"
 #include "Shadowing.h"
+#include "GUI.h"
 
 using namespace std;
 using namespace graphics_framework;

@@ -1,4 +1,5 @@
- #include "SceneManager.h"
+#include "SceneManager.h"
+#include "GUI.h"
 
 
 SceneManager::SceneManager(double initialMouseX, double initialMouseY)
@@ -24,6 +25,7 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	debug = false;
 	ssao = false;
 	blur = false;
+	vig = false;
 
 	// set type of geometry for radii to points.
 	radiusGeom.set_type(GL_POINTS);
@@ -85,7 +87,7 @@ void SceneManager::createLights()
 
 }
 
-effect* SceneManager::createEffect(char vertPath[], char fragPath[], char partPath1[], char partPath2[])
+effect* SceneManager::createEffect(const char vertPath[], const char fragPath[], const char partPath1[], const char partPath2[])
 {
 	// takes in paths of shaders, builds the effect and adds to a list of pointers.
 
@@ -290,4 +292,7 @@ SceneManager::~SceneManager()
 			delete texList[i][j]; 
 	}
 	texList.clear();
+
+	// free memory from gui
+	cleanGUI();
 }

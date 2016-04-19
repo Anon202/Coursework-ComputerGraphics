@@ -425,18 +425,11 @@ void Obj::render()
 	/*
 	 * method to recurse through branch and render all objects
 	 */ 
-
-
-
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glEnable(GL_BLEND);
 	if (visible && myType != glassOb)
 	{
-
-
 		camera* cam = myScene->cam;			 // camera pointer 
 
 		float transparencyValue = 1.0f;
