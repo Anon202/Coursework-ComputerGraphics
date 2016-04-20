@@ -17,15 +17,11 @@ void main()
 	float intensity = colourSample.r + colourSample.g + colourSample.b;
 	intensity/=3.0;
 
-	//float brightness = dot(colourSample.rgb, vec3(0.2126, 0.7152, 0.0722));
+	float brightness = dot(colourSample.rgb, vec3(0.2126, 0.7152, 0.0722));
 
-	if (intensity > 0.7)
+	if (brightness > 0.5)
 		colour = vec4(colourSample.rgb, 1.0);
 	else
 		colour = vec4(0.0, 0.0, 0.0, 0.0);
-
-
-	//colour = colourSample;
-	//colour.a = 1.0;
 
 }

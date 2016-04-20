@@ -120,78 +120,28 @@ public:
 	void calculateFrustrum();
 	void generateFrustrumPlanes();
 
-	// getters/setters for values	
-	bool getDebugBool(){ return debug; }
-	void setDebugBool(const bool &value){ debug = value; }
 
-	bool getFixCullBool(){ return fixCull; }
-	void setFixCullBool(const bool &value){ fixCull = value; }
-
-	bool getfirstMouse(){ return firstMouse; }
-	void setfirstMouse(const bool &value){ firstMouse = value; }
-
-	double getInitialX(){ return initialX; }
-	double getInitialY(){ return initialY; }
-
-	void setCurrX(const double &value) { current_x = value; }
-	double getCurrX() { return current_x; }
-
-	void setCurrY(const double &value) { current_y = value; }
-	double getCurrY() { return current_y; }
 
 	void incrementMyTime(const float &value){ myTime += value;	}
 	float getMyTime(){ return myTime; }
 
-	bool getGreyBool() { return grey; }
-	void setGreyBool(const bool &value) { grey = value; }
-
-	bool getBlurBool() { return blur; }
-	void setBlurBool(const bool &value) { blur = value; }
-
-	bool getVigBool() { return vig; }
-	void setVigBool(const bool &value) { vig = value; }
-
-	bool getGUIBool() { return gui; }
-	void setGUIBool(const bool &value) { gui = value; }
-
-	bool getSSAO() { return ssao; }
-	void setSSAO(const bool &value) { ssao = value; }
 
 	geometry getRadiGeom() { return radiusGeom; }
 	effect* getRadEff() { return rad_eff; }
 
 	geometry getFrustrumGeom() { return frustrumGeom; }
 	
-	// post- processing getters
-
-	//geometry getScreenQuad() { return screen_quad; }
-
-	//frame_buffer* getFrame(){ return &frame; }
-	//effect* getGreyEffect() { return &greyEff; }
-
-	//frame_buffer* getBlurA() { return &blurTargetA; }
-	//frame_buffer* getBlurB() { return &blurTargetB; }
-	//effect* getBlurEffect() { return &blurEff; }
-	//
-	//effect* getSimpleTexEffect() { return &simpleTex; }
-
-	//frame_buffer* getSSAOFrame() { return &ssaoframe; }
-	//effect* getSSAOPosEffect() { return &ssao_Position; }
-
-	//frame_buffer* getVigFrame() { return &vigFrame; }
-	//effect* getVignetteEffect() { return &vignetteEff; }
-
-	////frame_buffer* getVigFrame() { return &vigFrame; }
-	//effect* getBloomEffect() { return &bloomEff; }
-
-	//effect* getBloomFinalEffect() { return &bloomFinalEff; }
 
 	void renderScene();
 
 	void updateLightPositions();
 	void updateScene(float delta_time);
 
-
+	void toggleDebug();
 	void toggleBloom();
+	void toggleBlur();
+	void toggleVignette();
+	void toggleGrey();
+	void toggleCull();
 };
 

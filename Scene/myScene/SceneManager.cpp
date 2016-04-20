@@ -227,7 +227,7 @@ void SceneManager::initQuad()
 	vigFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	blurTargetA = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	blurTargetB = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
-
+	finalBlur = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 
 	vector<vec3> positions
 	{
@@ -375,6 +375,7 @@ void SceneManager::renderBlur(const bool &bloom)
 	{
 		renderer::set_render_target(finalBlur);
 	}
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Bind texture shader
 	renderer::bind(blurEff);
@@ -420,7 +421,6 @@ void SceneManager::renderMyBloom()
 	skybx->render();
 	transparentObjects.at(0)->renderGlass();
 	renderParticles();
-
 
 	// 2nd pass - render just bright parts
 	renderer::set_render_target(blurTargetA);
@@ -509,93 +509,6 @@ void SceneManager::renderGreyScale()
 
 }
 
-//void renderFrame()
-//{
-//	// render to frame buffer
-//	renderer::set_render_target(*myScene->getFrame());
-//
-//	//**GEOMETRY PASS**//
-//
-//	// Clear frame
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-//
-//	renderer::bind(*myScene->getSSAOPosEffect());
-//
-//	for (auto currObj : myScene->list)
-//	{
-//		if (currObj->myType == sky)
-//			continue;
-//
-//		auto M = currObj->mworld;		// use object's own model matrix
-//		mat4 V = myScene->cam->get_view();
-//		mat4 P = myScene->cam->get_projection();
-//		mat4 MVP = P * V * M;
-//		mat4 MV = V * M;
-//		glUniformMatrix4fv(
-//			myScene->getSSAOPosEffect()->get_uniform_location("MVP"), // Location of uniform
-//			1, // Number of values - 1 mat4
-//			GL_FALSE, // Transpose the matrix?
-//			value_ptr(MVP)); // Pointer to matrix data
-//		glUniformMatrix4fv(
-//			myScene->getSSAOPosEffect()->get_uniform_location("MV"), // Location of uniform
-//			1, // Number of values - 1 mat4
-//			GL_FALSE, // Transpose the matrix?
-//			value_ptr(MV)); // Pointer to matrix data
-//
-//		renderer::render(*currObj->m); // render mesh
-//	}
-//
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//
-//	//**SSAO PASS**//
-//
-//	// bind frame buffer for writing
-//	renderer::set_render_target(*myScene->getSSAOFrame());
-//
-//	// bind position
-//	glBindBuffer(GL_ARRAY_BUFFER, myScene->getFrame()->get_buffer());
-//
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//	// Bind texture shader
-//	renderer::bind(*myScene->getSimpleTexEffect());
-//
-//	// MVP is now the identity matrix
-//	glUniformMatrix4fv(
-//		myScene->getSimpleTexEffect()->get_uniform_location("MVP"), // Location of uniform
-//		1, // Number of values - 1 mat4
-//		GL_FALSE, // Transpose the matrix?
-//		value_ptr(mat4(1.0f))); // Pointer to matrix data
-//
-//	// projection matrix
-//	glUniformMatrix4fv(
-//		myScene->getSimpleTexEffect()->get_uniform_location("P"), // Location of uniform
-//		1, // Number of values - 1 mat4
-//		GL_FALSE, // Transpose the matrix?
-//		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
-//
-//	// Bind texture from frame buffer
-//	renderer::bind(myScene->getFrame()->get_frame(), 0);
-//
-//
-//
-//	glUniform3fv(myScene->getSimpleTexEffect()->get_uniform_location("gKernel"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
-//
-//	// Set the uniform
-//	glUniform1i(myScene->getSimpleTexEffect()->get_uniform_location("tex"), 0);
-//
-//	// Render the screen quad
-//
-//
-//	renderer::render(myScene->getScreenQuad());
-//
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//
-//	//renderer::set_render_target();
-//}
-
 void SceneManager::renderRadii()
 {
 	if (!debug)
@@ -664,7 +577,6 @@ void SceneManager::renderRadii()
 
 }
 
-
 void SceneManager::renderScene()
 {
 
@@ -724,6 +636,11 @@ void SceneManager::updateScene(float delta_time)
 
 	// get shadow update
 	updateShadows();
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_B))    // need to get an enum for camera tyoe
+		bloom = true;
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_G))    // need to get an enum for camera tyoe
+		bloom = false;
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		cam = cameraList[0];
@@ -837,6 +754,11 @@ void SceneManager::updateScene(float delta_time)
 }
 
 void SceneManager::toggleBloom() { bloom = !bloom; }
+void SceneManager::toggleDebug() { debug = !debug; }
+void SceneManager::toggleVignette() { vig = !vig; }
+void SceneManager::toggleBlur() { blur = !blur; }
+void SceneManager::toggleGrey() { grey = !grey; }
+void SceneManager::toggleCull() { fixCull = !fixCull; }
 
 SceneManager::~SceneManager()
 {

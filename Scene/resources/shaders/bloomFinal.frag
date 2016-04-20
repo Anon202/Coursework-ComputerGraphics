@@ -14,4 +14,5 @@ void main()
 	vec4 bloomSamp = texture2D(bloomBlur, tex_coord);
 
 	colour = mix(bloomSamp, sceneSamp, bloomSamp.a);
+	//colour = mix(sceneSamp, bloomSamp, bloomSamp.r);
 }

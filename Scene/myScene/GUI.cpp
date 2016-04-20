@@ -40,26 +40,44 @@ static void Menu() {
 		ImGui::Text("Optimization");
 		if (ImGui::Button("Draw Lines"))
 		{
-			myScene->setDebugBool(!myScene->getDebugBool());
+			myScene->toggleDebug();
 		}
 
+		if (ImGui::Button("Fix Culling"))
+		{
+			myScene->toggleCull();
+		}
 	}
+
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		static int radB = 0;
+		ImGui::RadioButton("Free Camera", &radB, 0); ImGui::SameLine();
+		ImGui::RadioButton("Camera 1", &radB, 1); ImGui::SameLine();
+		ImGui::RadioButton("Camera 2", &radB, 2);
+		
+		if (radB == 2)
+		{
+			myScene->cam = myScene->cameraList[2];
+		}
+	}
+
 
 	if (ImGui::CollapsingHeader("Post-Processing"))
 	{
 		if (ImGui::Button("Blur"))
 		{
-			myScene->setBlurBool(!myScene->getBlurBool());
+			myScene->toggleBlur();
 		}
 
 		if (ImGui::Button("Greyscale"))
 		{
-			myScene->setGreyBool(!myScene->getGreyBool());
+			myScene->toggleGrey();
 		}
 
 		if (ImGui::Button("Vignette"))
 		{
-			myScene->setVigBool(!myScene->getVigBool());
+			myScene->toggleVignette();
 		}
 
 		if (ImGui::Button("Bloom"))
