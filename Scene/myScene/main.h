@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 #include "Obj.h"
 #include "SceneManager.h"
-#include "Particles.h"
 #include "Shadowing.h"
 #include "GUI.h"
 

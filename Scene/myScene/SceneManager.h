@@ -11,6 +11,8 @@
 #include "GenerateBack.h"
 #include "Light.h"
 
+
+
 using namespace std;
 using namespace graphics_framework;
 using namespace glm;
@@ -38,6 +40,7 @@ private:
 	bool ssao;
 	bool gui;
 	bool vig;
+	bool bloom;
 
 	double initialX;				// vars for mouse positions initial
 	double initialY;
@@ -47,12 +50,13 @@ private:
 	float myTime; // float for passing in uniform for water and point light's vertex displacement + movement
 
 	geometry screen_quad;
-	frame_buffer frame;
+	frame_buffer screenFrame;
 	frame_buffer vigFrame;
 	frame_buffer ssaoframe;
 
 	frame_buffer blurTargetA;
 	frame_buffer blurTargetB;
+	frame_buffer finalBlur;
 
 	effect greyEff;
 	effect simpleTex;
@@ -60,8 +64,16 @@ private:
 	effect blurEff;
 	effect vignetteEff;
 	effect bloomEff;
+	effect bloomFinalEff;
 
 	geometry frustrumGeom;
+
+	// post processing render functions
+	void renderMyBloom();
+	void renderVignette();
+	void renderBlur(const bool &bloom);
+	void renderRadii();
+	void renderGreyScale();
 
 public:
 	void initQuad();
@@ -152,24 +164,34 @@ public:
 	
 	// post- processing getters
 
-	geometry getScreenQuad() { return screen_quad; }
+	//geometry getScreenQuad() { return screen_quad; }
 
-	frame_buffer* getFrame(){ return &frame; }
-	effect* getGreyEffect() { return &greyEff; }
+	//frame_buffer* getFrame(){ return &frame; }
+	//effect* getGreyEffect() { return &greyEff; }
 
-	frame_buffer* getBlurA() { return &blurTargetA; }
-	frame_buffer* getBlurB() { return &blurTargetB; }
-	effect* getBlurEffect() { return &blurEff; }
-	
-	effect* getSimpleTexEffect() { return &simpleTex; }
+	//frame_buffer* getBlurA() { return &blurTargetA; }
+	//frame_buffer* getBlurB() { return &blurTargetB; }
+	//effect* getBlurEffect() { return &blurEff; }
+	//
+	//effect* getSimpleTexEffect() { return &simpleTex; }
 
-	frame_buffer* getSSAOFrame() { return &ssaoframe; }
-	effect* getSSAOPosEffect() { return &ssao_Position; }
-
-	frame_buffer* getVigFrame() { return &vigFrame; }
-	effect* getVignetteEffect() { return &vignetteEff; }
+	//frame_buffer* getSSAOFrame() { return &ssaoframe; }
+	//effect* getSSAOPosEffect() { return &ssao_Position; }
 
 	//frame_buffer* getVigFrame() { return &vigFrame; }
-	effect* getBloomEffect() { return &bloomEff; }
+	//effect* getVignetteEffect() { return &vignetteEff; }
+
+	////frame_buffer* getVigFrame() { return &vigFrame; }
+	//effect* getBloomEffect() { return &bloomEff; }
+
+	//effect* getBloomFinalEffect() { return &bloomFinalEff; }
+
+	void renderScene();
+
+	void updateLightPositions();
+	void updateScene(float delta_time);
+
+
+	void toggleBloom();
 };
 

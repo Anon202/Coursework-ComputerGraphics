@@ -27,12 +27,8 @@ void main()
 	float len = length(position);
 	len = 1.0 - len;
 
-	//float i = dot(colourSample.rgb, intensity);
-	//colour = vec4(i, i, i, 1.0);
-
 	colourSample *= len;
 	
 	colour = vec4(colourSample.rgb, 1.0);
 
-	//colour.a = 1.0f;
 }

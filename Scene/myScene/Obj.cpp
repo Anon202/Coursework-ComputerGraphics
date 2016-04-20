@@ -576,10 +576,6 @@ void Obj::render()
 		// all objects in this loop are opaque objects therefore alpha is 1
 		glUniform1f(eff->get_uniform_location("alphaVal"), transparencyValue); 
 
-		renderer::bind(myScene->getSSAOFrame()->get_frame(), 10);
-		glUniform1i(eff->get_uniform_location("ssao"), 10);
-
-
 		// render mesh
 		renderer::render(*m);
 

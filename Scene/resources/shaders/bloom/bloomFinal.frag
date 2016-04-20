@@ -23,5 +23,5 @@ void main()
     result = pow(result, vec3(1.0 / gamma));
     
 	
-	FragColor = texture(bloomBlur, TexCoords);//vec4(result, 1.0f);
+	FragColor = vec4(result, 1.0f);
 }

@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shaders", "shaders", "{2194
 		resources\shaders\blending.frag = resources\shaders\blending.frag
 		resources\shaders\blending.vert = resources\shaders\blending.vert
 		resources\shaders\bloom.frag = resources\shaders\bloom.frag
+		resources\shaders\bloomFinal.frag = resources\shaders\bloomFinal.frag
 		resources\shaders\blur.frag = resources\shaders\blur.frag
 		resources\shaders\colour.frag = resources\shaders\colour.frag
 		resources\shaders\colour.vert = resources\shaders\colour.vert

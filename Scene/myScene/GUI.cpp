@@ -62,6 +62,11 @@ static void Menu() {
 			myScene->setVigBool(!myScene->getVigBool());
 		}
 
+		if (ImGui::Button("Bloom"))
+		{
+			myScene->toggleBloom();
+		}
+
 	}
 
 	ImGui::End();
@@ -71,32 +76,14 @@ void updateGUI() {
 	ImGuiIO &io = ImGui::GetIO();
 	ImGui_ImplGlfwGL3_NewFrame();
 
-	
-	int newkeystate = glfwGetKey(myWindow, 'M');
-	if (newkeystate && newkeystate != keystate) {
-		showMenu = !showMenu;
-		if (showMenu) {
-			glfwSetInputMode(myWindow, GLFW_CURSOR,
-				io.MouseDrawCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
-		}
-		else {
-			glfwSetInputMode(myWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-	}
-	keystate = newkeystate;
-
 	ShowStats(true);
-
-	if (showMenu) {
-		Menu();
-	}
+	Menu();
 }
 
 void initialiseGUI(GLFWwindow* inwindow) {
 	myWindow = inwindow;
 	bool f = ImGui_ImplGlfwGL3_Init(myWindow, true);
 	showMenu = false;
-	glfwSetInputMode(myWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void renderGUI() { ImGui::Render(); }

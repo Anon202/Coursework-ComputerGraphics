@@ -1,5 +1,9 @@
 #include "SceneManager.h"
 #include "GUI.h"
+#include "Obj.h"
+#include "Particles.h"
+#include "Shadowing.h"
+
 
 
 SceneManager::SceneManager(double initialMouseX, double initialMouseY)
@@ -33,6 +37,8 @@ SceneManager::SceneManager(double initialMouseX, double initialMouseY)
 	fixCull = false; // bool used to turn on/off updating the view frustrum to show culling working
 
 	createLights();
+
+	initialiseParticles(1);
 }
 
 void SceneManager::createLights()
@@ -216,7 +222,7 @@ void SceneManager::generateFrustrumPlanes()
 
 void SceneManager::initQuad()
 {
-	frame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
+	screenFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	ssaoframe = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	vigFrame = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
 	blurTargetA = frame_buffer(renderer::get_screen_width(), renderer::get_screen_height());
@@ -264,9 +270,573 @@ void SceneManager::initQuad()
 	bloomEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
 	bloomEff.add_shader("..\\resources\\shaders\\bloom.frag", GL_FRAGMENT_SHADER);
 	bloomEff.build();
+
+	bloomFinalEff.add_shader("..\\resources\\shaders\\simple_texture.vert", GL_VERTEX_SHADER);
+	bloomFinalEff.add_shader("..\\resources\\shaders\\bloomFinal.frag", GL_FRAGMENT_SHADER);
+	bloomFinalEff.build();
+}
+
+void SceneManager::renderVignette()
+{
+	// renders a vignette on the screen
+
+	// first pass to vignette frame buffer
+	renderer::set_render_target(vigFrame);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// render scene to frame buffer
+	skybx->render();
+	transparentObjects.at(0)->renderGlass();
+	renderParticles();
+
+	// set target back to screen - 2nd Pass
+	renderer::set_render_target();
+
+	renderer::bind(vignetteEff);
+
+	glUniformMatrix4fv(
+		vignetteEff.get_uniform_location("MVP"),
+		1,
+		GL_FALSE,
+		value_ptr(mat4(1.0f)));
+
+	renderer::bind(vigFrame.get_frame(), 0);
+	glUniform1i(vignetteEff.get_uniform_location("tex"), 0);
+
+	vec2 res = vec2(renderer::get_screen_width(), renderer::get_screen_height());
+	glUniform2f(vignetteEff.get_uniform_location("resolution"), res.x, res.y);
+
+	renderer::render(screen_quad);
+}
+
+void SceneManager::renderBlur(const bool &bloom)
+{
+	float screenHeight = (float)renderer::get_screen_height();
+	float screenWidth = (float)renderer::get_screen_width();
+
+
+	double mouseX;
+	double mouseY;
+	glfwGetCursorPos(renderer::get_window(), &mouseX, &mouseY);
+
+	if (!bloom)
+	{
+		// render to frame buffer
+		renderer::set_render_target(blurTargetA);
+
+		// Clear frame
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+		// render scene to frame buffer
+		skybx->render();
+		transparentObjects.at(0)->renderGlass();
+		renderParticles();
+	}
+
+	renderer::set_render_target(blurTargetB);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// Bind texture shader
+	renderer::bind(blurEff);
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		blurEff.get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(blurTargetA.get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(blurEff.get_uniform_location("tex"), 0);
+
+	float mouseXRatio = (float)mouseX / screenWidth;
+
+	glUniform1f(blurEff.get_uniform_location("radius"), mouseXRatio * 300.0f);
+
+	// horizontal blur
+	glUniform2f(blurEff.get_uniform_location("dir"), 1.0f, 0.0f);
+
+	// Render the screen quad
+	renderer::render(screen_quad);
+
+
+	if (!bloom)
+	{
+		// render to screen
+		renderer::set_render_target();
+	}
+	else
+	{
+		renderer::set_render_target(finalBlur);
+	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Bind texture shader
+	renderer::bind(blurEff);
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		blurEff.get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(blurTargetB.get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(blurEff.get_uniform_location("tex"), 0);
+
+	float mouseYRatio = (screenHeight - (float)mouseY - 1.0f) / screenHeight;
+
+	glUniform1f(blurEff.get_uniform_location("radius"), mouseYRatio * 300.0f);
+
+	// horizontal blur
+	glUniform2f(blurEff.get_uniform_location("dir"), 0.0f, 1.0f);
+
+	glUniform1f(blurEff.get_uniform_location("inverse_width"), (1.0f / screenWidth));
+	glUniform1f(blurEff.get_uniform_location("inverse_height"), (1.0f / screenHeight));
+
+	// Render the screen quad
+	renderer::render(screen_quad);
+
+}
+
+void SceneManager::renderMyBloom()
+{
+	// render to frame buffer
+	renderer::set_render_target(screenFrame);
+
+	// Clear frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// render scene to frame buffer
+	skybx->render();
+	transparentObjects.at(0)->renderGlass();
+	renderParticles();
+
+
+	// 2nd pass - render just bright parts
+	renderer::set_render_target(blurTargetA);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	// Bind texture shader
+	renderer::bind(bloomEff);
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		bloomEff.get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(screenFrame.get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(bloomEff.get_uniform_location("tex"), 0);
+
+	// Render the screen quad
+	renderer::render(screen_quad);
+
+	// blur pass
+	renderBlur(true);
+
+	// final render to screen with mix
+	renderer::set_render_target();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	renderer::bind(bloomFinalEff);
+
+	glUniformMatrix4fv(
+		bloomFinalEff.get_uniform_location("MVP"), // Location of  uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind scene texture
+	renderer::bind(screenFrame.get_frame(), 0);
+	glUniform1i(bloomFinalEff.get_uniform_location("scene"), 0);
+
+	renderer::bind(finalBlur.get_frame(), 1);
+	glUniform1i(bloomFinalEff.get_uniform_location("bloomBlur"), 1);
+	renderer::render(screen_quad);
+
+}
+
+void SceneManager::renderGreyScale()
+{
+	// render to frame buffer
+	renderer::set_render_target(screenFrame);
+
+	// Clear frame
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	skybx->render();  // is sky true (enable/disable depth)
+	transparentObjects.at(0)->renderGlass();  // render transparent objects last
+
+	renderParticles();
+
+	renderer::set_render_target();
+
+	// Bind texture shader
+	renderer::bind(greyEff);
+
+	// MVP is now the identity matrix
+	glUniformMatrix4fv(
+		greyEff.get_uniform_location("MVP"), // Location of uniform
+		1, // Number of values - 1 mat4
+		GL_FALSE, // Transpose the matrix?
+		value_ptr(mat4(1.0f))); // Pointer to matrix data
+
+	// Bind texture from frame buffer
+	renderer::bind(screenFrame.get_frame(), 0);
+
+	// Set the uniform
+	glUniform1i(greyEff.get_uniform_location("tex"), 0);
+
+	// Render the screen quad
+
+	renderer::render(screen_quad);
+
+}
+
+//void renderFrame()
+//{
+//	// render to frame buffer
+//	renderer::set_render_target(*myScene->getFrame());
+//
+//	//**GEOMETRY PASS**//
+//
+//	// Clear frame
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+//
+//	renderer::bind(*myScene->getSSAOPosEffect());
+//
+//	for (auto currObj : myScene->list)
+//	{
+//		if (currObj->myType == sky)
+//			continue;
+//
+//		auto M = currObj->mworld;		// use object's own model matrix
+//		mat4 V = myScene->cam->get_view();
+//		mat4 P = myScene->cam->get_projection();
+//		mat4 MVP = P * V * M;
+//		mat4 MV = V * M;
+//		glUniformMatrix4fv(
+//			myScene->getSSAOPosEffect()->get_uniform_location("MVP"), // Location of uniform
+//			1, // Number of values - 1 mat4
+//			GL_FALSE, // Transpose the matrix?
+//			value_ptr(MVP)); // Pointer to matrix data
+//		glUniformMatrix4fv(
+//			myScene->getSSAOPosEffect()->get_uniform_location("MV"), // Location of uniform
+//			1, // Number of values - 1 mat4
+//			GL_FALSE, // Transpose the matrix?
+//			value_ptr(MV)); // Pointer to matrix data
+//
+//		renderer::render(*currObj->m); // render mesh
+//	}
+//
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//
+//	//**SSAO PASS**//
+//
+//	// bind frame buffer for writing
+//	renderer::set_render_target(*myScene->getSSAOFrame());
+//
+//	// bind position
+//	glBindBuffer(GL_ARRAY_BUFFER, myScene->getFrame()->get_buffer());
+//
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//	// Bind texture shader
+//	renderer::bind(*myScene->getSimpleTexEffect());
+//
+//	// MVP is now the identity matrix
+//	glUniformMatrix4fv(
+//		myScene->getSimpleTexEffect()->get_uniform_location("MVP"), // Location of uniform
+//		1, // Number of values - 1 mat4
+//		GL_FALSE, // Transpose the matrix?
+//		value_ptr(mat4(1.0f))); // Pointer to matrix data
+//
+//	// projection matrix
+//	glUniformMatrix4fv(
+//		myScene->getSimpleTexEffect()->get_uniform_location("P"), // Location of uniform
+//		1, // Number of values - 1 mat4
+//		GL_FALSE, // Transpose the matrix?
+//		value_ptr(myScene->cam->get_projection())); // Pointer to matrix data
+//
+//	// Bind texture from frame buffer
+//	renderer::bind(myScene->getFrame()->get_frame(), 0);
+//
+//
+//
+//	glUniform3fv(myScene->getSimpleTexEffect()->get_uniform_location("gKernel"), KERNEL_SIZE, (const GLfloat*)&kernel[0]);
+//
+//	// Set the uniform
+//	glUniform1i(myScene->getSimpleTexEffect()->get_uniform_location("tex"), 0);
+//
+//	// Render the screen quad
+//
+//
+//	renderer::render(myScene->getScreenQuad());
+//
+//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//
+//	//renderer::set_render_target();
+//}
+
+void SceneManager::renderRadii()
+{
+	if (!debug)
+		return;
+
+	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+
+	// if debug mode draw radii of bounding spheres
+	vector<float> radii;
+	vector<vec3> positions;
+
+	// for each object, add it's radius and it's center position in world place to the vectors
+	for (auto c : list)
+	{
+		radii.push_back(c->getRadius());
+		vec3 centre = vec3(c->getWorldPos());
+		positions.push_back(centre);  // get centre positions
+	}
+
+	// add to buffers, dynamic_draw allows for overwriting the buffers.
+	radiusGeom.add_buffer(positions, BUFFER_INDEXES::POSITION_BUFFER, GL_DYNAMIC_DRAW);
+	radiusGeom.add_buffer(radii, 1, GL_DYNAMIC_DRAW);		// use buffer index 1
+
+	// bind the effect
+	renderer::bind(*rad_eff);
+
+	// Calculate ViewProjection matrix, - No model as center positon is already transformed by this
+
+	auto V = cam->get_view();
+	auto P = cam->get_projection();
+	auto VP = P * V;
+
+	// set uniform
+	glUniformMatrix4fv(
+		rad_eff->get_uniform_location("VP"),
+		1,
+		GL_FALSE,
+		value_ptr(VP));
+
+	// render the geometry
+	renderer::render(radiusGeom);
+
+
+	// if fixCull, then the frustrum plane is fixed and not updating, so draw if in debug mode
+	if (fixCull)
+	{
+		// generate the geometry from the plane points.
+		generateFrustrumPlanes();
+
+		// increase the line width so it's easier to see
+		glLineWidth(3.0f);
+
+		renderer::bind(frustrumEffect);
+
+		// set uniform (use view/projection matrix calulated above)
+		glUniformMatrix4fv(
+			frustrumEffect.get_uniform_location("VP"),
+			1,
+			GL_FALSE,
+			value_ptr(VP));
+
+		renderer::render(getFrustrumGeom());
+
+		glLineWidth(1.0f);
+	}
+
 }
 
 
+void SceneManager::renderScene()
+{
+
+	renderRadii(); // render radius of bounding spheres + view frustrum
+
+	renderShadows(); // render shadows
+
+	// render scene depending on what post processing technique is selected
+	if (grey)
+	{
+		renderGreyScale();	// if greyscale render screenquad else render objects normally
+	}
+	else if (blur)
+	{
+		renderBlur(false);  // false bool as not bloom blur
+	}
+	else if (vig)
+	{
+		renderVignette();
+	}
+	else if (bloom)
+	{
+		renderMyBloom();
+	}
+	else
+	{
+		skybx->render();  // is sky true (enable/disable depth)
+		transparentObjects.at(0)->renderGlass();  // render transparent objects last
+		renderParticles();
+	}
+
+
+	// render gui
+	if (gui)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		renderGUI();
+	}
+}
+
+void SceneManager::updateLightPositions()
+{
+	// int starting at 1 as directional light is the first light in the list
+	for (unsigned int i = 1; i < lightList.size(); ++i)
+	{
+		lightList[i]->set_position(vec3(lightObjects[i - 1]->getWorldPos()));
+	}
+}
+
+void SceneManager::updateScene(float delta_time)
+{
+	updateLightPositions();
+
+	//if (!myScene->getSSAO())
+
+	updateParticles(delta_time);
+
+	// get shadow update
+	updateShadows();
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
+		cam = cameraList[0];
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_2))
+		cam = cameraList[1];
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_3))
+		cam = cameraList[2];
+
+	free_camera* freeCam = NULL;
+	freeCam = dynamic_cast<free_camera*>(cam);
+
+	// enable/ disable polygon mode
+	if (debug)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	if (freeCam)
+	{
+		GLFWwindow* window = renderer::get_window();
+
+		// The ratio of pixels to rotation - remember the fov
+		static double ratio_width = quarter_pi<float>() / static_cast<float>(renderer::get_screen_width());
+		static double ratio_height = (quarter_pi<float>() * (static_cast<float>(renderer::get_screen_height()) / static_cast<float>(renderer::get_screen_width()))) / static_cast<float>(renderer::get_screen_height());
+
+		double new_x = 0;
+		double new_y = 0;
+
+		glfwGetCursorPos(window, &new_x, &new_y);	// Get the current cursor position
+
+		if (firstMouse)							 // if first mouse take cursor positons from initalised vars
+		{
+			current_x = initialX; 
+			current_y = initialY;
+			firstMouse = false;
+		}
+
+		double delta_x = 0;
+		double delta_y = 0;
+
+		delta_x = new_x - current_x;		 // Calculate delta of cursor positions from last frame
+		delta_y = new_y - current_y;
+
+
+		delta_x *= ratio_width;								 // Multiply deltas by ratios - gets actual change in orientation
+		delta_y *= -ratio_height;
+
+		freeCam->rotate((float)delta_x, (float)delta_y);     // Rotate cameras by delta :: delta_y - x-axis rotation :: delta_x - y-axis rotation
+
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_W))
+			freeCam->move(vec3(0.0f, 0.0f, 1.0f)*delta_time*200.0f);
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_A))
+			freeCam->move(vec3(-1.0f, 0.0f, 0.0f)*delta_time*200.0f);
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_D))
+			freeCam->move(vec3(1.0f, 0.0f, 0.0f)*delta_time*200.0f);
+		if (glfwGetKey(renderer::get_window(), GLFW_KEY_S))
+			freeCam->move(vec3(0.0f, 0.0f, -1.0f)*delta_time*200.0f);
+
+
+		glfwGetCursorPos(window, &new_x, &new_y);  // update cursor pos
+		current_x = new_x;
+		current_y = new_y;
+	}
+
+	cam->update(delta_time);  // update the camera
+
+	// FRUSTRUM UPDATE
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_C))
+		fixCull = !fixCull;
+
+	if (!fixCull)
+	{
+		calculateFrustrum();	   // update frustrum
+	}
+
+	skybx->update(NULL, delta_time); // null as no parent
+
+	incrementMyTime(2.0f * delta_time); // update myTime for water
+
+	// MOVE SPOTLIGHT
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
+		lightObjects[spot - 1]->move(vec3(0.0f, 0.1f, 0.0f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
+		lightObjects[spot - 1]->move(vec3(0.0f, -0.1f, 0.0f));
+
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
+		lightObjects[spot - 1]->move(vec3(0.0f, 0.0f, 0.1f));
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
+		lightObjects[spot - 1]->move(vec3(-0.0f, 0.0f, -0.1f));
+
+
+	static int keystate;
+	int newkeystate = glfwGetKey(renderer::get_window(), 'N');
+
+	if (newkeystate && newkeystate != keystate)
+	{
+		gui = !gui;
+	}
+
+	keystate = newkeystate;
+
+	if (gui)
+	{
+		updateGUI();
+	}
+	else
+	{
+		glfwSetInputMode(renderer::get_window(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
+}
+
+void SceneManager::toggleBloom() { bloom = !bloom; }
 
 SceneManager::~SceneManager()
 {
