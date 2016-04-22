@@ -1,6 +1,16 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: report.aux
 The style file: acmsiggraph.bst
 Database file #1: report.bib
+Name 1 in "Akenine-Moller, Tomas, and Haines, Eric, and Hoffman, Naty" has a comma at the end for entry RTR
+while executing---line 1276 of file acmsiggraph.bst
+Name 1 in "Akenine-Moller, Tomas, and Haines, Eric, and Hoffman, Naty" has a comma at the end for entry RTR
+while executing---line 1276 of file acmsiggraph.bst
+Name 2 in "Akenine-Moller, Tomas, and Haines, Eric, and Hoffman, Naty" has a comma at the end for entry RTR
+while executing---line 1276 of file acmsiggraph.bst
+Name 1 in "Akenine-Moller, Tomas, and Haines, Eric, and Hoffman, Naty" has a comma at the end for entry RTR
+while executing---line 1341 of file acmsiggraph.bst
+Name 2 in "Akenine-Moller, Tomas, and Haines, Eric, and Hoffman, Naty" has a comma at the end for entry RTR
+while executing---line 1341 of file acmsiggraph.bst
 Warning--empty note in Fallout4
 Warning--empty note in Destiny
-(There were 2 warnings)
+(There were 5 error messages)

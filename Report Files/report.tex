@@ -88,14 +88,14 @@ Computer Graphics (SET08116)}
 \teaser{
    \centering
    \includegraphics[width=1.0\textwidth]{images/teaser}
-   \caption{Project screenshots. (a) Point lights with Vertex Displacement and Parent-Child Hierarchy, (b) Normal Mapping, (c) Transparency and Render Ordering, and (e) View Frustrum Culling and Wireframing.}
+   \caption{Project screenshots. (a) Point lights with Vertex Displacement and Parent-Child Hierarchy, (b) Normal Mapping, (c) Transparency and Render Ordering, and (e) View Frustum Culling and Wire-framing.}
    \label{fig:teaser}
  }	
 
 \maketitle
 
 \begin{abstract}
-This project aims to implement a 3D scene, rendered in real-time using OpenGL and C++. The project was intended to be aesthetically interesting, but more importantly intended to show an understanding of fundamental computer graphics principles. This report details the industry techniques used within the development of the outdoor mars scene.
+This project aims to implement a 3D scene, rendered in real-time using OpenGL and C++. The project was intended to be aesthetically interesting, but more importantly intended to show an understanding of fundamental computer graphics principles. This report details the industry techniques used within the development of the outdoor Mars scene.
 \end{abstract}
 
 \keywordlist
@@ -111,7 +111,7 @@ This project aims to implement a 3D scene, rendered in real-time using OpenGL an
 
 \paragraph{Project Aims}The main aims of this project were not to produce something photo-realistic but to show understanding of the key concepts of computer graphics. The setting of the scene is a form of landscape on Mars with the inclusion of some extra-terrestrial objects and strange effects. The initial ideas were that of a barren land filled with broken stone and large metallic structures, littered with weeds and with dust clouds. The main inspiration for this type of scene comes from the vast landscapes used within Destiny (see Figure 2).
 
-\paragraph{High Level of Detail} Using different texturing techniques, a high level of detail is hope to be achieved. For example normal mapping to give the impression of more shape and detail to an object. Along with blend mapping and alphamapping used on different objects in the scene.
+\paragraph{High Level of Detail} Using different texturing techniques, a high level of detail is hope to be achieved. For example normal mapping to give the impression of more shape and detail to an object. Along with blend mapping and alpha-mapping used on different objects in the scene.
 
 \figuremacroW
 {fallout}
@@ -119,7 +119,7 @@ This project aims to implement a 3D scene, rendered in real-time using OpenGL an
 {\protect\cite{Fallout4}}
 {1.0}
 
-Even with the improvements to GPU hardware in recent times, there is always a need for optimisation. In this scene optimisation techniques such as a scene graph for spacial partioning was used alongside view culling.
+Even with the improvements to GPU hardware in recent times, there is always a need for optimisation. In this scene optimisation techniques such as a scene graph for spacial partitioning was used alongside view culling.
 
 \section{Implementation}
 
@@ -147,7 +147,7 @@ This technique is not only useful for positioning the geometry into world space,
 Rendering and updating is done by traversing the n-tree that makes up the hierarchy. Firstly the root is rendered if visible. It then iterates through a list of it's children rendering each in turn. If a child of the root is invisible, it will not check to see whether the children are, and the whole branch will be culled. 
 
 \subsection{Lighting}
-Lighting in computer graphics is very important to get correct as it is the main basis of making a scene look realistic. Lighting calculations are performed on the GPU by programs called shaders. There are three programmble shaders within the graphics pipeline: the vertex, the geometry and the fragment shader.
+Lighting in computer graphics is very important to get correct as it is the main basis of making a scene look realistic. Lighting calculations are performed on the GPU by programs called shaders. There are three programmable shaders within the graphics pipeline: the vertex, the geometry and the fragment shader.
     There are two main methods for lighting a scene using OpenGL: Gouraud shading, and Phong shading.
 Gouraud shading is %% quote here! 
 calculations performed per geometry vertex. This means that an object in a scene is coloured by interpolating the colour value between each vertex, as opposed to the more expensive but better Phong shading. Where colour calculations are performed on the fragment shader on a per pixel basis. (See Figure 4)
@@ -181,17 +181,17 @@ Diffuse lighting is a little more complex as the intensity of the light is not c
 Specular lighting is dependent on the object's material. It is the bright highlight that is dependent on the direction of the eye, in this case the position of the camera. How reflective the material is depends on how bright and how large this highlight appears on the object. In computer graphics it is a very important element in creating a realistic lighting model, as it mimics the reflective properties of a surface. %% reorder
 For this calculation, the position of the eye (or camera) must also be taken into account. 
 
-\begin{equation}
+\begin{equation} \label{specularLightingEq}
     SC max(H N, 0)^m
 \end{equation}
 
 where:
 
-\begin{equation} 
+\begin{equation} \label{halfVector}
     V = \frac{eyePosition - worldPosition}{||eyePosition - worldPosition||}
 \end{equation}
 
-Where the eye Positon is the position of the camera, and the world position is the position of the vertex in world space, and H is the half vector, V plus the direction of the light normalised.
+Where the eye Position is the position of the camera, and the world position is the position of the vertex in world space, and H is the half vector, V plus the direction of the light normalised.
 
 Attenuation lighting is where the lighting is taken from a point source or a spot source, where the intensity is multiplied by a factor of its range. In the real world lighting model, light from a point source drops off exponentially, however attenuation values are set for artistic purposes, to give a more even fall off. 
 
@@ -204,6 +204,9 @@ Vertex Displacement Mapping or simply Displacement Mapping is a technique allowi
 
 \subsection{Normal Mapping}
 %% talk about difference between bump mapping and how normal mapping is better
+
+Normal mapping is a technique used to add a higher level of detail to the scene. It uses a normal map texture for lighting calculations
+
 \figuremacroW
 {normalMap}
 {Normal Mapping Example from Scene}
@@ -216,7 +219,7 @@ A skybox is a cube rendered from the inside out, with the depth buffer turned of
 
 \subsection{Transparency}
 
-To render a transparent object, OpenGL has a mechnaism called blending, which combines any colour already in the frame buffer with the colour of the primitive, and the resulting blended colour is stored back in the framebuffer \cite{openGLBlend}. This causes problems for rendering a scene in real-time as render order must be taken into account. This is because if the transparent object is rendered first, the texture behind the object is blended to it, which means that any object rendered after the glass will be occluded by the object.
+To render a transparent object, OpenGL has a mechanism called blending, which combines any colour already in the frame buffer with the colour of the primitive, and the resulting blended colour is stored back in the framebuffer \cite{openGLBlend}. This causes problems for rendering a scene in real-time as render order must be taken into account. This is because if the transparent object is rendered first, the texture behind the object is blended to it, which means that any object rendered after the glass will be occluded by the object.
 To solve this issue, an enumeration was used to check for object type when rendering. If the object rendered is a glass object it is rendered separately after the main render function.
 
 \section{Optimization}
@@ -230,19 +233,77 @@ Originally, with no optimisation techniques implemented, running the performance
 {The results on the left are after optimization, it shows the hot path render() to be roughly 20\% lower than the original results.}
 {1.0}
 
-The rendering function initially used 83.20\% of inclusive samples, meaning it was the most expensive function overall. After applying the optimisation techniques, the profiler returned 63.9\% for the main render function meaning the frustrum culling saved on average 20\% of the program's performance. This can also be noted when monitoring the frame-rate for the scene, with the frame-rate clipped, the frame-rate stays at a constant 60FPS. Features such as exploring the environment, and toggling wire-frames on and off make no impact on this frame-rate whatsoever. When running without a clip, the frame rate can be seen to improve when looking away from a complex part of the scene which shows that the view clipping is working, as there is less operations per frame and therefore an improved frame-rate. The slowest parts of the code apart from the render function are part of the geometry builder in the setup of the scene. There is a peak at the start of the program of CPU usage. Further analysis shows that the the hot paths here are both the function to generate the terrain, and the function generating the plane for the water mesh. In both cases, the functions are expensive due to the high number of polygons required to make the mesh look realistic. 
+The rendering function initially used 83.20\% of inclusive samples, meaning it was the most expensive function overall. After applying the optimisation techniques, the profiler returned 63.9\% for the main render function meaning the frustum culling saved on average 20\% of the program's performance. This can also be noted when monitoring the frame-rate for the scene, with the frame-rate clipped, the frame-rate stays at a constant 60FPS. Features such as exploring the environment, and toggling wire-frames on and off make no impact on this frame-rate whatsoever. When running without a clip, the frame rate can be seen to improve when looking away from a complex part of the scene which shows that the view clipping is working, as there is less operations per frame and therefore an improved frame-rate. The slowest parts of the code apart from the render function are part of the geometry builder in the set-up of the scene. There is a peak at the start of the program of CPU usage. Further analysis shows that the the hot paths here are both the function to generate the terrain, and the function generating the plane for the water mesh. In both cases, the functions are expensive due to the high number of polygons required to make the mesh look realistic. 
 
 
 \subsection{Geometry Shader}
-%%calculate bounding sphere %%show radius algorthim here
-The geometry shader is the second part of the graphics pipeline. Unlike the vertex or fragment shaders, the geometry shader is used to transform the actual geometry of an object. A primitive is passed through the shader. For example a point, and the geometry shader can add or remove vertices. In the scene, the geometry shader was used to draw the radius of the bounding spheres for each object in the hierarchy. Each mesh has a selection of positions on the vertex array buffer, to calculate the radius a function iterates through positions to find the largest point of the geometry, the length of this as a float is passed into the geometry shader along with the center point, and a line is drawn.
+The geometry shader is the second part of the graphics pipeline. Unlike the vertex or fragment shaders, the geometry shader is used to transform the actual geometry of an object. A primitive is passed through the shader, for example a point, and the geometry shader then can either add or remove vertices to change the overall shape of the mesh. In the scene, the geometry shader was used to draw the radius of the bounding spheres for each object in the hierarchy. Each mesh has a selection of positions on the vertex array buffer, to calculate the radius a function iterates through positions to find the largest point of the geometry, the length of this as a float is passed into the geometry shader along with the centre point, and a line is drawn.
 
-\subsection{View Frustrum Culling}
-View frustum culling is an important optimisation technique which means removing objects that are out of view. By calculating the frustrum planes of the camera, intersection tests can be performed to see if an object's bounding volume is within view. Any object that is classified as outside of the view frustrum is culled - not rendered. In the scene the intersection tests are performed using bounding spheres. The use of bounding spheres as volumes is limited due to the fact most objects within the scene are not spheres. However this is a reasonable enough approximation to use. Although it has drawbacks, it is also less expensive to compute, as it is only a centre point test for each plane. The plane equation is used to test which side the 
+For the particle effect the geometry shader is used in conjunction with transform feedback. A transform feedback is a technique used to capture geometry data before it is rendered. The primitives passed to the geometry shader are first transformed and saved to the transform feedback buffer. This buffer is then used in the second render pass, to output the particles to the screen. Within this project, the second render pass also utilises the geometry shader using a technique called billboarding.
 
+\figuremacroW
+{billboards}
+{Screen Capture of Smoke Effect}
+{This effect uses a transform feedback buffer and a billboarding technique to render the texture facing the user.}
+{1.0}
+
+Billboarding is a technique which allows a texture to be rendered always in the direction facing the user. This was used within the second render pass of the particles to render a smoke texture to each, seen in Figure \ref{fig:billboards}.
+
+
+\subsection{View Frustum Culling}
+View frustum culling is an important optimisation technique which essentially means to remove objects that are out of the view of the camera. By calculating the frustum planes of the camera, intersection tests can be performed to see if an object's bounding volume is visible. Any object that is classified as outside of the view frustum is culled - not rendered.
+
+A geometric approach was taken to extract the planes from the view frustum, this involved determining the eight points defining the corners of the near and far plane, and use these points to define all six planes. \cite{lighthouse} The cross product of these corners are then used to find the normal pointing inwards for each plane. Once the planes have been extracted, the plane equation can be used to determine whether the object is inside or outside of the plane. (See equation \ref{planeEq})
+
+\begin{equation} \label{planeEq}
+D = \hat{n}\cdot(x_0-x_i)
+\end{equation}
+
+Where $D$ is the signed distance from a point $x_0$ to a plane that contains the point $x_i$. $\hat{n}$ is the normalised plane normal. For the intersection test, this equation is repeated for each plane, if the distance is negative for any plane then the centre point lies outside the frustum. To account for objects that intersect with the plane, the test approximates the point to be within the frustum if the distance is less than the radius of the bounding sphere of the object, see Listing \ref{lst:intersection}.
+
+\begin{lstlisting}[ label ={lst:intersection}, caption={Intersection Test for View Frustum}]
+for (int i = 0; i < myScene->planeNormals->length(); ++i) 
+{
+	// for each plane check if 	intersection occurs
+	vec3 pointOnPlane;
+
+	if (i < 3)
+	{
+		pointOnPlane = myScene->planePoints[ftl];		// first three planes are far, top and left therefore corner is in all three
+	}
+	else
+	{
+		pointOnPlane = myScene->planePoints[nbr];
+	}
+
+	vec3 centre = vec3(getWorldPos());
+
+	float d;
+	d = dot(myScene->planeNormals[i], centre - pointOnPlane);
+
+	if (d < - getRadius())
+	{
+		//cout << "CULLING! " << this->myName << endl;
+		visible = false;
+		break;
+	}
+
+}
+\end{lstlisting}
+
+In the scene the intersection tests are performed using bounding spheres. The use of bounding spheres as volumes is limited due to the fact most objects within the scene are not spheres, for example the columns will have a very wide radius to account for the height, however they will still be classified as within the frustum if horizontal and within it's length, even though it is not visible. However this is a reasonable enough approximation to use as it is less expensive to compute and still noticeably optimizes the render function.
+
+\figuremacroW
+{approxFrustum}
+{Diagram of Approximation of View Frustum}
+{The figure shows a bounding sphere and a frustum. The diagram on the right shows the approximation used in the calculation. If a sphere intersects within the radius boundary of the frustum plane it will be classified as inside the plane. It can lead to incorrect classifications of objects outside the rounded corner, however it is reasonable enough for this case. \cite{RTR}}
+{1.0}
+
+
+\section{Results}
 
 \section{Conclusion}
-In conclusion, the first attempt at building up the basics of the mars scene was successful. It showed many core principles of computer graphics, in particular optimisation techniques with view frustrum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add further level of detail.
+In conclusion, the first attempt at building up the basics of the Mars scene was successful. It showed many core principles of computer graphics, in particular optimisation techniques with view frustum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add further level of detail.
 \bibliographystyle{acmsiggraph}
 \bibliography{report}
 
