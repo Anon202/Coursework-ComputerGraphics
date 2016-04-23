@@ -3,17 +3,16 @@
 \bibitem[\protect\citename{{Bethesda Game Studios} }2015]{Fallout4}
 {\sc {Bethesda Game Studios}}.
 \newblock 2015.
-\newblock Destiny.
+\newblock Fallout 4.
 
 \bibitem[\protect\citename{{Bungie} }2014]{Destiny}
 {\sc {Bungie}}.
 \newblock 2014.
 \newblock Destiny.
 
-\bibitem[\protect\citename{{Jerome Guinot} }2001]{openGLBlend}
-{\sc {Jerome Guinot}}.
-\newblock 2001.
-\newblock Vertex displacement mapping using glsl.
+\bibitem[\protect\citename{{OpenGL} }]{openGLBlend}
+{\sc {OpenGL}}.
+\newblock Transparency, translucency, and blending.
 \newblock {\em Accessed: March 2015\/}.
 \newblock
   \href{https://www.opengl.org/archives/resources/faq/technical/transparency.htm}{www.opengl.org}.

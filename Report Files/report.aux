@@ -34,6 +34,7 @@
 \newlabel{fig:fallout}{{3}{1}{Normal Mapping example - Fallout 4}{figure.caption.5}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Implementation}{1}{section.2}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Parent-Child Hierarchy}{1}{subsection.2.1}}
+\newlabel{lst:hierarchy}{{1}{1}{Parent-child Hierarchy Update Method}{lstlisting.1}{}}
 \@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Parent-child Hierarchy Update Method}{1}{lstlisting.1}}
 \@LN@col{1}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Lighting}{2}{subsection.2.2}}
@@ -43,26 +44,40 @@
 \newlabel{ambientLightingEq}{{1}{2}{Lighting}{equation.2.1}{}}
 \newlabel{diffuseLightingEq}{{2}{2}{Lighting}{equation.2.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Texturing}{2}{subsection.2.3}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Vertex Displacement}{2}{subsubsection.2.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Terrain Generation}{2}{subsection.2.4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Vertex Displacement}{2}{subsubsection.2.4.1}}
 \citation{openGLBlend}
-\bibstyle{acmsiggraph}
-\bibdata{report}
 \@LN@col{1}
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Normal Mapping Example from Scene}}{3}{figure.caption.7}}
 \newlabel{fig:normalMap}{{5}{3}{Normal Mapping Example from Scene}{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Normal Mapping}{3}{subsection.2.4}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Skybox}{3}{subsubsection.2.4.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Transparency}{3}{subsection.2.5}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Optimization}{3}{section.3}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.0.1}Profiling}{3}{subsubsection.3.0.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Normal Mapping}{3}{subsubsection.2.4.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Skybox}{3}{subsubsection.2.4.3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.4}Transparency}{3}{subsubsection.2.4.4}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Post-Processing}{3}{section.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Greyscale}{3}{subsection.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Vignette}{3}{subsection.3.2}}
 \@LN@col{2}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Comparison of Profiling Results}}{3}{figure.caption.8}}
-\newlabel{fig:compare}{{6}{3}{Comparison of Profiling Results}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Geometry Shader}{3}{subsection.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}View Frustrum Culling}{3}{subsection.3.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{3}{section.4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces A screen capture of the scene rendering in greyscale}}{3}{figure.caption.8}}
+\newlabel{fig:greyscale}{{6}{3}{A screen capture of the scene rendering in greyscale}{figure.caption.8}{}}
+\newlabel{lst:vignette}{{2}{3}{Fragment Shader Code Snippet for Vignette Calculation}{lstlisting.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}Fragment Shader Code Snippet for Vignette Calculation}{3}{lstlisting.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Shadows}{3}{subsection.3.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Blur}{3}{subsection.3.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Bloom}{3}{subsection.3.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Advanced Rendering Techniques}{3}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Graphical User Interface}{3}{subsection.4.1}}
+\bibstyle{acmsiggraph}
+\bibdata{report}
 \bibcite{Fallout4}{\citename {{Bethesda Game Studios} }2015}
 \bibcite{Destiny}{\citename {{Bungie} }2014}
-\bibcite{openGLBlend}{\citename {{Jerome Guinot} }2001}
+\bibcite{openGLBlend}{\citename {{OpenGL} }}
 \@LN@col{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Particles}{4}{subsection.4.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Optimization}{4}{subsection.4.3}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Profiling}{4}{subsubsection.4.3.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Comparison of Profiling Results}}{4}{figure.caption.9}}
+\newlabel{fig:compare}{{7}{4}{Comparison of Profiling Results}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}Geometry Shader For Debugging}{4}{subsubsection.4.3.2}}
 \@LN@col{2}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}View Frustrum Culling}{4}{subsubsection.4.3.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{4}{section.5}}
