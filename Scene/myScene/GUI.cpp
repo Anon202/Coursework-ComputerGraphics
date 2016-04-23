@@ -5,7 +5,7 @@ static bool showMenu;
 static int keystate;
 
 
-static void ShowStats(bool opened) {
+static void showFrames(bool opened) {
 	ImGui::SetNextWindowPos(ImVec2(10, 10));
 	if (!ImGui::Begin("Overlay", &opened, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoMove |
@@ -14,14 +14,14 @@ static void ShowStats(bool opened) {
 		return;
 	}
 
-	ImGui::Text("Please work!!!!!!!");
+	ImGui::Text("Zoe Wall Computer Graphics - 40182161");
 	ImGui::Separator();
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
 		ImGui::GetIO().Framerate);
 	ImGui::End();
 }
 
-static void Menu() {
+static void menu() {
 
 	extern SceneManager* myScene;
 
@@ -51,14 +51,23 @@ static void Menu() {
 
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		static int radB = 0;
-		ImGui::RadioButton("Free Camera", &radB, 0); ImGui::SameLine();
-		ImGui::RadioButton("Camera 1", &radB, 1); ImGui::SameLine();
-		ImGui::RadioButton("Camera 2", &radB, 2);
-		
-		if (radB == 2)
+		if (ImGui::Button("Free Camera"))
 		{
 			myScene->cam = myScene->cameraList[2];
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Point Light Camera"))
+		{
+			myScene->cam = myScene->cameraList[1];
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Platform Camera"))
+		{
+			myScene->cam = myScene->cameraList[0];
 		}
 	}
 
@@ -94,8 +103,8 @@ void updateGUI() {
 	ImGuiIO &io = ImGui::GetIO();
 	ImGui_ImplGlfwGL3_NewFrame();
 
-	ShowStats(true);
-	Menu();
+	showFrames(true);
+	menu();
 }
 
 void initialiseGUI(GLFWwindow* inwindow) {

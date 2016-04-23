@@ -136,7 +136,8 @@ void Obj::setScaleFactor(float sf)
 
 void Obj::move(vec3 moveBy)
 {
-	m->get_transform().translate(moveBy);
+	translationAdjustment += moveBy;
+	translateMatrix = translate(mat4(1.0f), translationAdjustment + initialTranslation);
 }
 
 void Obj::update(Obj* parent, float delta_time)
@@ -157,7 +158,7 @@ void Obj::update(Obj* parent, float delta_time)
 
 		mworld = trans * rotation * mworld;
 	}
-	else if (myType == movingObject|| myType == pointLightObj) // if theta is not zero, update the rotation + normal matrix
+	else if (myType == movingObject || myType == pointLightObj) // if theta is not zero, update the rotation + normal matrix
 	{
 		if (theta != 0.0)
 		{
@@ -195,14 +196,15 @@ void Obj::update(Obj* parent, float delta_time)
 			scaleMatrix = scale(mat4(1.0f), scaleAdjustment);
 		}
 
-		// finally update local model matrix
-		if (myType == spot)
-		{
-			translateMatrix * m->get_transform().get_transform_matrix();
-		}
-
 		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
 
+
+	}
+
+	// check for moving light
+	if (myType == spotty)
+	{
+		mlocal = translateMatrix * rotationMatrix * scaleMatrix;
 	}
 
 	// if there is a parent.
@@ -406,16 +408,8 @@ void Obj::renderGlass()
 	float transparencyValue = 0.3f;
 	glUniform1f(eff->get_uniform_location("alphaVal"), transparencyValue); // glass object so true
 
-
-	//renderer::bind(myScene->getFrame().get_frame(), 10);
-	//glUniform1i(eff->get_uniform_location("ssao"), 10); 
-
-
 	// render mesh
 	renderer::render(*m);
-
-	//glDisable(GL_BLEND);									 // enable blend for transparency
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 
@@ -448,10 +442,6 @@ void Obj::render()
 		{
 			glDisable(GL_DEPTH_TEST);
 			glDepthMask(GL_FALSE);
-		}
-		else
-		{
-
 		}
 
 		// Bind the effect
@@ -524,22 +514,20 @@ void Obj::render()
 			}
 		}
 		
-		if (myType == forShade)
-		{
-			renderer::bind(myScene->shadow.buffer->get_depth(), 6);
-			glUniform1i(eff->get_uniform_location("shadow_map"), 6);
+		renderer::bind(myScene->shadow.buffer->get_depth(), 6);
+		glUniform1i(eff->get_uniform_location("shadow_map"), 6);
 
-			auto lV = myScene->shadow.get_view();
+		auto lV = myScene->shadow.get_view();
 
-			auto lMVP = P * lV * mworld;
+		auto lMVP = P * lV * mworld;
 
 
-			glUniformMatrix4fv(
-				eff->get_uniform_location("lightMVP"),
-				1,
-				GL_FALSE,
-				value_ptr(lMVP));
-		}
+		glUniformMatrix4fv(
+			eff->get_uniform_location("lightMVP"),
+			1,
+			GL_FALSE,
+			value_ptr(lMVP));
+	
 
 
 		renderer::bind(points, "point");

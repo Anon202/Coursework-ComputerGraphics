@@ -21,7 +21,7 @@ class GenerateBack;
 class Obj;				// forward declaration of object
 
 
-enum objType { sky, terrn, waterObj, object, pointLightObj, forShade, spotty, glassOb, movingObject }; //  enum
+enum objType { sky, terrn, waterObj, object, pointLightObj, spotty, glassOb, movingObject }; //  enum
 enum planeNum { farN, topN, leftN, nearN, bottN, rightN };
 enum planePointNames {ftl, ftr, fbl, fbr, ntl, ntr, nbl, nbr };
 enum lightTypes { direction, yellP, blueP, pinkP, spot };

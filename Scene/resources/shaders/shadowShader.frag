@@ -100,52 +100,41 @@ vec4 ambient = mat.diffuse_reflection * light.ambient_intensity;
 	
 	vec4 specular = mat.specular_reflection * light.light_colour * pow(kSpec, mat.shininess);
 
-	// **************
-	// Sample texture
-	// **************
-	
-
-	
-
-	// **********************************
-	// Calculate primary colour component
-	// **********************************
-
-	
-
-
-
     // **********************
     // Calculate shade factor
     // **********************
     float shade = calculate_shadow(shadow_map, light_space_pos);
-    // ************************
-    // Calculate view direction
-    // ************************
-    //vec3 view_dir = normalize(eye_pos - position);
+
     // **************
     // Sample texture
     // **************
     vec4 tex_colour = texture(tex, tex_coord);
-    // ********************
-    // Calculate spot light
-    // ********************
 
-	vec4 primary = mat.emissive + ambient + diffuse;
 
 	// **********************
 	// Calculate final colour
 	// - remember alpha 1.0
 	// **********************
 
+	// without ambient for shade 
+	vec4 primary = mat.emissive + diffuse;
+
+
+
 	colour = primary*tex_colour + specular;
 	
+	// ********************
+    // Calculate spot light
+    // ********************
+
     colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 
-	//colour = vec4(1.0, 0.0, 0.0, 1.0);
+
 	// *********************
 	// Scale colour by shade
 	// *********************
+
 	colour *= shade;
+	colour += ambient*tex_colour;
 	colour.a = 1.0;
 }

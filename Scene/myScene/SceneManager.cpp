@@ -637,11 +637,6 @@ void SceneManager::updateScene(float delta_time)
 	// get shadow update
 	updateShadows();
 
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_B))    // need to get an enum for camera tyoe
-		bloom = true;
-	if (glfwGetKey(renderer::get_window(), GLFW_KEY_G))    // need to get an enum for camera tyoe
-		bloom = false;
-
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_1))    // need to get an enum for camera tyoe
 		cam = cameraList[0];
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_2))
@@ -722,18 +717,18 @@ void SceneManager::updateScene(float delta_time)
 
 	// MOVE SPOTLIGHT
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP))
-		lightObjects[spot - 1]->move(vec3(0.0f, 0.1f, 0.0f));
+		lightObjects[spot - 1]->move(vec3(0.0f, 0.1f, 0.0f)*delta_time*20.0f);
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN))
-		lightObjects[spot - 1]->move(vec3(0.0f, -0.1f, 0.0f));
+		lightObjects[spot - 1]->move(vec3(0.0f, -0.1f, 0.0f)*delta_time*20.0f);
 
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT))
-		lightObjects[spot - 1]->move(vec3(0.0f, 0.0f, 0.1f));
+		lightObjects[spot - 1]->move(vec3(0.0f, 0.0f, 0.1f)*delta_time*20.0f);
 	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT))
-		lightObjects[spot - 1]->move(vec3(-0.0f, 0.0f, -0.1f));
+		lightObjects[spot - 1]->move(vec3(-0.0f, 0.0f, -0.1f)*delta_time*20.0f);
 
 
 	static int keystate;
-	int newkeystate = glfwGetKey(renderer::get_window(), 'N');
+	int newkeystate = glfwGetKey(renderer::get_window(), 'G');
 
 	if (newkeystate && newkeystate != keystate)
 	{

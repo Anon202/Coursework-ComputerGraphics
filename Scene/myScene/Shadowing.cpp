@@ -37,8 +37,8 @@ void renderShadows()
 	// Create MVP matrix
 	for (auto &o : myScene->list)
 	{
-
-		if (o->myType != sky && o->myType != terrn && o->getName() != "spotlight")
+		// o->myType != terrnv
+		if (o->myType != sky && o->getName() != "spotlight")
 		{
 			// View matrix taken from shadow map
 			auto V = myScene->shadow.get_view();

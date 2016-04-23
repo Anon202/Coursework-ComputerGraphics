@@ -298,8 +298,8 @@ bool load_content()
 	sphereG->setTranslationParams(vec3(0.0f, 0.75f, -0.75f), vec3(0.0f, 1.5f, 1.5f));
 
 	// create objects for the "temple" - platform is the root of this
-	Obj *platLower = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadowEff, forShade);
-	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadowEff, forShade);
+	Obj *platLower = new Obj(vec3(-6.0f, 2.8f, 6.0f), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadowEff, object);
+	Obj *platformUpper = new Obj(vec3(0.0f, 0.2f, 0.0f), vec3(0.0f), 0.0f, vec3(0.9f), &myScene->meshes["platform"], &myScene->materials["platform"], platText, shadowEff, object);
 
 	// pillars underneath platform 
 	Obj *pillar = new Obj(vec3(3.0f, -1.5f, -3.5f), vec3(0.0f), 0.0f, vec3(0.5f, 1.0f, 0.5f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], pillarText, norm_eff, object);
@@ -309,25 +309,25 @@ bool load_content()
 
 	// Ontop of the platform are two walls, more pillars, point light and piece of glass
 	Obj *platBox = new Obj(vec3(3.5, 1.0, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platBox"], &myScene->materials["platBox"], platText, blending, object);
-	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadowEff, forShade);
+	Obj *platWall = new Obj(vec3(-3.0, 1.5, 0.0), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["platWall"], &myScene->materials["platWall"], platText, shadowEff, object);
 	Obj *glassPane = new Obj(vec3(-1.0, 1.0, 1.0), vec3(0.0f, 0.0f, 0.0f), 0.0, vec3(1.0f, 1.0f, 1.0f), &myScene->meshes["glass"], &myScene->materials["glass"], glassText, phongEff, glassOb);
 	
 	// loaded model
-	Obj *stoneModel = new Obj(vec3(-3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["model"], stoneModText, shadowEff, forShade);
+	Obj *stoneModel = new Obj(vec3(-3.0, 0.0, 3.0), vec3(0.0f), 0.0f, vec3(0.05f), &myScene->meshes["model"], &myScene->materials["model"], stoneModText, shadowEff, object);
 
 	// bar geom ontop of pillars
-	Obj *bar = new Obj(vec3(0.0, 2.5, 3.5), vec3(0.0), 0.0f, vec3(1.0, 0.5, 0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, shadowEff, forShade);
+	Obj *bar = new Obj(vec3(0.0, 2.5, 3.5), vec3(0.0), 0.0f, vec3(1.0, 0.5, 0.5), &myScene->meshes["bar"], &myScene->materials["platform"], platText, shadowEff, object);
 	
-	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
-	Obj *pillarPlat2 = new Obj(vec3(-1.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
-	Obj *pillarPlat3 = new Obj(vec3(-0.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
-	Obj *pillarPlat4 = new Obj(vec3(0.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
-	Obj *pillarPlat5 = new Obj(vec3(1.5f, -2.75f, -5.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
-	Obj *pillarPlat6 = new Obj(vec3(2.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, forShade);
+	Obj *pillarPlat = new Obj(vec3(-2.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat2 = new Obj(vec3(-1.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat3 = new Obj(vec3(-0.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat4 = new Obj(vec3(0.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat5 = new Obj(vec3(1.5f, -2.75f, -5.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
+	Obj *pillarPlat6 = new Obj(vec3(2.5f, -2.75f, 0.0f), vec3(0.0f), 0.0f, vec3(0.5f, 1.5f, 1.0f), &myScene->meshes["cylinder"], &myScene->materials["cylinder"], platText, shadowEff, object);
 
 
-	//pillarPlat->setTranslationParams(vec3(1.0, 0.0, 0.0), vec3(10.0, 0.0, 0.0));
-	Obj *spotlight = new Obj(vec3(-0.35, 0.0, 0.5), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spotlight"], &myScene->materials["spotlight"], woodenTextures, phongEff, spotty);
+	//pillarPlat->setTranslationParams(vec3(1.0, 0.0, 0.0), vec3(10.0, 0.0, 0.0));  (-0.20, 0.0, 0.5)
+	Obj *spotlight = new Obj(vec3(-0.20, 0.0, 0.5), vec3(0.0f, 0.0f, 0.0f), 0.0f, vec3(1.0, 1.0, 1.0), &myScene->meshes["spotlight"], &myScene->materials["spotlight"], woodenTextures, phongEff, spotty);
 	// point light rotating hierarchy.
 	Obj *pointLightParent = new Obj(vec3(5, 1, -8), vec3(0.0f, 1.0f, 0.0f), pi<float>(), vec3(0.1f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightYellow"], displacementTextures, displacement, pointLightObj);
 	Obj *pointLightChildBall = new Obj(vec3(5.0f, 0.0, 0.0), vec3(1.0f, 0.0f, 0.0f), 2 * pi<float>(), vec3(1.0f), &myScene->meshes["pointLightParent"], &myScene->materials["pointLightBlue"], displacementTextures, displacement, pointLightObj);
@@ -488,8 +488,6 @@ bool load_content()
 
     return true;
 }
-
-// read for bloom fix http://kalogirou.net/2006/05/20/how-to-do-good-bloom-for-hdr-rendering/
 
 bool update(float delta_time)
 {

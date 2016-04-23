@@ -133,11 +133,6 @@ vec4 calculate_spot(in spot_light spot, in material mat, in vec3 position, in ve
 	return colour;
 }
 
-vec2 screenCoord()
-{
-	return vec2(gl_FragCoord)/vec2(800,600);
-}
-
 void main()
 {
 	// ***************************
@@ -209,7 +204,6 @@ void main()
 	
 	colour += calculate_spot(spot, mat, position, normal, view_dir, tex_colour);
 
-	//colour = texture(ssao, vertPos.xy*0.5f + 0.5f);
 	colour.a = alphaVal;
 }
 
