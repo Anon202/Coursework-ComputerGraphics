@@ -111,7 +111,7 @@ Computer Graphics (SET08116)}
 	
 \paragraph{Project Aims}The main aims of this project were not to produce something photo-realistic but to show understanding of the key concepts of computer graphics. The setting of the scene is a form of landscape on Mars with the inclusion of some extra-terrestrial objects and strange effects. The initial ideas were that of a barren land filled with broken stone and large metallic structures, littered with weeds and with dust clouds. The main inspiration for this type of scene comes from the vast landscapes used within Destiny (see Figure \ref{fig:DestinyMars1}).
 	
-\paragraph{High Level of Detail} Using different texturing techniques, a high level of detail is hope to be achieved. For example normal mapping to give the impression of more shape and detail to an object. Along with blend mapping and alpha mapping used on different objects in the scene.
+\paragraph{High Level of Detail} Using different texturing techniques, a high level of detail is hoped to be achieved. For example normal mapping to give the impression of more shape and detail to an object. Along with blend mapping and alpha mapping used on different objects in the scene.
 	
 \figuremacroW
 {fallout}
@@ -148,10 +148,9 @@ This technique is not only useful for positioning the geometry into world space,
 Rendering and updating is done by traversing the n-tree that makes up the hierarchy. Firstly the root is rendered if visible. It then iterates through a list of it's children rendering each in turn. If a child of the root is invisible, it will not check to see whether the children are, and the whole branch will be culled. 
 	
 \subsection{Lighting}
-Lighting in computer graphics is very important to get correct as it is the main basis of making a scene look realistic. Lighting calculations are performed on the GPU by programs called shaders. There are three programmble shaders within the graphics pipeline: the vertex, the geometry and the fragment shader.
+Lighting in computer graphics is very important to get correct as it is the main basis of making a scene look realistic. Lighting calculations are performed on the GPU by programs called shaders. There are three programmable shaders within the graphics pipeline: the vertex, the geometry and the fragment shader.
 There are two main methods for lighting a scene using OpenGL: Gouraud shading, and Phong shading.
-Gouraud shading is %% quote here! 
-calculations performed per geometry vertex. This means that an object in a scene is coloured by interpolating the colour value between each vertex, as opposed to the more expensive but better Phong shading. Where colour calculations are performed on the fragment shader on a per pixel basis. (See Figure \ref{fig:gouraudPhong})
+The Gouraud shading model's calculations are performed per geometry vertex. This means that an object in a scene is coloured by interpolating the colour value between each vertex, as opposed to the more expensive but better Phong shading. Where colour calculations are performed on the fragment shader on a per pixel basis. (See Figure \ref{fig:gouraudPhong})
 	
 \figuremacroW
 {gouraudPhong}
@@ -173,7 +172,7 @@ The equation for ambient lighting is as follows:
 \end{equation}
 where $D$ is the diffuse reflection of the material and $A$ is the ambient intensity of the scene. The diffuse reflection is the coloured reflection component of the material.
 	
-Diffuse lighting is a little more complex as the intensity of the light is not constant. It relies on the direction of the light source to the normal of the geometry. In simple Gouraud shading, the transformed normal of each vertex is calculated, and the angle between that and the light direction is calculated using the scalar product. If the vertex is facing the light source, the intensity of the light will be 100\% and however, 90 degrees away from the light, the intensity drops to zero.
+Diffuse lighting is a little more complex as the intensity of the light is not constant. It relies on the direction of the light source to the normal of the geometry. In simple Gouraud shading, the transformed normal of each vertex is calculated, and the angle between that and the light direction is calculated using the scalar product. If the vertex is facing the light source, the intensity of the light will be 100\%, whereas 90 degrees away from the light, the intensity drops to zero.
 	
 \begin{equation} \label{diffuseLightingEq}
 	DA max(L N, 0)
@@ -182,7 +181,7 @@ Diffuse lighting is a little more complex as the intensity of the light is not c
 Specular lighting is dependent on the object's material. It is the bright highlight that is dependent on the direction of the eye, in this case the position of the camera. How reflective the material is depends on how bright and how large this highlight appears on the object. In computer graphics it is a very important element in creating a realistic lighting model, as it mimics the reflective properties of a surface. %% reorder
 For this calculation, the position of the eye (or camera) must also be taken into account. 
 	
-\begin{equation}
+\begin{equation} \label{spec}
 	SC max(H N, 0)^m
 \end{equation}
 	
@@ -192,7 +191,7 @@ where:
 	V = \frac{eyePosition - worldPosition}{||eyePosition - worldPosition||}
 \end{equation}
 	
-Where the eye Positon is the position of the camera, and the world position is the position of the vertex in world space, and H is the half vector, V plus the direction of the light normalised.
+V is the view direction, where the eye position is the position of the camera, and the world position is the position of the vertex in world space. H from equation \ref{spec} is the half vector, which equates to the view direction plus the direction of the light normalised.
 
 Attenuation lighting is where the lighting is taken from a point source or a spot source, where the intensity is multiplied by a factor of its range. In the real world lighting model, light from a point source drops off exponentially, however attenuation values are set for artistic purposes, to give a more even fall off. 
 	
@@ -390,58 +389,22 @@ In the scene the intersection tests are performed using bounding spheres. The us
 
 \section{Results}
 
-The main aim of the project was to implement a real-time rendered scene using the OpenGL API, whilst developing an understanding of key concepts of computer graphics programming. The aim for the scene's setting was Mars, to give this impression the lighting and textures used within the scene were all very dim and orange looking. The generated terrain was rocky and bumpy to match this barren landscape. Overall the scene is visually interesting, and depicts a stylised impression of a Martian planet. To improve the overall aesthetics of the scene, models could have been used to create the geometry, but this was out of the scope of the assignment. However as stated, the more important goal for this project was to include many advanced concepts to display a good understanding of the subject.
+The main aim of the project was to implement a real-time rendered scene using the OpenGL API, whilst developing an understanding of key concepts of computer graphics programming. The aim for the scene's setting was Mars, to give this impression the lighting and textures used within the scene were all very dim and orange looking. The generated terrain was rocky and bumpy to match this barren landscape. Overall the scene is visually interesting, and depicts a stylised impression of a Martian planet. To improve the overall aesthetics of the scene, models could have been used to create the geometry, but this was out of the scope of the assignment. However as stated, the more important goal for this project was to include many advanced concepts to display a good understanding of the subject, which was achieved to a high standard. 
 
 Normal mapping was used to give a higher level of detail to the scene, this is shown within the pillars, given the impression that they are made of stone. Ideally, to add more detail this effect can be added to every texture that is used within the scene.
 
-Another way of adding a high level of detail to the scene would be the inclusion of Screen Space Ambient Occlusion, to give a more realistic lighting effect taking into account that the geometry in the scene are self-occluding. This would have been a good post-processing effect to use, however due to the limited geometry shapes used in the scene, when attempting to implement this effect it wasn't very clear that anything was happening. By using complex models within the scene to make shapes look more realistic, this effect could be included.
+Another way of adding a high level of detail to the scene would be the inclusion of Screen Space Ambient Occlusion, to give a more realistic lighting effect taking into account that the geometry in the scene is self-occluding. This would have been a good post-processing effect to use, however due to the limited geometry shapes used in the scene, when attempting to implement this effect it wasn't very clear that anything was happening. By using complex models within the scene to make shapes look more realistic, this effect could be included.
 
 To make the lighting more realistic shadows were implemented from the perspective of the spot light on the platform. Implementation of shadows for every lighting source both directional light and point lights would improve the overall lighting model of the scene.
 
 As for optimization techniques, a reasonable approximation of spheres as bounding volumes was used. However, this can lead to some inaccuracies when frustum culling. To improve this, axis-aligned bounding boxes could be used for the geometry of the scene which would make it more accurate.
 
-An alternative method for rendering the bloom post-processing technique would be to use deferred rendering. Deferred rendering consists of splitting the render function into smaller sections, for example first rendering all the geometry of the scene, then rendering the lighting model separately. Bloom could be implemented in this way, using a technique to create a higher dynamic range before the lighting is 
+Within the scene, the bloom is good however could be improved to give a more accurate colour representation. An alternative method for rendering the bloom post-processing technique would be to use deferred rendering. Deferred rendering consists of splitting the render function into smaller sections, for example first rendering all the geometry of the scene, then rendering the lighting model separately. Bloom could be implemented in this way, using a technique to create a higher dynamic range this would involve outputting a vertex buffer object with two colour buffers, one for the normal colour and one for the HDR colour, the scene's lighting would then be rendered using this.
 
-HIGHER LEVEL OF DETAIL - Transparency
-
---implemented a real time scene - good frame rate is use able
-
-initial design produce a landscape on mars which implemented in real time 
-
-red colouration using lighting model
-vertex displacement for strange objects
-moving water
-particle effects
-
-screen space ambient occulusion
-
-goal was to implement relevant techniques 
-
-purposely chose to appropriate to display the technqiues to use
-before neatness making it look pretty
-
-so future work to 
-
-realistic water effect
-realistic smoke
-
-more realistic shadows
-
-improve level of detail with normal mapping for every surface
-
-
-Render transparent of object 
-
-terrain smoothing + billboarding grass effects.
-
-
-
-
+The semi-transparent objects within the scene were rendered correctly, however it would have been good to include a better lighting model for this by taking into account the refraction and reflection of the light.
 	
 \section{Conclusion}
-In conclusion, a sucessfull real-time rendered scene 
-
-It showed many core principles of computer graphics, in particular optimisation techniques with view frustum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add a further level of detail.
+In conclusion, the project was a success. The scene was implemented in real-time with usable frame-rates, without any slow-down. It showed many core principles of computer graphics, in particular optimisation techniques with view frustum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add a further level of detail.
 \bibliographystyle{acmsiggraph}
 \bibliography{report}
 	
