@@ -197,17 +197,19 @@ Where the eye Positon is the position of the camera, and the world position is t
 Attenuation lighting is where the lighting is taken from a point source or a spot source, where the intensity is multiplied by a factor of its range. In the real world lighting model, light from a point source drops off exponentially, however attenuation values are set for artistic purposes, to give a more even fall off. 
 	
 \subsection{Texturing}
-	
-\subsection{Terrain Generation}
-	
+
 \subsubsection{Vertex Displacement}
 	
 %% jereome
 %%Textures used for vertex displacement 
-Vertex Displacement Mapping or simply Displacement Mapping is a technique allowing to deform a polygonal mesh using a texture (displacement map) in order to add surface detail. The scene includes a procedurally generated terrain from a height map %% change this
+"Vertex Displacement Mapping or simply Displacement Mapping is a technique allowing to deform a polygonal mesh using a texture (displacement map) in order to add surface detail." \cite{Guinot} The scene includes several different methods of vertex displacement including; a procedurally generated terrain from a height map; vertex displacement from a sine wave and scrolling texture for the water effect; and vertex displacement from a displacement map used for the point light's animation.
+
+To generate the terrain for the scene, a height map was used to displace the vertices of the mesh along the y-axis. For extra optimisation the terrain was split into four sections, and the geometry within each quadrant was added to the corresponding section's hierarchy, this is a type of spatial partitioning similar to a quad-tree. The textures were applied using weighting calculations in the y-axis to give the impression of separate parts of the terrain, for example the lowest weight a pebble texture was used for underneath the water.
+
 	
 \subsubsection{Normal Mapping}
-%% talk about difference between bump mapping and how normal mapping is better
+Normal mapping within the scene is used to give the impression of a greater level of detail to a piece of geometry without the need to render and displace more vertices. The pillars used for the example are uniform cylinders, but using a normal map texture, the lighting calculations can be altered to give the impression of bumps within the shapes.  
+
 \figuremacroW
 {normalMap}
 {Normal Mapping Example from Scene}
@@ -215,12 +217,11 @@ Vertex Displacement Mapping or simply Displacement Mapping is a technique allowi
 {1.0}
 	
 \subsubsection{Skybox}
-A skybox is essentially a set of textures called a cubemap. These are seamless textures that fit together like a layout of a cube
-A skybox is a cube rendered from the inside out, with the depth buffer turned off. It also needs to be transformed with the camera, so it gives the effect that it is infinitely large and far away.
+A skybox is essentially a set of textures called a cube map. These are seamless textures that are laid out in a cube net, which when mapped to the geometry the edges of the cube are not visible. The geometry for the skybox is a cube shape but rendered from the inside out as the renderer culls the inside faces of the shape for optimization. It is scaled and the depth buffer is turned off, by transforming along with the camera's movements this gives the impression that it is infinitely large and far away.
 	
 \subsubsection{Transparency}
 	
-To render a transparent object, OpenGL has a mechnaism called blending, which combines any colour already in the frame buffer with the colour of the primitive, and the resulting blended colour is stored back in the framebuffer \cite{openGLBlend}. This causes problems for rendering a scene in real-time as render order must be taken into account. This is because if the transparent object is rendered first, the texture behind the object is blended to it, which means that any object rendered after the glass will be occluded by the object.
+To render a transparent object, OpenGL has a mechanism called blending, which combines any colour already in the frame buffer with the colour of the primitive, and the resulting blended colour is stored back in the frame buffer \cite{openGLBlend}. This causes problems for rendering a scene in real-time as render order must be taken into account. This is because if the transparent object is rendered first, the texture behind the object is blended to it, which means that any object rendered after the glass will be occluded by the object.
 To solve this issue, an enumeration was used to check for object type when rendering. If the object rendered is a glass object it is rendered separately after the main render function.
 	
 \section{Post-Processing}
@@ -261,23 +262,53 @@ void main()
 }
 \end{lstlisting}
 	
-To calculate the position vector, %gl_FragCoord was used, a built in
+To calculate the position vector, gl\_FragCoord was used, a built in feature of the pipeline which returns the (x,y) coordinates of the current pixel. This is then divided by the screen's resolution to return a value between 0.0 and 1.0. As gl\_FragCoord uses a lower left origin, to find the centre position (0.5, 0.5) must be subtracted from this total vector.
 
 The length is inverted due to the RGB colour model being additive, meaning that a value of zero for each component will result in black, the shortest lengths are the coordinates closer to the centre of the screen, however multiplying a smaller number to the sampled colour would have produced the opposite effect.
 	
 \subsection{Shadows}
+
+Shadowing is an important technique to add in any scene to make the lighting model look more realistic. To create a shadow effect, the first render pass of the scene uses the light source's direction and position to render a shadow-map from the point of view of the light that is casting the shadows. A shadow-map is a texture that is taken from the depth buffer of the first render pass see Figure \ref{fig:shadowMap}. It is then used in the second render pass to determine what fragments are in shade. The calculation requires the texture coordinates to be transformed by the light's screen space coordinates. The depth texture is then sampled using these.
+
+\figuremacroW
+{shadowMap}
+{Shadow Map Example from Scene}
+{Here the brightness has been reduced to see more clearly. The shadow map captured from the first render pass, shows the depth of any objects within the field of view of the light source. The darker an object is the closer it is to the light source.}
+{1.0}
+
+The resulting x element of the sample is used to determine the shade factor. If the sample is larger than the z component of the projected coordinates in the light's screen space, then the shade factor is set to 0.5. Otherwise the factor remains 1, leaving any fragment not in shade unaltered by the calculation. The final output colour from the fragment shader is the diffuse and specular lighting values scaled by the calculated shade factor. The ambient component of the colour is not scaled as it is supposed to represent a constant overall illumination.
+
+An issue faced when rendering shadows was that of the directional and point lights within the scene. To render shadows, the depth buffer must be captured from the point of view of the light source, however the main directional light is a representation of a sun, where the distance from the light to the scene is infinitely large and therefore the light is approximated to be that it has a constant direction but no position. As for the point light, it emits light in every direction, so the shadow map would have to be in the form of a cube map, to account for the shadows cast in every direction. The scene would have had to be rendered in all 6 different directions and a cube map be rendered. For future work, the shadows could be extended to be more realistic by taking into account these multiple light sources and the different way of rendering them.
 	
 \subsection{Blur}
+
+A Gaussian blur was implemented within the scene applied in two passes - horizontally and vertically. In the first render pass all of the objects are rendered into a texture, then in the next pass the surrounding horizontal fragments are sampled and combined using pre-defined Gaussian weights. \cite{blurExample} Finally a third render pass is made using the same blur shader, but sampling the surrounding vertical fragments which is rendered to the screen. This has the exact same result as blurring in one render pass but reduces the number of calculations required. Blurring is useful as it can be used in conjunction with other post-processing effects such as Bloom.
+
+\figuremacroW
+{bloom_gaussian_two_pass}
+{A diagram to show the two-step Gaussian blur sample technique}
+{The blur is applied using two render passes to reduce the number of samples needed from a texture. On the left a normal Gaussian blur is shown, but requires a larger number of samples. By blurring in two steps, the exact same effect can be achieved only using 9 samples for each pass. \cite{blurDiagram}}
+{1.0}
 	
 \subsection{Bloom}
+
+Bloom is a technique used for giving the viewer visual cues for the brightness and intensity of a light. Bright lights are usually hard to depict on a screen due to the limited range of intensities of monitors. Bloom is an effect to heighten the perception of bright objects within a scene. There are many different ways to achieve this effect, however the effect within this project was accomplished by rendering two different frame buffers. During the first render pass, all of the objects were rendered normally to a buffer to contain the regular image. Next, this buffer's frame was sampled as a texture and the perceived brightness for each fragment was calculated using the relative luminance equation, see Equation \ref{luma}.
+
+\begin{equation} \label{luma}
+Y = 0.2126 R + 0.7152 G + 0.0722 B
+\end{equation}
+
+Where Y is the relative luminance: the scalar product of the sampled colour and the luminance values. This is calculated and if it is above a certain threshold, 0.9, the fragment's outgoing colour is set. Otherwise all other fragments are set to black.
+
+This second frame buffer, storing the black or bright parts of the scene is then sent through the Gaussian blur effect, before being rendered finally to the screen. The final render pass takes the output from the two-step Gaussian blur and the output from the initial render pass and sums the sampled colours.
+
+
 \section{Advanced Rendering Techniques}
 	
 \subsection{Graphical User Interface}
-A GUI was implemented for easier control over the post processing effects. 
+A GUI was implemented for easier control over the post processing effects, and for frame-rate monitoring. The GUI used within the project was a third-party open source library called ImGui. \cite{imgui} It was simple to integrate into the project and allowed easy functionality for user interaction to save keyboard shortcuts. 
 	
 \subsection{Particles}
-	
-To create a particle effect the geometry shader is used. twice. report is good.
 
 For the particle effect the geometry shader is used in conjunction with transform feedback. A transform feedback is a technique used to capture geometry data before it is rendered. The primitives passed to the geometry shader are first transformed and saved to the transform feedback buffer. This buffer is then used in the second render pass, to output the particles to the screen. Within this project, the second render pass also utilises the geometry shader using a technique called billboarding.
 
@@ -322,29 +353,29 @@ Where $D$ is the signed distance from a point $x_0$ to a plane that contains the
 \begin{lstlisting}[ label ={lst:intersection}, caption={Intersection Test for View Frustum}]
 for (int i = 0; i < myScene->planeNormals->length(); ++i) 
 {
-// for each plane check if 	intersection occurs
-vec3 pointOnPlane;
+	// for each plane check if 	intersection occurs
+	vec3 pointOnPlane;
 
-if (i < 3)
-{
-pointOnPlane = myScene->planePoints[ftl];		// first three planes are far, top and left therefore corner is in all three
-}
-else
-{
-pointOnPlane = myScene->planePoints[nbr];
-}
+	if (i < 3)
+	{
+		pointOnPlane = myScene->planePoints[ftl];		// first three planes are far, top and left therefore corner is in all three
+	}
+	else
+	{	
+		pointOnPlane = myScene->planePoints[nbr];
+	}
 
-vec3 centre = vec3(getWorldPos());
+	vec3 centre = vec3(getWorldPos());
 
-float d;
-d = dot(myScene->planeNormals[i], centre - pointOnPlane);
+	float d;
+	d = dot(myScene->planeNormals[i], centre - pointOnPlane);
 
-if (d < - getRadius())
-{
-//cout << "CULLING! " << this->myName << endl;
-visible = false;
-break;
-}
+	if (d < - getRadius())
+	{
+		//cout << "CULLING! " << this->myName << endl;
+		visible = false;
+		break;
+	}
 
 }
 \end{lstlisting}
@@ -357,9 +388,60 @@ In the scene the intersection tests are performed using bounding spheres. The us
 {The figure shows a bounding sphere and a frustum. The diagram on the right shows the approximation used in the calculation. If a sphere intersects within the radius boundary of the frustum plane it will be classified as inside the plane. It can lead to incorrect classifications of objects outside the rounded corner, however it is reasonable enough for this case. \cite{RTR}}
 {1.0}
 
+\section{Results}
+
+The main aim of the project was to implement a real-time rendered scene using the OpenGL API, whilst developing an understanding of key concepts of computer graphics programming. The aim for the scene's setting was Mars, to give this impression the lighting and textures used within the scene were all very dim and orange looking. The generated terrain was rocky and bumpy to match this barren landscape. Overall the scene is visually interesting, and depicts a stylised impression of a Martian planet. To improve the overall aesthetics of the scene, models could have been used to create the geometry, but this was out of the scope of the assignment. However as stated, the more important goal for this project was to include many advanced concepts to display a good understanding of the subject.
+
+Normal mapping was used to give a higher level of detail to the scene, this is shown within the pillars, given the impression that they are made of stone. Ideally, to add more detail this effect can be added to every texture that is used within the scene.
+
+Another way of adding a high level of detail to the scene would be the inclusion of Screen Space Ambient Occlusion, to give a more realistic lighting effect taking into account that the geometry in the scene are self-occluding. This would have been a good post-processing effect to use, however due to the limited geometry shapes used in the scene, when attempting to implement this effect it wasn't very clear that anything was happening. By using complex models within the scene to make shapes look more realistic, this effect could be included.
+
+To make the lighting more realistic shadows were implemented from the perspective of the spot light on the platform. Implementation of shadows for every lighting source both directional light and point lights would improve the overall lighting model of the scene.
+
+As for optimization techniques, a reasonable approximation of spheres as bounding volumes was used. However, this can lead to some inaccuracies when frustum culling. To improve this, axis-aligned bounding boxes could be used for the geometry of the scene which would make it more accurate.
+
+An alternative method for rendering the bloom post-processing technique would be to use deferred rendering. Deferred rendering consists of splitting the render function into smaller sections, for example first rendering all the geometry of the scene, then rendering the lighting model separately. Bloom could be implemented in this way, using a technique to create a higher dynamic range before the lighting is 
+
+HIGHER LEVEL OF DETAIL - Transparency
+
+--implemented a real time scene - good frame rate is use able
+
+initial design produce a landscape on mars which implemented in real time 
+
+red colouration using lighting model
+vertex displacement for strange objects
+moving water
+particle effects
+
+screen space ambient occulusion
+
+goal was to implement relevant techniques 
+
+purposely chose to appropriate to display the technqiues to use
+before neatness making it look pretty
+
+so future work to 
+
+realistic water effect
+realistic smoke
+
+more realistic shadows
+
+improve level of detail with normal mapping for every surface
+
+
+Render transparent of object 
+
+terrain smoothing + billboarding grass effects.
+
+
+
+
 	
 \section{Conclusion}
-In conclusion, the first attempt at building up the basics of the mars scene was successful. It showed many core principles of computer graphics, in particular optimisation techniques with view frustrum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add further level of detail.
+In conclusion, a sucessfull real-time rendered scene 
+
+It showed many core principles of computer graphics, in particular optimisation techniques with view frustum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add a further level of detail.
 \bibliographystyle{acmsiggraph}
 \bibliography{report}
 	
