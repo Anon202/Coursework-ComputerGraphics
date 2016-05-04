@@ -6,7 +6,9 @@
 
 \documentclass[conference]{acmsiggraph}
 
+
 \usepackage{graphicx}
+\usepackage{hyperref}
 \graphicspath{{./images/}}
 \newcommand{\figuremacroW}[4]{
 \begin{figure}[h] %[htbp]
@@ -407,6 +409,73 @@ The semi-transparent objects within the scene were rendered correctly, however i
 In conclusion, the project was a success. The scene was implemented in real-time with usable frame-rates, without any slow-down. It showed many core principles of computer graphics, in particular optimisation techniques with view frustum culling, and texturing effects for more than just basic decoration. Future work will be to further the lighting and optimisation techniques to recreate light more realistically. For example to show how light bends as it passes through a transparent object, and use Screen Space Ambient Occlusion to add a further level of detail.
 \bibliographystyle{acmsiggraph}
 \bibliography{report}
-	
-	
+
+\clearpage
+\section{Appendix}
+
+Below are some screenshots of the final results, a video demonstration can be found here:
+\url{https://www.youtube.com/watch?v=EeGMYvXEmrg}
+
+\figuremacroW
+{pointl}
+{Point Lights with Vertex Displacement Showing parent-child Hierarchy.}
+{}
+{1.0}
+
+\figuremacroW
+{radii}
+{Wire-framing and Bounding Volume Radii.}
+{}
+{1.0}
+
+\figuremacroW
+{bloom}
+{Comparison of with and without Bloom Effect.}
+{}
+{1.0}
+%%\end{minipage}
+
+\figuremacroW
+{vignette}
+{Vignette Post-Processing Effect.}
+{}
+{1.0}
+
+\figuremacroW
+{blur}
+{A Two-Step Gaussian Blur.}
+{}
+{1.0}
+
+\figuremacroW
+{shadow}
+{Shadows cast from spot light.}
+{}
+{1.0}
+
+\figuremacroW
+{trans}
+{Transparency and Render Ordering.}
+{}
+{1.0}
+
+\figuremacroW
+{view}
+{Rendering of a View Frustum when culling is fixed.}
+{}
+{1.0}
+
+\figuremacroW
+{terrain}
+{Generated Terrain and Vertex Displaced Water.}
+{}
+{1.0}
+
+\figuremacroW
+{skyb}
+{Multiple Overlay of Skyboxes.}
+{}
+{1.0}
+
+
 \end{document}
